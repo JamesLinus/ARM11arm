@@ -2,12 +2,25 @@ system 'clear;'
 puts '////////////////////////////////////////////////////////'
 puts 'CLEANING'
 puts '////////////////////////////////////////////////////////'
-system 'make clean;'
+IO.popen 'make clean 2>&1' do |io|
+  clean = io.read
+  puts clean
+  if clean =~ /: error:/
+    abort('Clean was not successful.')
+  end
+end
 puts
 puts '////////////////////////////////////////////////////////'
 puts 'REBUILDING'
 puts '////////////////////////////////////////////////////////'
-system 'make build;'
+IO.popen 'make build 2>&1' do |io|
+  make = io.read
+  puts make
+  if make =~ /: error:/
+    abort('Make was not successful.')
+  end
+end
+puts
 puts
 puts '////////////////////////////////////////////////////////'
 puts 'STARTING TESTS'
