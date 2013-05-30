@@ -9,15 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* loadBinaryFile(char* path)
+unsigned char* loadBinaryFile(char* path)
 {
   // declare variables
   // the binary file pointer
-  FILE *arm_bin;
+  FILE *arm_bin = 0;
   // the size of the binary file
-  long unsigned int size;
+  long unsigned int size = 0;
   // the pointer to the buffer
-  unsigned char *buffer;
+  unsigned char *buffer = 0;
 
   // open the file
   arm_bin = fopen(path, "rb");
@@ -41,7 +41,7 @@ char* loadBinaryFile(char* path)
 
   // allocate memory in heap for the file contents
   // where size is the size of the file
-  buffer = (unsigned char*)malloc(size + 1);
+  buffer = (unsigned char*)malloc(size);
 
   // if buffer is null, has not been allocated correctly
   if (!buffer)
@@ -53,11 +53,17 @@ char* loadBinaryFile(char* path)
   }
 
   // use fread to read to the buffer
-  fread(&buffer, sizeof(*buffer), size, arm_bin);
+  fread(buffer, sizeof(*buffer), size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
-  // return the buffer pointer
-  printf("%s", buffer);
 
+  /*  
+  for (int i = 0; i < size; i++)
+  {
+    printf("0x%x%x\n", buffer[i], buffer[i+1]);
+    i++;
+  }
+  */
+  
   return buffer;
 }
