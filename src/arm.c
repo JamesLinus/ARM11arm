@@ -11,5 +11,4 @@
 
 void initialize(void)
 {
-
 }

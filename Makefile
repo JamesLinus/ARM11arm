@@ -1,9 +1,10 @@
 build:
 	make -C ./src all
-	cd bin; ls -l | grep ^d | grep -vi 'tests' | xargs rm -rf; cd ..
+	rm -rf bin/*.dSYM
 
 clean:
 	make -C ./src clean
+	rm -rf bin/*.dSYM
 
 test:
 	make -C ./src all

@@ -34,3 +34,4 @@ assemble
 *.toc
 
 .DS_Store
+bin/*
