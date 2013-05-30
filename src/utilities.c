@@ -22,7 +22,7 @@ unsigned char* loadBinaryFile(char* path)
   // open the file
   arm_bin = fopen(path, "rb");
 
-  // if the file is not null
+  // if the file is null
   if (!arm_bin)
   {
     // output error to stdout
@@ -47,23 +47,15 @@ unsigned char* loadBinaryFile(char* path)
   if (!buffer)
   {
     // memory error, typically game over
-    fprintf(stderr, "Error allocating memory");
+    fprintf(stderr, "Error allocating memory.\n");
     // exit with failure
     exit(EXIT_FAILURE);
   }
 
   // use fread to read to the buffer
-  fread(buffer, sizeof(*buffer), size, arm_bin);
+  fread(buffer, size, size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
-
-  /*  
-  for (int i = 0; i < size; i++)
-  {
-    printf("0x%x%x\n", buffer[i], buffer[i+1]);
-    i++;
-  }
-  */
   
   return buffer;
 }
