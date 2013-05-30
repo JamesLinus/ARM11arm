@@ -52,6 +52,15 @@ unsigned char* loadBinaryFile(char* path)
     exit(EXIT_FAILURE);
   }
 
+  // assert no emulator memory overflow
+  if (size > 65536)
+  {
+    // output error to stdout
+    fprintf(stderr, "Emulator memory overflow\n");
+    // exit with a failure
+    exit(EXIT_FAILURE);
+  }
+
   // use fread to read to the buffer
   fread(buffer, size, size, arm_bin);
   // use fclose to end the feed from the file
