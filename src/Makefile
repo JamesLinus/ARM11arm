@@ -1,17 +1,14 @@
 CC      = gcc
 CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+BIN=../bin/
 
-.SUFFIXES: .c .o
+PROG=assemble emulate
+LIST=$(addprefix $(BIN)/, $(PROG))
 
-.PHONY: all clean
+all: $(LIST)
 
-all: assemble emulate
+clean: $(LIST)
+	rm -rf $(BIN)/*
 
-assemble: assemble.o
-
-emulate: emulate.o
-
-clean:
-	rm -f $(wildcard *.o)
-	rm -f assemble
-	rm -f emulate
+$(BIN)/%:  %.c
+	$(CC) $< $(CFLAGS) -o $@
