@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
+require 'spec_helper'
 require 'ffi'
 
 module Emulate
   extend FFI::Library
-
-  ffi_lib File.absolute_path(
-    File.join(File.dirname(__FILE__), '../bin', 'emulate'))
+  ffi_lib File.join(File.expand_path('bin'), 'emulate')
 
   # char* loadBinaryFile(char* path)
   attach_function :loadBinaryFile, [:string], :string
@@ -15,9 +14,8 @@ end
 describe 'unit test for utilities.c from emulate' do
 
   it 'returns contents of binary file' do
-    out = FFI::MemoryPointer.new :pointer
-    res = Emulate.loadBinaryFile('./cases/A.bin', out)
-    puts out.read_string_to_null
+    res = Emulate.loadBinaryFile('./spec/binary_cases/A')
+    puts res
   end
 
 end

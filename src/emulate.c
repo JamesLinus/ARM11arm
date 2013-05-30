@@ -16,7 +16,5 @@
 #include "utilities.h"
 
 int main(int argc, char **argv) {
-  printf("\n%s\n", argv[0]);
-  loadBinaryFile(argv[0]);
   return EXIT_SUCCESS;
 }

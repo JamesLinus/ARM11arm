@@ -35,3 +35,4 @@ assemble
 
 .DS_Store
 bin/*
+src/utilities.h.gch

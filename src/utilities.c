@@ -17,7 +17,7 @@ char* loadBinaryFile(char* path)
   // the size of the binary file
   long unsigned int size;
   // the pointer to the buffer
-  char *buffer;
+  unsigned char *buffer;
 
   // open the file
   arm_bin = fopen(path, "rb");
@@ -41,7 +41,7 @@ char* loadBinaryFile(char* path)
 
   // allocate memory in heap for the file contents
   // where size is the size of the file
-  buffer = (char*)malloc(size + 1);
+  buffer = (unsigned char*)malloc(size + 1);
 
   // if buffer is null, has not been allocated correctly
   if (!buffer)
@@ -53,7 +53,7 @@ char* loadBinaryFile(char* path)
   }
 
   // use fread to read to the buffer
-  fread(buffer, size, 1, arm_bin);
+  fread(&buffer, sizeof(*buffer), size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
   // return the buffer pointer
