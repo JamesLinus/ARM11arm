@@ -51,10 +51,12 @@ char* loadBinaryFile(char* path){
     exit(EXIT_FAILURE);
   }
 
-  // use fread to read from the buffer
+  // use fread to read to the buffer
   fread(buffer, size, 1, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
   // return the buffer pointer
+  printf("%s", buffer);
+
   return buffer;
 }
