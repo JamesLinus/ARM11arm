@@ -9,7 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* loadBinaryFile(char* path){
+char* loadBinaryFile(char* path)
+{
   // declare variables
   // the binary file pointer
   FILE *arm_bin;

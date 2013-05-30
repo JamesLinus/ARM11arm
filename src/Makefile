@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -Wall -pid -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 BIN=../bin/
 OBJ=../objs/
 
