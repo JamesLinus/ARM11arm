@@ -1,17 +1,24 @@
 CC      = gcc
 CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+BIN=../bin/
+OBJ=../objs/
 
-.SUFFIXES: .c .o
+PROG=assemble emulate
+LIST=$(addprefix $(BIN)/, $(PROG))
 
-.PHONY: all clean
+all: $(LIST)
 
-all: assemble emulate
+clean: $(LIST)
+	rm $(LIST)
 
-assemble: assemble.o
+$(BIN)/assemble: assemble.c assemble.h
+	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c assemble.h
 
-emulate: emulate.o
+$(BIN)/emulate: emulate.c utilities.o arm.o
+	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities.o arm.o 
 
-clean:
-	rm -f $(wildcard *.o)
-	rm -f assemble
-	rm -f emulate
+utilities.o: utilities.c utilities.h
+	$(CC) $(CFLAGS) -c utilities.c utilities.h
+
+arm.o: arm.c arm.h
+	$(CC) $(CFLAGS) -c arm.c
