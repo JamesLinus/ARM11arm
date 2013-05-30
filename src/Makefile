@@ -8,7 +8,8 @@ LIST=$(addprefix $(BIN)/, $(PROG))
 all: $(LIST)
 
 clean: $(LIST)
-	rm -rf $(BIN)/*
+	rm $(LIST)
+	rm -rf $(BIN)/*.dSYM
 
 $(BIN)/%:  %.c
 	$(CC) $< $(CFLAGS) -o $@

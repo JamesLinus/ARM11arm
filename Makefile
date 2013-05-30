@@ -1,6 +1,6 @@
 build:
 	make -C ./src all
-	cd bin | ls -l | grep ^d | xargs rm -rf; cd ..
+	cd bin; ls -l | grep ^d | grep -vi 'tests' | xargs rm -rf; cd ..
 
 clean:
 	make -C ./src clean
