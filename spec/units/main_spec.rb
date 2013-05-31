@@ -2,15 +2,15 @@
 require 'spec_helper'
 require 'ffi'
 
-module Arm
+module Emulate
   extend FFI::Library
   ffi_lib File.join(File.expand_path('bin'), 'emulate')
-  attach_function :initialize, [:string], :void
+  attach_function :main, [:string], :void
   attach_function :decodeInstruction, [:ulong, :pointer, :ulong], :ulong
 
 end
 
-describe 'unit test for arm.c' do
+describe 'unit test for main.c' do
   describe 'initialization' do
     context 'file exists' do
       it 'initializes both state structs' do
