@@ -21,4 +21,4 @@ utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c
 
 arm.o: arm.c arm.h
-	$(CC) $(CFLAGS) -c arm.c
+	$(CC) $(CFLAGS) arm.c
