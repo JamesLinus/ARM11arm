@@ -91,12 +91,12 @@ u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
   {
     return 0;
   }
-  u32 flags = 0xF0000000 & registor[16];
+  u32 flags = cpsr >> 28 & 0xF;
   // verify instruction condition
   switch((inst & 0xF0000000) >> 28)
   {
     // I0, equals
-    case 0x0:
+    case 0x00:
     if (flags & 4 == 4)
     {
       processInst(inst, registor, memory);
@@ -145,57 +145,6 @@ u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
   return 1;
 }
 
-u16 *decodeOp(struct dcpu *d, u16 code) {
-  switch (code) {
-  case 0x00: case 0x01: case 0x02: case 0x03:
-  case 0x04: case 0x05: case 0x06: case 0x07:
-    return d->r + code;
-  case 0x08: case 0x09: case 0x0a: case 0x0b:
-  case 0x0c: case 0x0d: case 0x0e: case 0x0f:
-    return d->m + d->r[code & 7];
-  case 0x10: case 0x11: case 0x12: case 0x13:
-  case 0x14: case 0x15: case 0x16: case 0x17:
-    return d->m + ((d->r[code & 7] + d->m[d->pc++]) & 0xffff);
-  case 0x18:
-    return d->m + d->sp++;
-  case 0x19:
-    return d->m + d->sp;
-  case 0x1a:
-    return d->m + (--(d->sp));
-  case 0x1b:
-    return &d->sp;
-  case 0x1c:
-    return &d->pc;
-  case 0x1d:
-    return &d->ov;
-  case 0x1e:
-    return d->m + d->m[d->pc++];
-  case 0x1f:
-    return d->m + d->pc++;
-  default:
-    return lit + (code & 0x1F);
-  }
-}
-
-switch (op & 0xF) {
-  case 0x1: res = b; break;
-  case 0x2: res = a + b; d->ov = res >> 16; break;  
-  case 0x3: res = a - b; d->ov = res >> 16; break;
-  case 0x4: res = a * b; d->ov = res >> 16; break;
-  case 0x5: if (b) { res = a / b; } else { res = 0; } d->ov = res >> 16; break;
-  case 0x6: if (b) { res = a % b; } else { res = 0; } break;
-  case 0x7: res = a << b; d->ov = res >> 16; break;
-  case 0x8: res = a >> b; d->ov = res >> 16; break;
-  case 0x9: res = a & b; break;
-  case 0xA: res = a | b; break;
-  case 0xB: res = a ^ b; break;
-  case 0xC: if (a!=b) dcpu_skip(d); return;
-  case 0xD: if (a==b) dcpu_skip(d); return;
-  case 0xE: if (a<=b) dcpu_skip(d); return;
-  case 0xF: if ((a&b)==0) dcpu_skip(d); return;
-
-
-
 
 void main(int argc, char** argv)
 {
@@ -204,21 +153,22 @@ void main(int argc, char** argv)
   // initialise all struct elements to 0 
   struct arm raspi = calloc(sizeof(arm));
   struct memory m  = calloc(sizeof(memory));
-  raspi->pc = 1;
-  println("Rasp! %d", raspi->pc);
-  while(int j = 1; j < j;)// exit on all zero input from decode
-  {
-    // decode the loaded instruction and execute and possibly terminate
-    loopTermination = decodeInstruction(pState.loadInst, eState.registor, eState.memory);
-    // load the instruction from memory
-    pState.loadInst = eState.memory[eState.registor[15]];
-    // load into PC and 
-    eState.registor[15] += 4;
-  }
+  // load the binary into the struct memory
+  loadBinaryFile(path, raspi->m);
+  return 0;
+}
+
+void run_arm(struct arm *raspi)
+{
+  // EXECUTE
+  *(raspi->pc)
+  // get instruction from memory
+  // decode instruction
+  // execute instruction
+}
 
   // print all registors to standard output
   for(int n = 0; n < NO_OF_REGS; n++)
   {
     printf("Value of registor %d: %d/n", n, eState.registor[n]);
   }
-}
