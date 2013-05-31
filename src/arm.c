@@ -26,47 +26,56 @@ uint32_t decodeInstruction(uint32_t inst, uint32_t *registor, uint32_t *memory)
   {
     return 0;
   }
-  switch(inst & 0xF0000000)
+  uint32_t flags = 0xF0000000 & registor[16];
+  // verify instruction condition
+  switch((inst & 0xF0000000) >> 28)
   {
-    case 0x00000000:
-      if((registor[16] & 0xF0000000) & 4 == 4)
-      {
-        processInst(inst, registor, memory);
-      }
-      break;
-    case 0x10000000:
-      if((registor[16] & 0xF0000000) & 4 == 0)
-      {
-        processInst(inst, registor, memory);
-      }
-      break;
-    case 0xa0000000:
-      if((registor[16] & 0xF0000000) & 9 == 9 || (registor[16] & 0xF0000000) & 9 == 0)
-      {
-        processInst(inst, registor, memory);
-      }
-      break;
-    case 0xb0000000:
-      if((registor[16] & 0xF0000000) & 9 != 9 || (registor[16] & 0xF0000000) & 9 != 0)
-      {
-        processInst(inst, registor, memory);
-      }
-      break;
-    case 0xc0000000:
-     if((registor[16] & 0xF0000000) & 4 == 0 && ((registor[16] & 0xF0000000) & 9 == 9 || (registor[16] & 0xF0000000) & 9 == 0))
-      {
-        processInst(inst, registor, memory);
-      }
-      break;
-    case 0xd0000000:
-     if((registor[16] & 0xF0000000) & 4 == 4 && ((registor[16] & 0xF0000000) & 9 != 9 || (registor[16] & 0xF0000000) & 9 != 0))
-      {
-        processInst(inst, registor, memory);
-      }
-      break;
-    case 0xe0000000:
+    // I0, equals
+    case 0x0:
+    if (flags & 4 == 4)
+    {
       processInst(inst, registor, memory);
-      break;
+    }
+    break;
+    // I1, not equal
+    case 0x1:
+    if (flags & 4 == 0)
+    {
+      processInst(inst, registor, memory);
+    }
+    break;
+    // I10, greater than or equal
+    case 0xa:
+    if (flags & 9 == 9 || flags & 9 == 0)
+    {
+      processInst(inst, registor, memory);
+    }
+    break;
+    // I11, less than
+    case 0xb:
+    if (flags & 9 != 9 || flags & 9 != 0)
+    {
+      processInst(inst, registor, memory);
+    }
+    break;
+    // I12, greater than
+    case 0xc:
+    if (flags & 4 == 0 && (flags & 9 == 9 || flags & 9 == 0))
+    {
+      processInst(inst, registor, memory);
+    }
+    break;
+    // I13, less than or equal
+    case 0xd:
+    if (flags & 4 == 4 && (flags & 9 != 9 || flags & 9 != 0))
+    {
+      processInst(inst, registor, memory);
+    }
+    break;
+    // I14, always
+    case 0xe:
+    processInst(inst, registor, memory);
+    break;
   }
   return 1;
 }
