@@ -27,13 +27,6 @@ struct arm
   u32 m[MEMSIZE];     // memory array
 };
 
-// set up the pipeline state
-struct pipe
-{
-  u32 decodeInst;
-  u32 loadInst;
-};
-
 #endif
 
 void main(int argc, char** argv);

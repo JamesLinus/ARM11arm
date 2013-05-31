@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include "utilities.h"
 
-#include "arm.h"
+#include "emulate.h"
 
 static u16 lit[0x20] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -152,10 +152,8 @@ void main(int argc, char** argv)
   // setup the loop termination escape code
   int loopTermination = 1;
   // initialise all struct elements to 0 
-  struct arm eState = {0};
+  struct arm arm = {0};
   u32* loaded = loadBinaryFile(path);
-  
-  struct pipe pState = {0};
 
   while(loopTermination == 1)// exit on all zero input from decode
   {
