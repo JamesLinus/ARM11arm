@@ -66,7 +66,7 @@ uint32_t* loadBinaryFile(char* path)
 
   // allocate memory in heap for the file contents
   // where size is the size of the file
-  buffer = (uint32_t*)malloc(size);
+  buffer = malloc(size);
 
   // if buffer is null, has not been allocated correctly
   if (!buffer)

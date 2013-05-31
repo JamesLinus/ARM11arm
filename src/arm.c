@@ -13,10 +13,61 @@
 #include "utilities.h"
 
 #define NO_OF_REGS 17
-#define WORDS_IN_MEMORY 16384
+#define WORDS_IN_MEMORY 65536
 
-uint32_t decodeInstruction(uint32_t loadInst, uint32_t *memory, uint32_t *registor)
+void processInst(uint32_t inst)
 {
+
+}
+
+uint32_t decodeInstruction(uint32_t inst, uint32_t *registor)
+{
+  if(inst == 0)
+  {
+    // need to get loop in calling method to terminate in this case
+  }
+  switch(inst & 0xF0000000)
+  {
+    case 0x00000000:
+      if((registor[16] & 0xF0000000) & 4 == 4)
+      {
+        processInst(inst);
+      }
+      break;
+    case 0x10000000:
+      if((registor[16] & 0xF0000000) & 4 == 0)
+      {
+        processInst(inst);
+      }
+      break;
+    case 0xa0000000:
+      if((registor[16] & 0xF0000000) & 9 == 9 || (registor[16] & 0xF0000000) & 9 == 0)
+      {
+        processInst(inst);
+      }
+      break;
+    case 0xb0000000:
+      if((registor[16] & 0xF0000000) & 9 != 9 || (registor[16] & 0xF0000000) & 9 != 0)
+      {
+        processInst(inst);
+      }
+      break;
+    case 0xc0000000:
+     if((registor[16] & 0xF0000000) & 4 == 0 && ((registor[16] & 0xF0000000) & 9 == 9 || (registor[16] & 0xF0000000) & 9 == 0))
+      {
+        processInst(inst);
+      }
+      break;
+    case 0xd0000000:
+     if((registor[16] & 0xF0000000) & 4 == 4 && ((registor[16] & 0xF0000000) & 9 != 9 || (registor[16] & 0xF0000000) & 9 != 0))
+      {
+        processInst(inst);
+      }
+      break;
+    case 0xe0000000:
+      processInst(inst);
+      break;
+  }
   return 0;
 }
 
@@ -42,14 +93,14 @@ void initialize(char *path)
   
   struct PipelineState pState = {0};
 
-  while(NO_OF_REGS == 17)// note change condition
+  for(;;)// exit on all zero input from decode
   {
     // decode the loaded instruction and execute
-    pState.decodeInst = decodeInstruction(pState.loadInst, eState.memory, eState.registor);
+    pState.decodeInst = decodeInstruction(pState.loadInst, eState.registor);
     // load the instruction from memory
     pState.loadInst = eState.memory[eState.registor[15]];
     // increment PC
-    eState.registor[15]++;
+    eState.registor[15] += 4;
   }
 
   // print all registors to standard output
