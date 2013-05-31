@@ -5,9 +5,31 @@ require 'ffi'
 module Arm
   extend FFI::Library
   ffi_lib File.join(File.expand_path('bin'), 'emulate')
+  attach_function :initialize, [:string], :void
+  attach_function :decodeInstruction, [:ulong, :pointer, :ulong], :ulong
 
 end
 
 describe 'unit test for arm.c' do
+  describe 'initialization' do
+    context 'file exists' do
+      it 'initializes both state structs' do
+      end
+      it 'zeros all struct elements' do
+      end
+      it 'loads file at path into state memory' do
+      end
+    end
+    context 'file does not exist' do
+    end
+  end
 
+  describe 'decoding instruction' do
+  end
+
+  describe 'process instruction' do
+  end
+
+  describe 'memory accessing' do
+  end
 end
