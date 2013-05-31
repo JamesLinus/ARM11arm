@@ -15,60 +15,60 @@
 #define NO_OF_REGS 17
 #define WORDS_IN_MEMORY 65536
 
-void processInst(uint32_t inst)
+void processInst(uint32_t inst, uint32_t *registor, uint32_t *memory)
 {
 
 }
 
-uint32_t decodeInstruction(uint32_t inst, uint32_t *registor)
+uint32_t decodeInstruction(uint32_t inst, uint32_t *registor, uint32_t *memory)
 {
   if(inst == 0)
   {
-    // need to get loop in calling method to terminate in this case
+    return 0;
   }
   switch(inst & 0xF0000000)
   {
     case 0x00000000:
       if((registor[16] & 0xF0000000) & 4 == 4)
       {
-        processInst(inst);
+        processInst(inst, registor, memory);
       }
       break;
     case 0x10000000:
       if((registor[16] & 0xF0000000) & 4 == 0)
       {
-        processInst(inst);
+        processInst(inst, registor, memory);
       }
       break;
     case 0xa0000000:
       if((registor[16] & 0xF0000000) & 9 == 9 || (registor[16] & 0xF0000000) & 9 == 0)
       {
-        processInst(inst);
+        processInst(inst, registor, memory);
       }
       break;
     case 0xb0000000:
       if((registor[16] & 0xF0000000) & 9 != 9 || (registor[16] & 0xF0000000) & 9 != 0)
       {
-        processInst(inst);
+        processInst(inst, registor, memory);
       }
       break;
     case 0xc0000000:
      if((registor[16] & 0xF0000000) & 4 == 0 && ((registor[16] & 0xF0000000) & 9 == 9 || (registor[16] & 0xF0000000) & 9 == 0))
       {
-        processInst(inst);
+        processInst(inst, registor, memory);
       }
       break;
     case 0xd0000000:
      if((registor[16] & 0xF0000000) & 4 == 4 && ((registor[16] & 0xF0000000) & 9 != 9 || (registor[16] & 0xF0000000) & 9 != 0))
       {
-        processInst(inst);
+        processInst(inst, registor, memory);
       }
       break;
     case 0xe0000000:
-      processInst(inst);
+      processInst(inst, registor, memory);
       break;
   }
-  return 0;
+  return 1;
 }
 
 void initialize(char *path)
@@ -87,16 +87,18 @@ void initialize(char *path)
     uint32_t loadInst;
   };
 
+  int loopTermination = 1;
+
   // initialise all struct elements to 0 
   struct EmulatorState eState = {0};
   uint32_t* loaded = loadBinaryFile(path);
   
   struct PipelineState pState = {0};
 
-  for(;;)// exit on all zero input from decode
+  while(loopTermination == 1)// exit on all zero input from decode
   {
-    // decode the loaded instruction and execute
-    pState.decodeInst = decodeInstruction(pState.loadInst, eState.registor);
+    // decode the loaded instruction and execute and possibly terminate
+    loopTermination = decodeInstruction(pState.loadInst, eState.registor, eState.memory);
     // load the instruction from memory
     pState.loadInst = eState.memory[eState.registor[15]];
     // increment PC
