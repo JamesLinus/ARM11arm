@@ -54,6 +54,8 @@ uint32_t* loadBinaryFile(char* path)
 
   // get the file size
   size = getSize(arm_bin);
+  // adjust to get it in word size and offset termination character
+  size = 1 + (size >> 2);
 
   // assert no emulator memory overflow
   if (size > 65536)
@@ -66,7 +68,7 @@ uint32_t* loadBinaryFile(char* path)
 
   // allocate memory in heap for the file contents
   // where size is the size of the file
-  buffer = (uint32_t*)malloc(size);
+  buffer = malloc(size);
 
   // if buffer is null, has not been allocated correctly
   if (!buffer)
@@ -76,12 +78,10 @@ uint32_t* loadBinaryFile(char* path)
     // exit with failure
     exit(EXIT_FAILURE);
   }
-
   // use fread to read to the buffer
   fread(buffer, size, size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
-  
   return buffer;
 }
 

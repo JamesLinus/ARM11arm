@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'spec_helper'
 require 'ffi'
+require 'base64'
 
 module Utilities
   extend FFI::Library
@@ -32,7 +33,9 @@ describe 'unit test for utilities.c' do
     
     it 'A matches A' do
       res = Utilities.loadBinaryFile path + 'A'
-      res.get_bytes(0, s).should eq(ruby_bin.read_bytes(s))
+      ruby_hex = ruby_bin.read_bytes(8).unpack('H*')
+      c_hex = res.read_bytes(8).unpack('H*')
+      c_hex.should eq ruby_hex
     end
     it 'A does not match B' do
       res = Utilities.loadBinaryFile path + 'B'
