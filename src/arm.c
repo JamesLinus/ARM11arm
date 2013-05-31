@@ -17,7 +17,19 @@
 
 void processInst(uint32_t inst, uint32_t *registor, uint32_t *memory)
 {
-  
+  if((inst >> 24) & 0x0F & 12 == 4)
+  {
+    singleDataTransfer(inst);
+  } else if ((inst >> 24) & 0x0F & 12 == 8)
+  {
+    branch(inst);
+  } else if (inst & 0xF00000F0 == 0x00000090)
+  {
+    multiply(inst);
+  } else
+  {
+    dataProcessing(inst);
+  }
 }
 
 uint32_t decodeInstruction(uint32_t inst, uint32_t *registor, uint32_t *memory)
