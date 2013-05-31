@@ -31,15 +31,13 @@ long unsigned int getSize(FILE* file)
   return size;
 } 
 
-uint32_t* loadBinaryFile(char* path)
+uint32_t* loadBinaryFile(char* path, uint32_t* memory)
 {
   // declare variables
   // the binary file pointer
   FILE *arm_bin = 0;
   // the size of the binary file
   long unsigned int size = 0;
-  // the pointer to the buffer
-  uint32_t *buffer = 0;
 
   arm_bin = openFile(path);
 
@@ -66,12 +64,8 @@ uint32_t* loadBinaryFile(char* path)
     exit(EXIT_FAILURE);
   }
 
-  // allocate memory in heap for the file contents
-  // where size is the size of the file
-  buffer = malloc(size);
-
   // if buffer is null, has not been allocated correctly
-  if (!buffer)
+  if (!memory)
   {
     // memory error, typically game over
     fprintf(stderr, "Error allocating memory.\n");
@@ -79,9 +73,9 @@ uint32_t* loadBinaryFile(char* path)
     exit(EXIT_FAILURE);
   }
   // use fread to read to the buffer
-  fread(buffer, size, size, arm_bin);
+  fread(memory, size, size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
-  return buffer;
+  return memory;
 }
 

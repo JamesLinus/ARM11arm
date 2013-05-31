@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: emulate.c
+// File: arm.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,137 +39,205 @@ static u16 lit[0x20] = {
 // Rn: Base pointer for the function entry
 // Rd: Source destination register for the passed word
 // Offset has been covered in the above definitions.
-void singleDataTransfer(u32 inst, u32 *registor, u32 *memory)
+void dataProcessing(u32 inst)
 {
+  // CPRS updates still need to be implemented
+  // need to find a way of not using the nexted statements
+  // set up easy access to registors
+  typedef arm.register[(inst >> 16) & 0x000F] operand1;
+  typedef arm.register[(((inst >> 16) & 0x000F) + 1) / 2] operand2;
 
-}
 
-// problem might execute next command in pipeline before branching to new one
-void branch(uint32_t inst, uint32_t *registor, uint32_t *memory)
-{
-  int32_t offset;
-  if((inst >> 20) & 0x00F & 8 == 0)
+  // case where I = 0
+  if(inst & 0x02000000 == 0)
   {
-    offset = 0x00FFFFFF & (inst << 10) & 0xFF3FFFFF;
-  } else
+    operand2 = arm.register[inst & 0x0000000F];
+    if(inst & 0x00000010)
+    {
+      switch((inst >> 4) & 0x00000006)
+      {
+        case 0:
+          operand2 = operand2 << ((inst >> 7) & 0x0000003F);
+          break;
+        case 2:
+          operand2 = operand2 >> ((inst >> 7) & 0x0000003F);
+          break;
+        case 4:
+          break;
+        case 5:
+          (operand2 >> ((inst >> 7) & 0x0000003F) | 
+          (operand2 << (32 - ((inst >> 7) & 0x0000003F));
+          break;
+      }
+    }
+  } else // I = 1
   {
-    offset = 0xFFFFFFFF & (inst << 10);
+    //convert 8 bit to 32 bit and rotate right 2* the 4 bit value specified
+    operand2 = ((inst & 0x000000FF) >> ((inst >> 8) & 0x0000000F)*2)) | 
+               ((inst & 0x000000FF) << (32 - ((inst >> 8) & 0x0000000F)*2));
   }
-  memory[15] += offset - 2;
+  // switch on opcodes 
+  switch((inst >> 20) & 0x01e)
+  {
+    // rdest = and
+    case 0:
+      arm.register[(inst >> 12) & 0x0000F] = operand1 & operand2;
+      break;
+    // rdest = exclusive or
+    case 2:
+      arm.register[(inst >> 12) & 0x0000F] = operand1 ^ operand2;
+      break;
+    // sub rdes = opr1 - opr2
+    case 4:
+      arm.register[(inst >> 12) & 0x0000F] = operand1 - operand2;
+      break;
+    // rdest = opr2 - opr1
+    case 6:
+      arm.register[(inst >> 12) & 0x0000F] = operand2 - operand1;
+      break;
+    // rdest = opr1 + opr2
+    case 8:
+      arm.register[(inst >> 12) & 0x0000F] = operand1 + operand2;
+      break;
+    // opr1 & opr2
+    case 16:
+      operand1 & operand2;
+      break;
+    // opr1 xor opr2
+    case 18:
+      operand1 ^ operand2;
+      break;
+    // opr1 - opr2
+    case 20:
+      operand1 - operand2;
+      break;
+    // rdest = opr1 | opr2
+    case 24:
+      arm.register[(inst >> 12) & 0x0000F] = operand1 | operand2;
+      break;
+    // rest = opr2
+    case 26:
+      arm.register[(inst >> 12) & 0x0000F] = operand2;
+      break;
+  }
 }
 
-void multiply(u32 inst, u32 *registor, u32 *memory)
+void branch(u32 inst)
+{
+
+}
+
+void multiply(u32 inst)
 {
   
 }
 
-void dataProcessing(u32 inst, u32 *registor, u32 *memory)
+void singleDataTransfer(u32 inst)
 {
   
 }
 
-void processInst(u32 inst, u32 *registor, u32 *memory)
+void processInst(u32 inst)
 {
   if((inst >> 24) & 0x0F & 12 == 4)
   {
-    singleDataTransfer(inst, registor, memory);
+    singleDataTransfer(inst);
   } else if ((inst >> 24) & 0x0F & 12 == 8)
   {
-    branch(inst, registor, memory);
+    branch(inst);
   } else if (inst & 0x0F0000F0 == 0x00000090)
   {
-    multiply(inst, registor, memory);
+    multiply(inst);
   } else
   {
-    dataProcessing(inst, registor, memory);
+    dataProcessing(inst);
   }
 }
 
-u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
+u32 decodeInstruction(u32 inst)
 {
   if(inst == 0)
   {
     return 0;
   }
-  u32 flags = 0xF0000000 & registor[16];
+  u32 flags = cpsr >> 28 & 0xF;
   // verify instruction condition
   switch((inst & 0xF0000000) >> 28)
   {
     // I0, equals
-    case 0x0:
+    case 0x00:
     if (flags & 4 == 4)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I1, not equal
     case 0x1:
     if (flags & 4 == 0)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I10, greater than or equal
     case 0xa:
     if (flags & 9 == 9 || flags & 9 == 0)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I11, less than
     case 0xb:
     if (flags & 9 != 9 || flags & 9 != 0)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I12, greater than
     case 0xc:
     if (flags & 4 == 0 && (flags & 9 == 9 || flags & 9 == 0))
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I13, less than or equal
     case 0xd:
     if (flags & 4 == 4 && (flags & 9 != 9 || flags & 9 != 0))
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I14, always
     case 0xe:
-    processInst(inst, registor, memory);
+    processInst(inst);
     break;
   }
   return 1;
 }
 
+
 void main(int argc, char** argv)
 {
   // grab path of binary from argvs
   char* path = argv[0];
-  // setup the loop termination escape code
-  int loopTermination = 1;
   // initialise all struct elements to 0 
-  struct arm eState = {0};
-  u32* loaded = loadBinaryFile(path);
-  
-  struct pipe pState = {0};
+  struct arm raspi = calloc(sizeof(arm));
+  struct memory m  = calloc(sizeof(memory));
+  // load the binary into the struct memory
+  loadBinaryFile(path, raspi->m);
+  return 0;
+}
 
-  while(loopTermination == 1)// exit on all zero input from decode
-  {
-    // decode the loaded instruction and execute and possibly terminate
-    loopTermination = decodeInstruction(pState.loadInst, eState.registor, eState.memory);
-    // load the instruction from memory
-    pState.loadInst = eState.memory[eState.registor[15]];
-    // increment PC
-    eState.registor[15] += 4;
-  }
+void run_arm(struct arm *raspi)
+{
+  // EXECUTE
+  *(raspi->pc)
+  // get instruction from memory
+  // decode instruction
+  // execute instruction
+}
 
   // print all registors to standard output
   for(int n = 0; n < NO_OF_REGS; n++)
   {
     printf("Value of registor %d: %d/n", n, eState.registor[n]);
   }
-}

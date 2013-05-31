@@ -10,7 +10,12 @@ module Emulate
 
 end
 
-describe 'unit test for main.c' do
+describe 'unit test for emulate.c' do
+
+  it 'does not crash' do
+    Emulate.main('spec/official_tests/add01')
+  end
+
   describe 'initialization' do
     context 'file exists' do
       it 'initializes both state structs' do
@@ -27,9 +32,19 @@ describe 'unit test for main.c' do
   describe 'decoding instruction' do
   end
 
-  describe 'process instruction' do
+  describe 'single data transfer tests' do
+  end
+
+  describe 'branch tests' do
+  end
+
+  describe 'multiply tests' do
+  end
+
+  describe 'data processing tests' do
   end
 
   describe 'memory accessing' do
   end
+
 end

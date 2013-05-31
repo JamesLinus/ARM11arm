@@ -11,14 +11,11 @@ all: $(LIST)
 clean: $(LIST)
 	rm $(LIST)
 
-$(BIN)/assemble: assemble.c assemble.h
+$(BIN)/assemble: assemble.c
 	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c assemble.h
 
-$(BIN)/emulate: emulate.c emulate.h utilities.o arm.o
-	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities.o arm.o 
+$(BIN)/emulate: emulate.c emulate.h utilities.o
+	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities.o
 
-utilities.o: utilities.c utilities.h
-	$(CC) $(CFLAGS) -c utilities.c
-
-arm.o: arm.c arm.h
-	$(CC) $(CFLAGS) arm.c
+utilities.o: utilities.c
+	$(CC) $(CFLAGS) utilities.c
