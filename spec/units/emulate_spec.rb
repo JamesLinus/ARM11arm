@@ -10,7 +10,12 @@ module Emulate
 
 end
 
-describe 'unit test for main.c' do
+describe 'unit test for emulate.c' do
+
+  it 'does not crash' do
+    Emulate.main('spec/official_tests/add01')
+  end
+
   describe 'initialization' do
     context 'file exists' do
       it 'initializes both state structs' do

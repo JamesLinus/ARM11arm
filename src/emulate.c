@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: emulate.c
+// File: arm.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,6 +144,55 @@ u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
   }
   return 1;
 }
+
+u16 *decodeOp(struct dcpu *d, u16 code) {
+  switch (code) {
+  case 0x00: case 0x01: case 0x02: case 0x03:
+  case 0x04: case 0x05: case 0x06: case 0x07:
+    return d->r + code;
+  case 0x08: case 0x09: case 0x0a: case 0x0b:
+  case 0x0c: case 0x0d: case 0x0e: case 0x0f:
+    return d->m + d->r[code & 7];
+  case 0x10: case 0x11: case 0x12: case 0x13:
+  case 0x14: case 0x15: case 0x16: case 0x17:
+    return d->m + ((d->r[code & 7] + d->m[d->pc++]) & 0xffff);
+  case 0x18:
+    return d->m + d->sp++;
+  case 0x19:
+    return d->m + d->sp;
+  case 0x1a:
+    return d->m + (--(d->sp));
+  case 0x1b:
+    return &d->sp;
+  case 0x1c:
+    return &d->pc;
+  case 0x1d:
+    return &d->ov;
+  case 0x1e:
+    return d->m + d->m[d->pc++];
+  case 0x1f:
+    return d->m + d->pc++;
+  default:
+    return lit + (code & 0x1F);
+  }
+}
+
+switch (op & 0xF) {
+  case 0x1: res = b; break;
+  case 0x2: res = a + b; d->ov = res >> 16; break;  
+  case 0x3: res = a - b; d->ov = res >> 16; break;
+  case 0x4: res = a * b; d->ov = res >> 16; break;
+  case 0x5: if (b) { res = a / b; } else { res = 0; } d->ov = res >> 16; break;
+  case 0x6: if (b) { res = a % b; } else { res = 0; } break;
+  case 0x7: res = a << b; d->ov = res >> 16; break;
+  case 0x8: res = a >> b; d->ov = res >> 16; break;
+  case 0x9: res = a & b; break;
+  case 0xA: res = a | b; break;
+  case 0xB: res = a ^ b; break;
+  case 0xC: if (a!=b) dcpu_skip(d); return;
+  case 0xD: if (a==b) dcpu_skip(d); return;
+  case 0xE: if (a<=b) dcpu_skip(d); return;
+  case 0xF: if ((a&b)==0) dcpu_skip(d); return;
 
 
 

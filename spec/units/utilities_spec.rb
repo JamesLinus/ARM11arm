@@ -7,9 +7,10 @@ module Utilities
   ffi_lib File.join(File.expand_path('bin'), 'emulate')
 
   # char* loadBinaryFile(char* path)
-  attach_function :loadBinaryFile, [:string], :pointer
+  attach_function :loadBinaryFile, [:string, :pointer], :pointer
   attach_function :openFile, [:string], :pointer
   attach_function :getSize, [:pointer], :ulong
+  attach_function :calloc, [:size_t], :pointer
 
   def self.get_binary(path)
     file = File.join(File.expand_path(''), path)
@@ -31,18 +32,21 @@ describe 'unit test for utilities.c' do
     let('s') { ruby_bin.size }
     
     it 'A matches A' do
-      res = Utilities.loadBinaryFile path + 'A'
+      buffer = FFI::MemoryPointer.new(:uint32, 65536)
+      res = Utilities.loadBinaryFile path + 'A', buffer
       ruby_hex = ruby_bin.read_bytes(8).unpack('H*')
       c_hex = res.read_bytes(8).unpack('H*')
       c_hex.should eq ruby_hex
     end
     it 'A is not longer than A' do
-      res = Utilities.loadBinaryFile path + 'A'
+      buffer = FFI::MemoryPointer.new(:uint32, 65536)
+      res = Utilities.loadBinaryFile path + 'A', buffer
       res.read_bytes(9).should_not eq \
-        Utilities.loadBinaryFile path + 'A'
+        Utilities.loadBinaryFile path + 'A', buffer
     end
     it 'A does not match B' do
-      res = Utilities.loadBinaryFile path + 'B'
+      buffer = FFI::MemoryPointer.new(:uint32, 65536)
+      res = Utilities.loadBinaryFile path + 'B', buffer
       res.get_bytes(0, s).should_not eq(ruby_bin.read_bytes(s))
     end
 
