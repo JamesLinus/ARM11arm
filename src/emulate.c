@@ -44,9 +44,18 @@ void singleDataTransfer(u32 inst, u32 *registor, u32 *memory)
 
 }
 
-void branch(u32 inst, u32 *registor, u32 *memory)
+// problem might execute next command in pipeline before branching to new one
+void branch(uint32_t inst, uint32_t *registor, uint32_t *memory)
 {
-  
+  int32_t offset;
+  if((inst >> 20) & 0x00F & 8 == 0)
+  {
+    offset = 0x00FFFFFF & (inst << 10) & 0xFF3FFFFF;
+  } else
+  {
+    offset = 0xFFFFFFFF & (inst << 10);
+  }
+  memory[15] += offset - 2;
 }
 
 void multiply(u32 inst, u32 *registor, u32 *memory)
@@ -138,14 +147,10 @@ u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
 
 void main(int argc, char** argv)
 {
-  if (argc != 2) 
-  {
-    
-  }
+  // grab path of binary from argvs
   char* path = argv[0];
-
+  // setup the loop termination escape code
   int loopTermination = 1;
-
   // initialise all struct elements to 0 
   struct arm eState = {0};
   u32* loaded = loadBinaryFile(path);
