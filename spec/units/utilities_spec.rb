@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 require 'spec_helper'
 require 'ffi'
-require 'base64'
 
 module Utilities
   extend FFI::Library
@@ -37,6 +36,11 @@ describe 'unit test for utilities.c' do
       c_hex = res.read_bytes(8).unpack('H*')
       c_hex.should eq ruby_hex
     end
+    it 'A is not longer than A' do
+      res = Utilities.loadBinaryFile path + 'A'
+      res.read_bytes(9).should_not eq \
+        Utilities.loadBinaryFile path + 'A'
+    end
     it 'A does not match B' do
       res = Utilities.loadBinaryFile path + 'B'
       res.get_bytes(0, s).should_not eq(ruby_bin.read_bytes(s))
@@ -52,7 +56,7 @@ describe 'unit test for utilities.c' do
       size.should_not be < 65536
     end
 
-    it 'exits for nonexistant file' do
+    it 'detects nonexistant file' do
       file = Utilities.openFile path + 'Ghost'
       # invalid should point to it's initialized value- 0
       file.address.should eq(0)

@@ -17,7 +17,7 @@
 
 void processInst(uint32_t inst, uint32_t *registor, uint32_t *memory)
 {
-
+  
 }
 
 uint32_t decodeInstruction(uint32_t inst, uint32_t *registor, uint32_t *memory)
