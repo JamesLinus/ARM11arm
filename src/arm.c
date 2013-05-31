@@ -23,7 +23,7 @@ void processInst(uint32_t inst, uint32_t *registor, uint32_t *memory)
   } else if ((inst >> 24) & 0x0F & 12 == 8)
   {
     branch(inst);
-  } else if (inst & 0xF00000F0 == 0x00000090)
+  } else if (inst & 0x0F0000F0 == 0x00000090)
   {
     multiply(inst);
   } else
