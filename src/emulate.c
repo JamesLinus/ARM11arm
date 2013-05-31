@@ -122,18 +122,9 @@ void dataProcessing(u32 inst)
   }
 }
 
-// problem might execute next command in pipeline before branching to new one
-void branch(uint32_t inst)
+void branch(u32 inst)
 {
-  int32_t offset;
-  if((inst >> 20) & 0x00F & 8 == 0)
-  {
-    offset = 0x00FFFFFF & (inst << 10) & 0xFF3FFFFF;
-  } else
-  {
-    offset = 0xFFFFFFFF & (inst << 10);
-  }
-  memory[15] += offset - 2;
+
 }
 
 void multiply(u32 inst)
