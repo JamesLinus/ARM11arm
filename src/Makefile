@@ -18,7 +18,7 @@ $(BIN)/emulate: emulate.c utilities.o arm.o
 	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities.o arm.o 
 
 utilities.o: utilities.c utilities.h
-	$(CC) $(CFLAGS) -c utilities.c utilities.h
+	$(CC) $(CFLAGS) -c utilities.c
 
 arm.o: arm.c arm.h
 	$(CC) $(CFLAGS) -c arm.c

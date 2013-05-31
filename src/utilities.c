@@ -9,6 +9,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+FILE* openFile(char* path)
+{
+  // open the file
+  FILE *file = fopen(path, "rb");
+  return file;
+}
+
+long unsigned int getSize(FILE* file)
+{
+  // use fseek to set relative pointer pos in file
+  fseek(file, 0, SEEK_END);
+  // get size from current relative position of the seek
+  // inside the file
+  long unsigned int size = ftell(file);
+  // reset the offset to the beginning of the file
+  fseek(file, 0, SEEK_SET);
+  return size;
+} 
+
 unsigned char* loadBinaryFile(char* path)
 {
   // declare variables
@@ -19,8 +38,7 @@ unsigned char* loadBinaryFile(char* path)
   // the pointer to the buffer
   unsigned char *buffer = 0;
 
-  // open the file
-  arm_bin = fopen(path, "rb");
+  arm_bin = openFile(path);
 
   // if the file is null
   if (!arm_bin)
@@ -31,13 +49,17 @@ unsigned char* loadBinaryFile(char* path)
     exit(EXIT_FAILURE);
   }
 
-  // use fseek to set relative pointer pos in file
-  fseek(arm_bin, 0, SEEK_END);
-  // get size from current relative position of the seek
-  // inside the file
-  size = ftell(arm_bin);
-  // reset the offset to the beginning of the file
-  fseek(arm_bin, 0, SEEK_SET);
+  // get the file size
+  size = getSize(arm_bin);
+
+  // assert no emulator memory overflow
+  if (size > 65536)
+  {
+    // output error to stdout
+    fprintf(stderr, "Emulator memory overflow\n");
+    // exit with a failure
+    exit(EXIT_FAILURE);
+  }
 
   // allocate memory in heap for the file contents
   // where size is the size of the file
@@ -49,15 +71,6 @@ unsigned char* loadBinaryFile(char* path)
     // memory error, typically game over
     fprintf(stderr, "Error allocating memory.\n");
     // exit with failure
-    exit(EXIT_FAILURE);
-  }
-
-  // assert no emulator memory overflow
-  if (size > 65536)
-  {
-    // output error to stdout
-    fprintf(stderr, "Emulator memory overflow\n");
-    // exit with a failure
     exit(EXIT_FAILURE);
   }
 

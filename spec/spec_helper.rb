@@ -1,29 +1,31 @@
 system 'clear;'
 puts '////////////////////////////////////////////////////////'
-puts 'CLEANING'
+puts "\e[1;32m  CLEANING BINARIES\e[0m"
 puts '////////////////////////////////////////////////////////'
 IO.popen 'make clean 2>&1' do |io|
   clean = io.read
   puts clean
-  if clean =~ /: error:/
-    abort('Clean was not successful.')
+  if clean =~ /: error:/ or clean =~ /: warning:/
+    msg = "  CLEAN FAILED."
+    abort "\n\e[1;31m#{msg}\e[0m"
   end
 end
 puts
 puts '////////////////////////////////////////////////////////'
-puts 'REBUILDING'
+puts "\e[1;32m  BUILDING BINARIES\e[0m"
 puts '////////////////////////////////////////////////////////'
 IO.popen 'make build 2>&1' do |io|
   make = io.read
   puts make
-  if make =~ /: error:/
-    abort('Make was not successful.')
+  if make =~ /: error:/ or make =~ /: warning:/
+    msg = "  MAKE FAILED."
+    abort "\n\e[1;31m#{msg}\e[0m"
   end
 end
 puts
 puts
 puts '////////////////////////////////////////////////////////'
-puts 'STARTING TESTS'
+puts "\e[1;32m  STARTING TESTS\e[0m"
 puts '////////////////////////////////////////////////////////'
 puts
 

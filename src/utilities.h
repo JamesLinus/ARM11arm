@@ -7,3 +7,5 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 char* loadBinaryFile(char* path);
+FILE* openFile(char* path, FILE* file);
+long unsigned int getSize(FILE* file);
