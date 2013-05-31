@@ -1,0 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////
+////// C Group Project - First Year
+////// ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+////// File: instructionSet.c
+////// Group: 21
+////// Memebers: amv12, lmj112, skd212
+///////////////////////////////////////////////////////////////////////////////////
+
+void dataProcessing(void) {
+}
+
+void multiply(void){
+}
+
+void singleDataTransfer(void){
+}
+
+void branch(void){
+
+}
+
+
+

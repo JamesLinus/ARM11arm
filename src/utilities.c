@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 FILE* openFile(char* path)
 {
@@ -30,7 +31,7 @@ long unsigned int getSize(FILE* file)
   return size;
 } 
 
-unsigned char* loadBinaryFile(char* path)
+uint32_t* loadBinaryFile(char* path)
 {
   // declare variables
   // the binary file pointer
@@ -38,7 +39,7 @@ unsigned char* loadBinaryFile(char* path)
   // the size of the binary file
   long unsigned int size = 0;
   // the pointer to the buffer
-  unsigned char *buffer = 0;
+  uint32_t *buffer = 0;
 
   arm_bin = openFile(path);
 
@@ -65,7 +66,7 @@ unsigned char* loadBinaryFile(char* path)
 
   // allocate memory in heap for the file contents
   // where size is the size of the file
-  buffer = (unsigned char*)malloc(size);
+  buffer = (uint32_t*)malloc(size);
 
   // if buffer is null, has not been allocated correctly
   if (!buffer)
@@ -83,3 +84,4 @@ unsigned char* loadBinaryFile(char* path)
   
   return buffer;
 }
+

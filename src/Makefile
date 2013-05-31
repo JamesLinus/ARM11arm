@@ -1,9 +1,9 @@
 CC      = gcc
-CFLAGS  = -Wall -pid -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -pid -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 BIN=../bin/
 OBJ=../objs/
 
-PROG=assemble emulate
+PROG=emulate
 LIST=$(addprefix $(BIN)/, $(PROG))
 
 all: $(LIST)
