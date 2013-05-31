@@ -10,14 +10,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-uint32_t decodeInstruction(uint32_t loadInst)
+uint32_t decodeInstruction(uint32_t loadInst, uint32_t *memory, uint32_t *registor)
 {
   return 0;
-}
-
-void runInstruction(uint32_t loadInst)
-{
-
 }
 
 void initialize(void)
@@ -25,7 +20,7 @@ void initialize(void)
   // set up state of the emulator
   struct EmulatorState
   {
-    uint32_t memory[2048];
+    uint32_t memory[16384];
     uint32_t registor[17];
   };
 
@@ -41,12 +36,10 @@ void initialize(void)
   struct PipelineState pState = { 0 };
   const int NO_OF_REGS = 17;
 
-  while(NO_OF_REGS == 17)
+  while(NO_OF_REGS == 17)// note change condition
   {
-    // run the decoded instruction
-    runInstruction(pState.decodeInst);
     // decode the loaded intruction
-    pState.decodeInst = decodeInstruction(pState.loadInst);
+    pState.decodeInst = decodeInstruction(pState.loadInst, eState.memory, eState.registor);
     // load the instruction from memory
     pState.loadInst = eState.memory[eState.registor[15]];
     // increment PC
