@@ -9,26 +9,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "instructionSet.h"
 #include "utilities.h"
 
 #define NO_OF_REGS 17
 #define WORDS_IN_MEMORY 65536
 
+void singleDataTransfer(uint32_t inst, uint32_t *registor, uint32_t *memory)
+{
+  
+}
+
+void branch(uint32_t inst, uint32_t *registor, uint32_t *memory)
+{
+  
+}
+
+void multiply(uint32_t inst, uint32_t *registor, uint32_t *memory)
+{
+  
+}
+
+void dataProcessing(uint32_t inst, uint32_t *registor, uint32_t *memory)
+{
+  
+}
+
 void processInst(uint32_t inst, uint32_t *registor, uint32_t *memory)
 {
   if((inst >> 24) & 0x0F & 12 == 4)
   {
-    singleDataTransfer(inst);
+    singleDataTransfer(inst, registor, memory);
   } else if ((inst >> 24) & 0x0F & 12 == 8)
   {
-    branch(inst);
-  } else if (inst & 0xF00000F0 == 0x00000090)
+    branch(inst, registor, memory);
+  } else if (inst & 0x0F0000F0 == 0x00000090)
   {
-    multiply(inst);
+    multiply(inst, registor, memory);
   } else
   {
-    dataProcessing(inst);
+    dataProcessing(inst, registor, memory);
   }
 }
 
