@@ -19,19 +19,17 @@ typedef uint32_t u32;
 // Set up program state as a C Struct
 struct arm
 {
-  u32 register[13];   // registers
+  u32 reg[13];        // registers
   u32 sp;             // R[13] <- stack pointer
   u32 lr;             // R[14] <- link register
   u32 pc;             // R[15] <- program counter
-  u32 cpsr;           // R[16] <- 
-  u32 m[MEMSIZE];     // memory array
+  u32 cpsr;           // R[16] <- flags
 };
 
-// set up the pipeline state
-struct pipe
+struct memory
 {
-  u32 decodeInst;
-  u32 loadInst;
+  u32 m[MEMSIZE];
+  u32 d[MEMSIZE];
 };
 
 #endif

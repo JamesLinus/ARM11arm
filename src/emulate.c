@@ -145,25 +145,25 @@ u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
   return 1;
 }
 
+
+
+
 void main(int argc, char** argv)
 {
   // grab path of binary from argvs
   char* path = argv[0];
-  // setup the loop termination escape code
-  int loopTermination = 1;
   // initialise all struct elements to 0 
-  struct arm eState = {0};
-  u32* loaded = loadBinaryFile(path);
-  
-  struct pipe pState = {0};
-
-  while(loopTermination == 1)// exit on all zero input from decode
+  struct arm raspi = calloc(sizeof(arm));
+  struct memory m  = calloc(sizeof(memory));
+  raspi->pc = 1;
+  println("Rasp! %d", raspi->pc);
+  while(int j = 1; j < j;)// exit on all zero input from decode
   {
     // decode the loaded instruction and execute and possibly terminate
     loopTermination = decodeInstruction(pState.loadInst, eState.registor, eState.memory);
     // load the instruction from memory
     pState.loadInst = eState.memory[eState.registor[15]];
-    // increment PC
+    // load into PC and 
     eState.registor[15] += 4;
   }
 

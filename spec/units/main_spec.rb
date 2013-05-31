@@ -27,9 +27,19 @@ describe 'unit test for main.c' do
   describe 'decoding instruction' do
   end
 
-  describe 'process instruction' do
+  describe 'single data transfer tests' do
+  end
+
+  describe 'branch tests' do
+  end
+
+  describe 'multiply tests' do
+  end
+
+  describe 'data processing tests' do
   end
 
   describe 'memory accessing' do
   end
+
 end
