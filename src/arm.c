@@ -12,6 +12,9 @@
 #include "instructionSet.h"
 #include "utilities.h"
 
+#define NO_OF_REGS 17
+#define WORDS_IN_MEMORY 16384
+
 uint32_t decodeInstruction(uint32_t loadInst, uint32_t *memory, uint32_t *registor)
 {
   return 0;
@@ -19,9 +22,6 @@ uint32_t decodeInstruction(uint32_t loadInst, uint32_t *memory, uint32_t *regist
 
 void initialize(char *path)
 {
-  const int NO_OF_REGS = 17;
-  const int WORDS_IN_MEMORY = 16384;
-
   // set up state of the emulator
   struct EmulatorState
   {
@@ -37,11 +37,10 @@ void initialize(char *path)
   };
 
   // initialise all struct elements to 0 
-  struct EmulatorState eState = { (uint32_t) 0 };
-  struct PipelineState pState = { (uint32_t) 0 };
-
-  // load bin file into memory
-  eState.memory = loadBinaryFile(path);
+  struct EmulatorState eState = {0};
+  uint32_t* loaded = loadBinaryFile(path);
+  
+  struct PipelineState pState = {0};
 
   while(NO_OF_REGS == 17)// note change condition
   {
