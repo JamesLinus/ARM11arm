@@ -233,6 +233,7 @@ void main(int argc, char** argv)
   struct memory m  = calloc(sizeof(memory));
   // load the binary into the struct memory
   loadBinaryFile(path, raspi->m);
+  printf('Hello');
   return 0;
 }
 

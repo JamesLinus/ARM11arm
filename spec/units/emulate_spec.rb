@@ -5,15 +5,16 @@ require 'ffi'
 module Emulate
   extend FFI::Library
   ffi_lib File.join(File.expand_path('bin'), 'emulate')
-  attach_function :main, [:string], :void
+  attach_function :main, [:int, :array], :void
   attach_function :decodeInstruction, [:ulong, :pointer, :ulong], :ulong
+  attach_function :malloc, [:string, :int], :pointer
 
 end
 
 describe 'unit test for emulate.c' do
 
   it 'does not crash' do
-    Emulate.main('spec/official_tests/add01')
+    Emulate.main(2, ['spec/official_tests/add01'])
   end
 
   describe 'initialization' do
