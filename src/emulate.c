@@ -123,7 +123,7 @@ void dataProcessing(u32 inst)
 }
 
 // problem might execute next command in pipeline before branching to new one
-void branch(uint32_t inst, uint32_t *registor, uint32_t *memory)
+void branch(uint32_t inst)
 {
   int32_t offset;
   if((inst >> 20) & 0x00F & 8 == 0)
@@ -136,34 +136,34 @@ void branch(uint32_t inst, uint32_t *registor, uint32_t *memory)
   memory[15] += offset - 2;
 }
 
-void multiply(u32 inst, u32 *registor, u32 *memory)
+void multiply(u32 inst)
 {
   
 }
 
-void singleDataTransfer(u32 inst, u32 *registor, u32 *memory)
+void singleDataTransfer(u32 inst)
 {
   
 }
 
-void processInst(u32 inst, u32 *registor, u32 *memory)
+void processInst(u32 inst)
 {
   if((inst >> 24) & 0x0F & 12 == 4)
   {
-    singleDataTransfer(inst, registor, memory);
+    singleDataTransfer(inst);
   } else if ((inst >> 24) & 0x0F & 12 == 8)
   {
-    branch(inst, registor, memory);
+    branch(inst);
   } else if (inst & 0x0F0000F0 == 0x00000090)
   {
-    multiply(inst, registor, memory);
+    multiply(inst);
   } else
   {
-    dataProcessing(inst, registor, memory);
+    dataProcessing(inst);
   }
 }
 
-u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
+u32 decodeInstruction(u32 inst)
 {
   if(inst == 0)
   {
@@ -177,47 +177,47 @@ u32 decodeInstruction(u32 inst, u32 *registor, u32 *memory)
     case 0x00:
     if (flags & 4 == 4)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I1, not equal
     case 0x1:
     if (flags & 4 == 0)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I10, greater than or equal
     case 0xa:
     if (flags & 9 == 9 || flags & 9 == 0)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I11, less than
     case 0xb:
     if (flags & 9 != 9 || flags & 9 != 0)
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I12, greater than
     case 0xc:
     if (flags & 4 == 0 && (flags & 9 == 9 || flags & 9 == 0))
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I13, less than or equal
     case 0xd:
     if (flags & 4 == 4 && (flags & 9 != 9 || flags & 9 != 0))
     {
-      processInst(inst, registor, memory);
+      processInst(inst);
     }
     break;
     // I14, always
     case 0xe:
-    processInst(inst, registor, memory);
+    processInst(inst);
     break;
   }
   return 1;
