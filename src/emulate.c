@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include "utilities.h"
 
-#include "arm.h"
+#include "emulate.h"
 
 static u16 lit[0x20] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
