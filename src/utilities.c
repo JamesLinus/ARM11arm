@@ -4,6 +4,8 @@
 // File: utilities.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
+//
+// TODO - Move the 2^16 bits into a const
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>

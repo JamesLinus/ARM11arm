@@ -6,6 +6,6 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-char* loadBinaryFile(char* path);
-FILE* openFile(char* path, FILE* file);
+unsigned char* loadBinaryFile(char* path);
+FILE* openFile(char* path);
 long unsigned int getSize(FILE* file);
