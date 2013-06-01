@@ -17,7 +17,7 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 
 // Set up program state as a C Struct
-struct arm
+struct Arm
 {
   u32 reg[13];        // registers
   u32 sp;             // R[13] <- stack pointer
@@ -26,7 +26,7 @@ struct arm
   u32 cpsr;           // R[16] <- flags
 };
 
-struct memory
+struct Memory
 {
   u32 m[MEMSIZE];
   u32 d[MEMSIZE];

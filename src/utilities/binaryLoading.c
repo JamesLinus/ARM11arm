@@ -1,16 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: utilities.c
+// File: binaryLoading.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 //
 // TODO - Move the 2^16 bits into a const
 ///////////////////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 
 FILE* openFile(char* path)
 {

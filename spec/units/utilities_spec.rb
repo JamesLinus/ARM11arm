@@ -65,7 +65,6 @@ describe 'unit test for utilities.c' do
       # invalid should point to it's initialized value- 0
       file.address.should eq(0)
     end
-
   end
 
 end
