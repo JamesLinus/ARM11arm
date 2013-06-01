@@ -10,8 +10,8 @@ all: $(LIST)
 clean: $(LIST)
 	rm $(LIST)
 
-$(BIN)/assemble: assemble.c
+$(BIN)/assemble: assemble.c assemble.h
 	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c
 
-$(BIN)/emulate: emulate.c
+$(BIN)/emulate: emulate.c emulate.h
 	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c

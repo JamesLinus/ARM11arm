@@ -34,7 +34,6 @@ uint32_t* loadBinaryFile(char* path, uint32_t* memory)
   FILE *arm_bin = 0;
   // the size of the binary file
   long unsigned int size = 0;
-
   arm_bin = openFile(path);
 
   // if the file is null
