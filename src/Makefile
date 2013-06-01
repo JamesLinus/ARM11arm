@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -pid -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -pie -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 BIN=../bin/
 
 PROG=emulate

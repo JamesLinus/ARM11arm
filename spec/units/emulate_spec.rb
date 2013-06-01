@@ -7,20 +7,24 @@ describe 'unit test for emulate.c' do
     Emulate.main(0, './spec/official_tests/add01')
   end
 
-  it 'detects incorrect nonexistant files' do
-    res = Emulate.fileExists('./bogus')
-    res.should eq(1)
-    res = Emulate.fileExists('./spec/binary_cases/A')
-    res.should eq(0)
-  end
-
   describe 'initialization' do
     context 'file exists' do
-      it 'initializes both state structs'
-      it 'zeros all struct elements'
+      it 'zeros all struct elements' do
+        ptr = Emulate.makeRaspi './spec/official_tests/add01'
+        raspi = Raspi.new ptr
+        r = FFI::Pointer.new(raspi[:r])
+        r = r.read_array_of_type(:ulong, :read_ulong, 12)
+        puts r
+      end
       it 'loads file at path into state memory'
     end
     context 'file does not exist' do
+      it 'detects incorrect nonexistant files' do
+        res = Emulate.fileExists('./bogus')
+        res.should eq(1)
+        res = Emulate.fileExists('./spec/binary_cases/A')
+        res.should eq(0)
+      end
     end
   end
 

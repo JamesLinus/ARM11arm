@@ -17,6 +17,7 @@
 // DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+#define NO_OF_REGISTERS 12
 #define NO_FILE_FOUND 1
 
 // Set up program state as a C Struct
@@ -28,13 +29,13 @@ typedef struct
 
 typedef struct
 {
-  u32 reg[13];        // registers
-  u32 sp;             // R[13] <- stack pointer
-  u32 lr;             // R[14] <- link register
-  u32 pc;             // R[15] <- program counter
-  u32 cpsr;           // R[16] <- flags
-  u32 em[MEMSIZE];    // encoded memory
-  u32 dm[MEMSIZE];    // decoded memory
+  u32 *r;        // registers
+  u32 sp;        // R[13] <- stack pointer
+  u32 lr;        // R[14] <- link register
+  u32 pc;        // R[15] <- program counter
+  u32 cpsr;      // R[16] <- flags
+  u32 *em;       // encoded memory
+  u32 *dm;       // decoded memory
 } Arm;
 
 static u16 lit[0x20] =
@@ -59,6 +60,20 @@ static u16 lit[0x20] =
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+Arm* makeRaspi(char* mempath)
+{
+  // allocate and initialise the raspi struct
+  Arm *raspi = (Arm *) malloc(sizeof(Arm));
+  // allocate space for all the memory
+  raspi->em = (u32 *) malloc(sizeof(u32) * MEMSIZE);
+  raspi->dm = (u32 *) malloc(sizeof(u32) * MEMSIZE);
+  // allocate space for all the registers
+  raspi->r  = (u32 *) malloc(sizeof(u32) * NO_OF_REGISTERS); 
+  // load the contents of the file @ mempath
+  loadBinaryFile(mempath, raspi->em);
+  return raspi;
+}
+
 int main(int argc, char **argv)
 {
   char *path;
@@ -68,9 +83,6 @@ int main(int argc, char **argv)
   case 2: path = argv[0]; break;
   default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;
   }
-  // initialise raspi
-  Arm *raspi = (Arm *) malloc(sizeof(Arm));
-  // load the binary into the struct encoded memory
-  loadBinaryFile(path, raspi->em);
+  Arm *raspi = makeRaspi(path);
   return 0;
 }

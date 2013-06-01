@@ -7,6 +7,7 @@ module Emulate extend FFI::Library
   #### emulate.c ############################################
   attach_function :main, [:int, :string], :void
   attach_function :loadBinaryFile, [:string, :pointer], :pointer
+  attach_function :makeRaspi, [:string], :pointer
 
   #### utilites/binaryLoading.c #############################
   attach_function :openFile, [:string], :pointer
