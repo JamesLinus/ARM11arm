@@ -17,6 +17,8 @@
 // DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+#define NO_FILE_FOUND 1
+
 // Set up program state as a C Struct
 typedef struct
 {
@@ -60,31 +62,15 @@ static u16 lit[0x20] =
 int main(int argc, char **argv)
 {
   char *path;
-  if (argc == 0)
+  switch (argc)
   {
-    // testing only from FFI
-    printf("TESTING for filepath - %s\n", argv[0]);
-    path = argv[0];
-  }
-  else if (argc != 2)
-  {
-    fprintf(stderr, "Path for binary file is required.\n");
-    return 0;
-  }
-  else
-  {
-    path = argv[1];
+  case 0: path = (char *)argv; break;
+  case 2: path = argv[0]; break;
+  default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;
   }
   // initialise raspi
   Arm *raspi = (Arm *) malloc(sizeof(Arm));
-  printf("This is the pointer to the raspi %p\n", (void *)raspi);
-  printf("This is the contents of em[0] - %d\n", raspi->em[0]);
-  raspi->em[0] = 5;
-  raspi->em[5] = 3;
-  printf("This is the contents of em[0] & em[5] - %d, %d\n", raspi->em[0], raspi->em[5]);
-  printf("DONE\n\n");
-  // load the binary into the struct memory
-  printf("This is file path %s", path);
+  // load the binary into the struct encoded memory
   loadBinaryFile(path, raspi->em);
   return 0;
 }

@@ -15,6 +15,13 @@ FILE* openFile(char* path)
   return file;
 }
 
+int fileExists(char* path)
+{
+  FILE *file = openFile(path);
+  if (!file)  { return 1; }
+  fclose(file); return 0;
+}
+
 long unsigned int getSize(FILE* file)
 {
   // use fseek to set relative pointer pos in file
@@ -37,7 +44,7 @@ uint32_t* loadBinaryFile(char* path, uint32_t* memory)
   arm_bin = openFile(path);
 
   // if the file is null
-  if (!arm_bin)
+  if (fileExists(path) == 1)
   {
     // output error to stdout
     fprintf(stderr, "Error opening file.\n");

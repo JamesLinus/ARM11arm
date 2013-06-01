@@ -3,9 +3,15 @@ require 'emulate_helper'
 
 describe 'unit test for emulate.c' do
 
-  it 'does not crash' do
-    path = Emulate.pointer_from_string './spec/official_tests/add01'
-    Emulate.main(0, path)
+  it 'does not crash for normal file' do
+    Emulate.main(0, './spec/official_tests/add01')
+  end
+
+  it 'detects incorrect nonexistant files' do
+    res = Emulate.fileExists('./bogus')
+    res.should eq(1)
+    res = Emulate.fileExists('./spec/binary_cases/A')
+    res.should eq(0)
   end
 
   describe 'initialization' do
