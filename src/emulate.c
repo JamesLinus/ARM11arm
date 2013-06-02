@@ -20,6 +20,24 @@
 #define NO_OF_REGISTERS 12
 #define NO_FILE_FOUND 1
 
+#define N_MASK (u32) 1 << 31
+#define Z_MASK (u32) 1 << 30
+#define C_MASK (u32) 1 << 29
+#define V_MASK (u32) 1 << 28
+
+#define N_SET(i) ( ( i & N_MASK ) >> 31 )
+#define Z_SET(i) ( ( i & Z_MASK ) >> 30 )
+#define C_SET(i) ( ( i & C_MASK ) >> 29 )
+#define V_SET(i) ( ( i & V_MASK ) >> 28 )
+
+#define EQ_FLAG 0x00u
+#define NE_FLAG 0x01u
+#define GE_FLAG 0x0au
+#define LT_FLAG 0x0bu
+#define GT_FLAG 0x0cu
+#define LE_FLAG 0x0du
+#define AL_FLAG 0x0eu
+
 // Set up program state as a C Struct
 typedef struct
 {
@@ -60,6 +78,83 @@ static u16 lit[0x20] =
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+inline u8 opn(u8 n, u32 instr)
+{
+  u8 code = (instr >> (28 - n)) & ((n << 2) - 1);
+  return code;
+}
+
+u32 *arm_opr(Arm *raspi, u32 instr)
+{
+  u32 cprs = raspi->cprs;
+  switch (instr >> 28)
+  {
+  case EQ_FLAG:
+    if (!Z_SET(cprs))  goto next;
+  case NE_FLAG:
+    if ( Z_SET(cprs)) goto next;
+  case GE_FLAG:
+    if ( N_SET(cprs) != V_SET(cprs)) goto next;
+  case LT_FLAG:
+    if ( N_SET(cprs) == V_SET(cprs)) goto next;
+  case GT_FLAG:
+    if ( Z_SET(cprs) && ( N_SET(cprs) != V_SET(cprs))) goto next;
+  case LE_FLAG:
+    if (!SET_Z(cprs) && ( N_SET(cprs) == V_SET(cprs))) goto next;
+  case AL_FLAG:
+    goto next;
+  }
+  switch (instr >> 26 & 0x03)
+  {
+  case 0x00:
+    switch (instr >> 26 & 0x07)
+    {
+      // long multiply
+    case 0x01:
+      // swap
+    case 0x02:
+    default: switch (instr >> 25 & 0x0F)
+      {
+        // multiply
+      case 0x00:
+        // data processing
+      default:
+      }
+    }
+    // single data transferring
+  case 0x01:
+  case 0x02:
+    switch (instr >> 25 & 0x07)
+    {
+      // load/store multiple
+    case 0x04:
+      // branch statement
+    case 0x05:
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// UTILITY FUNCITONS
+///////////////////////////////////////////////////////////////////////////////
+
+u32 fetch(Arm *raspi)
+{
+  return raspi->em[raspi->pc++];
+}
+
+int runRaspi(Arm *raspi)
+{
+  u32 instr;
+  for (;;)
+  {
+    execute(instr);
+    decode(instr);
+    instr = fetch(raspi);
+
+  }
+}
+
 Arm *makeRaspi()
 {
   // allocate and initialise the raspi struct
@@ -83,5 +178,8 @@ int main(int argc, char **argv)
   }
   Arm *raspi = makeRaspi(path);
   loadBinaryFile(path, raspi->em);
+  // begin the emulation
+  fetch(raspi); decode(raspi);
+  runRaspi(raspi);
   return 0;
 }
