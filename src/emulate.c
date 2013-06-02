@@ -38,6 +38,22 @@
 #define LE_FLAG 0x0du
 #define AL_FLAG 0x0eu
 
+#define MUL_MASK         0x0fC000f0u
+#define DATA_MASK        0x0c000000u
+#define BLOCK_DATA_MASK  0x08000000u
+#define S_DATA_MASK      0x04000000u
+#define BRANCH_MASK      0x0a000000u
+
+#define IMMEDIATE_MASK   0x01000000u
+#define DATA_OP_MASK     0x01e00000u
+#define RN_MASK          0x000f0000u
+#define RD_MASK          0x0000f000u
+#define RS_MASK          0x00000f00u
+#define RM_MASK          0x0000000fu
+#define DATA_OPR_2       0x00000fffu
+#define BRANCH_OFFSET    0x00ffffffu
+#define S_DATA_OFFSET    0x00000fffu
+
 // Set up program state as a C Struct
 typedef struct
 {
@@ -84,6 +100,11 @@ inline u8 opn(u8 n, u32 instr)
   return code;
 }
 
+inline u32 maskFits(u32 i, u32 m)
+{
+  return ((i & m) == 0);
+}
+
 u32 *arm_opr(Arm *raspi, u32 instr)
 {
   u32 cprs = raspi->cprs;
@@ -104,34 +125,32 @@ u32 *arm_opr(Arm *raspi, u32 instr)
   case AL_FLAG:
     goto next;
   }
-  switch (instr >> 26 & 0x03)
-  {
-  case 0x00:
-    switch (instr >> 26 & 0x07)
-    {
-      // long multiply
-    case 0x01:
-      // swap
-    case 0x02:
-    default: switch (instr >> 25 & 0x0F)
-      {
-        // multiply
-      case 0x00:
-        // data processing
-      default:
-      }
-    }
-    // single data transferring
-  case 0x01:
-  case 0x02:
-    switch (instr >> 25 & 0x07)
-    {
-      // load/store multiple
-    case 0x04:
-      // branch statement
-    case 0x05:
-    }
+  if (maskFits(instr, DATA_MASK))
+  { // opcode matches data processing
+    
   }
+  else if (maskFits(instr, MUL_MASK))
+  { // opcode matches multiplication (not long)
+
+  }
+  else if (maskFits(instr, S_DATA_MASK))
+  { // opcode matches single data transfer
+
+  }
+  else if (maskFits(instr, BLOCK_DATA_MASK))
+  { // opcode matches block transfer
+
+  }
+  else if (maskFits(instr, BRANCH_MASK))
+  { // opcode matches a branch statement 
+
+  }
+  else // this on as yet not implemented opcode
+  {
+  next:
+
+  }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,13 +165,13 @@ u32 fetch(Arm *raspi)
 int runRaspi(Arm *raspi)
 {
   u32 instr;
-  for (;;)
-  {
-    execute(instr);
-    decode(instr);
-    instr = fetch(raspi);
-
-  }
+emulate:
+  execute(instr);
+  decode(instr);
+  instr = fetch(raspi);
+  goto emulate
+stackprint:
+  return 0;
 }
 
 Arm *makeRaspi()
@@ -180,6 +199,5 @@ int main(int argc, char **argv)
   loadBinaryFile(path, raspi->em);
   // begin the emulation
   fetch(raspi); decode(raspi);
-  runRaspi(raspi);
-  return 0;
+  return runRaspi(raspi);
 }
