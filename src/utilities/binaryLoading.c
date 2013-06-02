@@ -75,7 +75,7 @@ uint32_t* loadBinaryFile(char* path, uint32_t* memory)
     exit(EXIT_FAILURE);
   }
   // use fread to read to the buffer
-  fread(memory, size, size, arm_bin);
+  fread(memory, 8, size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
   return memory;

@@ -60,29 +60,28 @@ static u16 lit[0x20] =
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-Arm* makeRaspi(char* mempath)
+Arm *makeRaspi()
 {
   // allocate and initialise the raspi struct
-  Arm *raspi = (Arm *) malloc(sizeof(Arm));
+  Arm *raspi = (Arm *) calloc(1, sizeof(Arm));
   // allocate space for all the memory
-  raspi->em = (u32 *) malloc(sizeof(u32) * MEMSIZE);
-  raspi->dm = (u32 *) malloc(sizeof(u32) * MEMSIZE);
+  raspi->em = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
+  raspi->dm = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
   // allocate space for all the registers
-  raspi->r  = (u32 *) malloc(sizeof(u32) * NO_OF_REGISTERS); 
+  raspi->r  = (u32 *) calloc(1, sizeof(u32) * NO_OF_REGISTERS);
   // load the contents of the file @ mempath
-  loadBinaryFile(mempath, raspi->em);
   return raspi;
 }
 
 int main(int argc, char **argv)
 {
-  char *path;
-  switch (argc)
+  char *path; switch (argc)
   {
   case 0: path = (char *)argv; break;
   case 2: path = argv[0]; break;
   default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;
   }
   Arm *raspi = makeRaspi(path);
+  loadBinaryFile(path, raspi->em);
   return 0;
 }
