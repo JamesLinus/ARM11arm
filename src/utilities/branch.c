@@ -1,4 +1,4 @@
-void branch(u32 inst)
+void branch(Arm* raspi, BaseOpInstr* i)
 {
 
 }

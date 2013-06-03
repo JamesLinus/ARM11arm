@@ -12,13 +12,14 @@
 #include <ctype.h>
 
 #include "emulate.h"
+#include "utilities/opstructs.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
 
 #define NO_OF_REGISTERS 12
-#define NO_FILE_FOUND 1
+#define NO_FILE_FOUND    1
 
 #define N_MASK (u32) 1 << 31
 #define Z_MASK (u32) 1 << 30
@@ -38,6 +39,23 @@
 #define LE_FLAG 0x0du
 #define AL_FLAG 0x0eu
 
+#define AND 0x00u
+#define EOR 0x01u
+#define SUB 0x02u
+#define RSB 0x03u
+#define ADD 0x04u
+#define ADC 0x05u
+#define SBC 0x06u
+#define RSC 0x07u
+#define TST 0x08u
+#define TEQ 0x09u
+#define CMP 0x0au
+#define CMN 0x0bu
+#define ORR 0x0cu
+#define MOV 0x0du
+#define BIC 0x0eu
+#define MVN 0x0fu
+
 #define MUL_MASK         0x0fC000f0u
 #define DATA_MASK        0x0c000000u
 #define BLOCK_DATA_MASK  0x08000000u
@@ -53,6 +71,18 @@
 #define DATA_OPR_2       0x00000fffu
 #define BRANCH_OFFSET    0x00ffffffu
 #define S_DATA_OFFSET    0x00000fffu
+#define S_DATA_UP        0x00800000u
+#define SET_COND_MASK    0x00100000u
+#define ACCUM_MASK       0x00000100u
+#define P_INDEX_MASK     0x01000000u
+#define LOAD_STORE_MASK  0x00100000u
+#define OP_ROTATE        0x00000f00u
+#define OP_IMMD          0x0000000fu
+
+#define J_DATA      0x00u
+#define J_S_DATA    0x01u
+#define J_MUL       0x02u
+#define J_BRANCH    0x03u
 
 // Set up program state as a C Struct
 typedef struct
@@ -68,8 +98,8 @@ typedef struct
   u32 lr;        // R[14] <- link register
   u32 pc;        // R[15] <- program counter
   u32 cpsr;      // R[16] <- flags
-  u32 *em;       // encoded memory
-  u32 *dm;       // decoded memory
+  u32 *em;           // encoded memory
+  BaseOpInstr *dm;       // decoded memory
 } Arm;
 
 static u16 lit[0x20] =
@@ -80,6 +110,8 @@ static u16 lit[0x20] =
   0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
 };
 
+typedef void(*OpFunction)(Arm*, BaseOpInstr*);
+
 ///////////////////////////////////////////////////////////////////////////////
 // EXECUTION FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,71 +119,105 @@ static u16 lit[0x20] =
 // #include "utilities/dataProcessing.c"
 #include "utilities/branch.c"
 #include "utilities/multiply.c"
+#include "utilities/dataProcessing.c"
 #include "utilities/singleDataTransfer.c"
 #include "utilities/binaryLoading.c"
+
+OpFunction opJumpTable[5] = 
+{
+  dataProcessing,
+  singleDataTransfer,
+  multiply,
+  branch,
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-inline u8 opn(u8 n, u32 instr)
-{
-  u8 code = (instr >> (28 - n)) & ((n << 2) - 1);
-  return code;
-}
+inline u32 maskFits(u32 i, u32 m) { return ((i & m) == 0x0u); }
 
-inline u32 maskFits(u32 i, u32 m)
+BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
 {
-  return ((i & m) == 0);
-}
-
-u32 *arm_opr(Arm *raspi, u32 instr)
-{
-  u32 cprs = raspi->cprs;
-  switch (instr >> 28)
-  {
-  case EQ_FLAG:
-    if (!Z_SET(cprs))  goto next;
-  case NE_FLAG:
-    if ( Z_SET(cprs)) goto next;
-  case GE_FLAG:
-    if ( N_SET(cprs) != V_SET(cprs)) goto next;
-  case LT_FLAG:
-    if ( N_SET(cprs) == V_SET(cprs)) goto next;
-  case GT_FLAG:
-    if ( Z_SET(cprs) && ( N_SET(cprs) != V_SET(cprs))) goto next;
-  case LE_FLAG:
-    if (!SET_Z(cprs) && ( N_SET(cprs) == V_SET(cprs))) goto next;
-  case AL_FLAG:
-    goto next;
-  }
+  u32 instr = raspi->em[index];
   if (maskFits(instr, DATA_MASK))
   { // opcode matches data processing
-    
+    DataInstr* i = (DataInstr*) &(raspi->dm[index]);
+    i->jump    = J_DATA;
+    i->cond    = instr >> 28;
+    i->immd    = instr & IMMEDIATE_MASK >> 25;
+    i->opcode  = instr & DATA_OP_MASK >> 21;
+    i->setcond = instr & SET_COND_MASK >> 20;
+    i->rn      = &(raspi->r[instr & RN_MASK >> 16]);
+    i->rd      = &(raspi->r[instr & RD_MASK >> 12]);
+    i->operand = instr & DATA_OP_MASK;
   }
   else if (maskFits(instr, MUL_MASK))
   { // opcode matches multiplication (not long)
-
+    MulInstr* i = (MulInstr*) &(raspi->dm[index]);
+    i->jump    = J_MUL;
+    i->cond    = instr >> 28;
+    i->accum   = instr & ACCUM_MASK >> 21;
+    i->setcond = instr & SET_COND_MASK >> 20;
+    // note that rn and rd are swapped for mul
+    i->rd      = &(raspi->r[instr & RN_MASK >> 16]);
+    i->rn      = &(raspi->r[instr & RD_MASK >> 12]);
+    i->rs      = &(raspi->r[instr & RS_MASK >>  8]);
+    i->rm      = &(raspi->r[instr & RM_MASK]);
   }
   else if (maskFits(instr, S_DATA_MASK))
   { // opcode matches single data transfer
-
+    SingleDataInstr* i = (SingleDataInstr*) &(raspi->dm[index]);
+    i->jump    = J_S_DATA;
+    i->cond    = instr >> 28;
+    i->immd    = instr & IMMEDIATE_MASK >> 25; 
+    i->pindex  = instr & P_INDEX_MASK >> 24;
+    i->up      = instr & S_DATA_UP >> 23;
+    i->ls      = instr & LOAD_STORE_MASK >> 20;
+    i->rn      = &(raspi->r[instr & RN_MASK >> 16]);
+    i->rd      = &(raspi->r[instr & RD_MASK >> 12]);
+    i->offset  = instr & S_DATA_OFFSET;
   }
   else if (maskFits(instr, BLOCK_DATA_MASK))
   { // opcode matches block transfer
-
+    // TODO - Implement!
   }
   else if (maskFits(instr, BRANCH_MASK))
   { // opcode matches a branch statement 
-
+    BranchInstr* i = (BranchInstr*) &(raspi->dm[index]);
+    i->jump    = J_BRANCH;
+    i->cond    = instr >> 28;
+    i->offset  = instr & BRANCH_OFFSET;
   }
-  else // this on as yet not implemented opcode
-  {
-  next:
-
-  }
-
+  return (BaseOpInstr*) &(raspi->dm[index]);
 }
+
+int checkFlags(Arm* raspi, u8 cond)
+{
+  u32 cpsr = raspi->cpsr;
+  switch (cond)
+  {
+  case EQ_FLAG:
+    if (!Z_SET(cpsr))  goto next;
+  case NE_FLAG:
+    if ( Z_SET(cpsr)) goto next;
+  case GE_FLAG:
+    if ( N_SET(cpsr) != V_SET(cpsr)) goto next;
+  case LT_FLAG:
+    if ( N_SET(cpsr) == V_SET(cpsr)) goto next;
+  case GT_FLAG:
+    if ( Z_SET(cpsr) && ( N_SET(cpsr) != V_SET(cpsr))) goto next;
+  case LE_FLAG:
+    if (!Z_SET(cpsr) && ( N_SET(cpsr) == V_SET(cpsr))) goto next;
+  case AL_FLAG:
+    goto next;
+  }
+next:
+  // this on as yet not implemented opcode
+  return 0;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // UTILITY FUNCITONS
@@ -165,12 +231,14 @@ u32 fetch(Arm *raspi)
 int runRaspi(Arm *raspi)
 {
   u32 instr;
+  /*
 emulate:
   execute(instr);
   decode(instr);
   instr = fetch(raspi);
   goto emulate
 stackprint:
+  */
   return 0;
 }
 
@@ -180,7 +248,7 @@ Arm *makeRaspi()
   Arm *raspi = (Arm *) calloc(1, sizeof(Arm));
   // allocate space for all the memory
   raspi->em = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
-  raspi->dm = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
+  raspi->dm = (BaseOpInstr *) calloc(1, sizeof(BaseOpInstr) * MEMSIZE);
   // allocate space for all the registers
   raspi->r  = (u32 *) calloc(1, sizeof(u32) * NO_OF_REGISTERS);
   // load the contents of the file @ mempath
@@ -198,6 +266,5 @@ int main(int argc, char **argv)
   Arm *raspi = makeRaspi(path);
   loadBinaryFile(path, raspi->em);
   // begin the emulation
-  fetch(raspi); decode(raspi);
   return runRaspi(raspi);
 }

@@ -1,4 +1,4 @@
-void singleDataTransfer(u32 inst)
+void singleDataTransfer(Arm* raspi, BaseOpInstr* i)
 {
 
 }

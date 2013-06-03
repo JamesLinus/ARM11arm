@@ -1,4 +1,4 @@
-void multiply(u32 inst)
+void multiply(Arm* raspi, BaseOpInstr* i)
 {
 
 }

@@ -22,8 +22,7 @@ class RaspiRuby
     memsize = (str[:dm].address - str[:em].address) / 4
     @r, @em, @dm = [
       array_from_ptr(str[:r] , 12),
-      array_from_ptr(str[:em], memsize),
-      array_from_ptr(str[:dm], memsize)
+      array_from_ptr(str[:em], memsize)
     ]
   end
 
@@ -37,7 +36,6 @@ class RaspiRuby
     return false unless sum.zero?
     r.map  { |n| return false unless n.zero? }
     em.map { |n| return false unless n.zero? }
-    dm.map { |n| return false unless n.zero? }
     return true
   end
 
