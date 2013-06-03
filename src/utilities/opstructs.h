@@ -13,7 +13,7 @@ typedef struct
   u8 setcond;
   u32 *rn;
   u32 *rd;
-  u16 operand;
+  u16 operand2;
 } DataInstr;
 
 typedef struct

@@ -78,6 +78,14 @@
 #define LOAD_STORE_MASK  0x00100000u
 #define OP_ROTATE        0x00000f00u
 #define OP_IMMD          0x0000000fu
+#define OP_SHIFT         0x00000ff0u
+#define OP_SHIFT_TYPE    0x00000006u
+
+#define MSB 0x80000000u
+#define LSL(i,v) (v << i)
+#define LSR(i,v) (i >> v)
+#define ASR(i,v) (LSR(i,v) | (i & MSB))
+#define ROR(i,v) (i >> v) | (i << (0x20u - v))
 
 #define J_DATA      0x00u
 #define J_S_DATA    0x01u
@@ -135,7 +143,7 @@ OpFunction opJumpTable[5] =
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-inline u32 maskFits(u32 i, u32 m) { return ((i & m) == 0x0u); }
+u32 maskFits(u32 i, u32 m) { return ((i & m) == 0x0u); }
 
 BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
 {
@@ -143,40 +151,40 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   if (maskFits(instr, DATA_MASK))
   { // opcode matches data processing
     DataInstr* i = (DataInstr*) &(raspi->dm[index]);
-    i->jump    = J_DATA;
-    i->cond    = instr >> 28;
-    i->immd    = instr & IMMEDIATE_MASK >> 25;
-    i->opcode  = instr & DATA_OP_MASK >> 21;
-    i->setcond = instr & SET_COND_MASK >> 20;
-    i->rn      = &(raspi->r[instr & RN_MASK >> 16]);
-    i->rd      = &(raspi->r[instr & RD_MASK >> 12]);
-    i->operand = instr & DATA_OP_MASK;
+    i->jump     = J_DATA;
+    i->cond     = instr >> 28;
+    i->immd     = instr & IMMEDIATE_MASK >> 25;
+    i->opcode   = instr & DATA_OP_MASK >> 21;
+    i->setcond  = instr & SET_COND_MASK >> 20;
+    i->rn       = &(raspi->r[instr & RN_MASK >> 16]);
+    i->rd       = &(raspi->r[instr & RD_MASK >> 12]);
+    i->operand2 = instr & DATA_OP_MASK;
   }
   else if (maskFits(instr, MUL_MASK))
   { // opcode matches multiplication (not long)
     MulInstr* i = (MulInstr*) &(raspi->dm[index]);
-    i->jump    = J_MUL;
-    i->cond    = instr >> 28;
-    i->accum   = instr & ACCUM_MASK >> 21;
-    i->setcond = instr & SET_COND_MASK >> 20;
+    i->jump     = J_MUL;
+    i->cond     = instr >> 28;
+    i->accum    = instr & ACCUM_MASK >> 21;
+    i->setcond  = instr & SET_COND_MASK >> 20;
     // note that rn and rd are swapped for mul
-    i->rd      = &(raspi->r[instr & RN_MASK >> 16]);
-    i->rn      = &(raspi->r[instr & RD_MASK >> 12]);
-    i->rs      = &(raspi->r[instr & RS_MASK >>  8]);
-    i->rm      = &(raspi->r[instr & RM_MASK]);
+    i->rd       = &(raspi->r[instr & RN_MASK >> 16]);
+    i->rn       = &(raspi->r[instr & RD_MASK >> 12]);
+    i->rs       = &(raspi->r[instr & RS_MASK >>  8]);
+    i->rm       = &(raspi->r[instr & RM_MASK]);
   }
   else if (maskFits(instr, S_DATA_MASK))
   { // opcode matches single data transfer
     SingleDataInstr* i = (SingleDataInstr*) &(raspi->dm[index]);
-    i->jump    = J_S_DATA;
-    i->cond    = instr >> 28;
-    i->immd    = instr & IMMEDIATE_MASK >> 25; 
-    i->pindex  = instr & P_INDEX_MASK >> 24;
-    i->up      = instr & S_DATA_UP >> 23;
-    i->ls      = instr & LOAD_STORE_MASK >> 20;
-    i->rn      = &(raspi->r[instr & RN_MASK >> 16]);
-    i->rd      = &(raspi->r[instr & RD_MASK >> 12]);
-    i->offset  = instr & S_DATA_OFFSET;
+    i->jump     = J_S_DATA;
+    i->cond     = instr >> 28;
+    i->immd     = instr & IMMEDIATE_MASK >> 25; 
+    i->pindex   = instr & P_INDEX_MASK >> 24;
+    i->up       = instr & S_DATA_UP >> 23;
+    i->ls       = instr & LOAD_STORE_MASK >> 20;
+    i->rn       = &(raspi->r[instr & RN_MASK >> 16]);
+    i->rd       = &(raspi->r[instr & RD_MASK >> 12]);
+    i->offset   = instr & S_DATA_OFFSET;
   }
   else if (maskFits(instr, BLOCK_DATA_MASK))
   { // opcode matches block transfer
@@ -185,9 +193,9 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   else if (maskFits(instr, BRANCH_MASK))
   { // opcode matches a branch statement 
     BranchInstr* i = (BranchInstr*) &(raspi->dm[index]);
-    i->jump    = J_BRANCH;
-    i->cond    = instr >> 28;
-    i->offset  = instr & BRANCH_OFFSET;
+    i->jump     = J_BRANCH;
+    i->cond     = instr >> 28;
+    i->offset   = instr & BRANCH_OFFSET;
   }
   return (BaseOpInstr*) &(raspi->dm[index]);
 }
