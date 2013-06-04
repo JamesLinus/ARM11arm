@@ -4,26 +4,28 @@
 // File: binaryLoading.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
-//
 ///////////////////////////////////////////////////////////////////////////////
 
-#define MAX_MEMORY_SIZE 65536
+#include "binaryLoading.h"
 
-FILE* openFile(char* path)
+FILE *openFile(char *path)
 {
   // open the file
   FILE *file = fopen(path, "rb");
   return file;
 }
 
-int fileExists(char* path)
+int fileExists(char *path)
 {
   FILE *file = openFile(path);
-  if (!file)  { return 1; }
+  if (!file)
+  {
+    return 1;
+  }
   fclose(file); return 0;
 }
 
-long unsigned int getSize(FILE* file)
+long unsigned int getSize(FILE *file)
 {
   // use fseek to set relative pointer pos in file
   fseek(file, 0, SEEK_END);
@@ -33,9 +35,9 @@ long unsigned int getSize(FILE* file)
   // reset the offset to the beginning of the file
   fseek(file, 0, SEEK_SET);
   return size;
-} 
+}
 
-uint32_t* loadBinaryFile(char* path, uint32_t* memory)
+uint32_t *loadBinaryFile(char *path, uint32_t *memory)
 {
   // declare variables
   // the binary file pointer
@@ -61,7 +63,7 @@ uint32_t* loadBinaryFile(char* path, uint32_t* memory)
   size = 1 + (size >> 2);
 
   // assert no emulator memory overflow
-  if (size > MAX_MEMORY_SIZE)
+  if (size > MEMSIZE)
   {
     // output error to stdout
     fprintf(stderr, "Emulator memory overflow\n");

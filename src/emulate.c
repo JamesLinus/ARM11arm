@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: arm.c
+// File: emulate.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
@@ -12,33 +12,20 @@
 #include <ctype.h>
 
 #include "emulate.h"
-
-///////////////////////////////////////////////////////////////////////////////
-// DEFINITIONS
-///////////////////////////////////////////////////////////////////////////////
-
-#include "utilities/opstructs.h"
-#include "definitions.h"
+#include "utilities/execute.h"
+#include "utilities/decode.h"
+#include "utilities/binaryLoading.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXECUTION FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "utilities/execute
-.c"
-#include "utilities/binaryLoading.c"
-
-u32 isMul(u32 i) {
-  return IS_MUL(i);
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "utilities/decodeInstruction.c"
-
-int checkFlags(u32* cpsr, u8 cond)
+int checkFlags(u32 *cpsr, u8 cond)
 {
   switch (cond)
   {
@@ -73,14 +60,14 @@ u32 fetch(Arm *raspi)
 
 int runRaspi(Arm *raspi)
 {
-  u32 instr;
+  //u32 instr;
   /*
-emulate:
+  emulate:
   execute(instr);
   decode(instr);
   instr = fetch(raspi);
   goto emulate
-stackprint:
+  stackprint:
   */
   return 0;
 }
@@ -102,7 +89,7 @@ int main(int argc, char **argv)
 {
   char *path; switch (argc)
   {
-  // case 0 for testing purposes
+    // case 0 for testing purposes
   case 0: path = (char *)argv; break;
   case 2: path = argv[0]; break;
   default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;

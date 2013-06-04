@@ -2,7 +2,7 @@ require 'make_preflight'
 require 'ffi'
 
 class RaspiStruct < FFI::Struct
-  layout :r, :pointer,
+  layout :r, [:uint8, 17],
     :sp,   :uint32,
     :lr,   :uint32,
     :pc,   :uint32,
@@ -10,8 +10,21 @@ class RaspiStruct < FFI::Struct
     :em,   :pointer,
     :dm,   :pointer
   def set_reg(i,v)
-    puts @r
+    puts self.r
   end
+end
+
+class DataProcessingStruct < FFI::Struct
+  layout :cond, :uint8,
+    :cpsr,      :pointer,
+    :function,  :pointer,
+    :op1,       :pointer,
+    :op2,       :pointer,
+    :shift,     :pointer,
+    :_op2,      :uint32,
+    :_shift,    :uint32,
+    :exShift,   :pointer,
+    :des,       :pointer
 end
 
 class RaspiRuby

@@ -6,12 +6,19 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef EMULATE_H
+#include "../emulate.h"
+#endif
+
+#ifndef OPSTRUCTS_H
+#define OPSTRUCTS_H
+
 // required for C lexigraphical compilation
-typedef void* PtrToBeCast;
+typedef void *PtrToBeCast;
 // functions to apply shifting
-typedef u32 (*Shifter)(u32,u32);
+typedef u32 (*Shifter)(u32, u32);
 // typedef of execute function with dummy pointer arg
-// will really take a BaseStruct address representing 
+// will really take a BaseStruct address representing
 // all the below types
 typedef void (*Execute)(PtrToBeCast);
 
@@ -46,9 +53,9 @@ typedef void (*Execute)(PtrToBeCast);
 //////////////////////////////////////////////////////
 // BASE STRUCT ///////////////////////////////////////
 // type to represent the LARGEST of the below structs
-// in memory, allowing for rapid memory access in a 
+// in memory, allowing for rapid memory access in a
 // selection of calloced memory
-typedef struct 
+typedef struct
 {
   BASE
   char padding[64];
@@ -90,10 +97,10 @@ typedef struct   //  < BaseInstr
 typedef struct    //  < BaseInstr
 {
   BASE
-  u32* op1;
-  u32* op2;
-  u32* acc;
-  u32* des;
+  u32 *op1;
+  u32 *op2;
+  u32 *acc;
+  u32 *des;
 } MultiplyInstr;
 
 //////////////////////////////////////////////////////
@@ -103,7 +110,9 @@ typedef struct    //  < BaseInstr
 typedef struct    //  < BaseInstr
 {
   BASE
-  u32* pc;
+  u32 *pc;
   u32 toAdd;
   u32 offset;   // to be signed on execution
 } BranchInstr;
+
+#endif

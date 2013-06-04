@@ -1,20 +1,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: branch.c
+// File: execute.h
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-void branch(PtrToBeCast base)
-{
-  BranchInstr* i = (BranchInstr*) base;
-  if(i->toAdd)
-  {
-    // we want to increment the pc before decode/possible execute
-    i->pc += i->offset;
-  } else
-  {
-    i->pc -= i->offset;
-  }
-}
+#ifndef EMULATE_H
+#include "../emulate.h"
+#endif
+
+#ifndef EXECUTE_H
+#define EXECUTE_H
+
+void branch(PtrToBeCast base);
+void singleDataTransfer(PtrToBeCast *base);
+void multiply(Arm *raspi, BaseInstr *i);
+
+#endif

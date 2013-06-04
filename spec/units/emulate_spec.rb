@@ -15,8 +15,7 @@ describe 'unit test for emulate.c' do
 
     context 'file exists' do
       it 'zeros all struct elements' do
-        raspi = RaspiRuby.new raspi_ptr
-        raspi.zeroed.should eq(true)
+        raspi_ptr.zeroed.should eq(true)
       end
       it 'loads file at path into state memory' do
         struct = RaspiStruct.new raspi_ptr
@@ -108,29 +107,34 @@ describe 'unit test for emulate.c' do
     context 'COND as 1110 (always)' do
       context 'as immediate' do
         before(:all) do
-          RaspiStruct.new raspi_ptr
+          @op1s, @op2s = [[],[]]
+          max = 2**32
+          100.times do
+            @op1s << rand(max)
+            @op2s << rand(max)
+          end
+        end
+        it 'AND' do
+          #for op1, op2 in @op1s
           
         end
-        context 'and' do
-
+        context 'EOR' do
         end
-        context 'eor' do
+        context 'SUB' do
         end
-        context 'sub' do
+        context 'RSB' do
         end
-        context 'rsb' do
+        context 'ADD' do
         end
-        context 'add' do
+        context 'TST' do
         end
-        context 'tst' do
+        context 'TEQ' do
         end
-        context 'teq' do
+        context 'CMP' do
         end
-        context 'cmp' do
+        context 'ORR' do
         end
-        context 'orr' do
-        end
-        context 'mov' do
+        context 'MOV' do
         end
       end
       context 'as register' do

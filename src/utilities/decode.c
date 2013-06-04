@@ -1,71 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: decodeInstruction.c
+// File: decode.c
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
+
+#include "decode.h"
 
 u32 lsl(u32 a, u32 b) { return LSL(a,b); }
 u32 lsr(u32 a, u32 b) { return LSR(a,b); }
 u32 asr(u32 a, u32 b) { return ASR(a,b); }
 u32 ror(u32 a, u32 b) { return ROR(a,b); }
-
-void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
-{
-  // retrieve last twelve bits for operand
-  u32 rawOperand = instr & DATA_OPR_2;
-  // set default shift type
-  u8   shiftType = 0x3u;
-  if (instr & IMMEDIATE_MASK)  // if immediate is set
-  {
-    // get immediate part of operand
-    u32 imm   = rawOperand & OP_IMMD;
-    // get value to rotate right by
-    u8  val   = rawOperand & OP_ROTATE >> 8u;
-    // generate operand by rotate right
-    i->_op2   = ROR(imm, val << 1);
-    // set the exposed pointer to internal literal
-    i->op2    = &(i->_op2);
-    // set shift value to 0
-    i->_shift = 0u;
-    // set exposed shift pointer to the internal literal
-    i->shift  = &(i->_shift);
-  }
-  else  // operand 2 is a register
-  {
-    // isolate shift information
-    u8 shift   = rawOperand & OP_SHIFT >> 4u;
-    // reset the shifting type
-    shiftType  = shift & OP_SHIFT_TYPE >> 1u;
-    // assign pointer to the op2 as a raspi register
-    i->op2     = &(raspi->r[rawOperand & RM_MASK]);
-    if (shift & 0x01u) // if bit 4 is 1
-    {
-      // then shift by value in register
-      i->shift = &(raspi->r[shift & 0x0fu >> 4]);
-    }
-    else  // shift by a constant
-    {
-      // set literal value of shift
-      i->_shift = shift & 0xf8u;
-      // set pointer to internal literal
-      i->shift  = &(i->_shift);
-    }
-  }
-  switch (shiftType)
-  {
-    // lsl
-    case 0x0u: i->exShift = &lsl; break;
-    // lsr
-    case 0x1u: i->exShift = &lsr; break;
-    // asr
-    case 0x2u: i->exShift = &asr; break;
-    // ror
-    case 0x3u: i->exShift = &ror; break;
-  }
-}
-
 
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
@@ -156,4 +102,57 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   return (BaseInstr *) & (raspi->dm[index]);
 }
 
-
+void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
+{
+  // retrieve last twelve bits for operand
+  u32 rawOperand = instr & DATA_OPR_2;
+  // set default shift type
+  u8   shiftType = 0x3u;
+  if (instr & IMMEDIATE_MASK)  // if immediate is set
+  {
+    // get immediate part of operand
+    u32 imm   = rawOperand & OP_IMMD;
+    // get value to rotate right by
+    u8  val   = rawOperand & OP_ROTATE >> 8u;
+    // generate operand by rotate right
+    i->_op2   = ROR(imm, (val << 1));
+    // set the exposed pointer to internal literal
+    i->op2    = &(i->_op2);
+    // set shift value to 0
+    i->_shift = 0u;
+    // set exposed shift pointer to the internal literal
+    i->shift  = &(i->_shift);
+  }
+  else  // operand 2 is a register
+  {
+    // isolate shift information
+    u8 shift   = rawOperand & OP_SHIFT >> 4u;
+    // reset the shifting type
+    shiftType  = shift & OP_SHIFT_TYPE >> 1u;
+    // assign pointer to the op2 as a raspi register
+    i->op2     = &(raspi->r[rawOperand & RM_MASK]);
+    if (shift & 0x01u) // if bit 4 is 1
+    {
+      // then shift by value in register
+      i->shift = &(raspi->r[shift & 0x0fu >> 4]);
+    }
+    else  // shift by a constant
+    {
+      // set literal value of shift
+      i->_shift = shift & 0xf8u;
+      // set pointer to internal literal
+      i->shift  = &(i->_shift);
+    }
+  }
+  switch (shiftType)
+  {
+    // lsl
+    case 0x0u: i->exShift = &lsl; break;
+    // lsr
+    case 0x1u: i->exShift = &lsr; break;
+    // asr
+    case 0x2u: i->exShift = &asr; break;
+    // ror
+    case 0x3u: i->exShift = &ror; break;
+  }
+}

@@ -6,6 +6,13 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef EMULATE_H
+#include "../emulate.h"
+#endif
+
+#ifndef FLAG_MASKS
+#define FLAG_MASKS
+
 #define NO_OF_REGISTERS 12
 #define NO_FILE_FOUND    1
 
@@ -54,7 +61,7 @@
 #define IS_DATA(i)       ((DATA_MASK   & i) == 0x00000000u)
 #define IS_S_DATA(i)     ((S_DATA_MASK & i) == 0x04000000u)
 #define IS_BRANCH(i)     ((BRANCH_MASK & i) == 0x0a000000u)
-// #define IS_BLOCK_DATA(i) 
+// #define IS_BLOCK_DATA(i)
 
 #define IMMEDIATE_MASK   0x02000000u
 #define DATA_OP_MASK     0x01e00000u
@@ -86,20 +93,4 @@
 #define ASR(i,v) (LSR(i,v) | (i & MSB))
 #define ROR(i,v) (i >> v) | ((0x20u - v) << i)
 
-// Set up program state as a C Struct
-typedef struct
-{
-  u32 e[MEMSIZE];
-  u32 d[MEMSIZE];
-} Memory;
-
-typedef struct
-{
-  u32 *r;        // registers
-  u32 sp;        // R[13] <- stack pointer
-  u32 lr;        // R[14] <- link register
-  u32 pc;        // R[15] <- program counter
-  u32 cpsr;      // R[16] <- flags
-  u32 *em;           // encoded memory
-  BaseInstr *dm;       // decoded memory
-} Arm;
+#endif
