@@ -74,8 +74,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   // cond is the same no matter the instruction
   base->cond = instr >> 28;
   // set cpsr reg pointer, used in most
-  base->cpsr = &(raspi->cpsr)
-
+  base->cpsr = &(raspi->cpsr);
   if (IS_DATA(instr))
   {
     // opcode matches data processing
@@ -127,13 +126,17 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   {
     // opcode matches single data transfer
     SingleDataInstr *i = (SingleDataInstr *) base;
-    i->function = 0; // add function pointer
-    i->p = instr & S_DATA_P >> 23;
-    i->u = instr & S_DATA_U >> 22;
-    i->l = instr & S_DATA_L >> 19;
-    i->rb = raspi->r[instr & RN_MASK >> 16];
-    i->rd = raspi->r[instr & RD_MASK >> 12];
-    i->roffset = imediateOrReg(instr);
+    // extract the p u and l flags
+    i->p = (instr & P_INDEX_MASK >> 23) & 0xffu;
+    i->u = (instr & S_DATA_UP >> 22) & 0xffu;
+    i->l = (instr & LOAD_STORE_MASK >> 19) & 0xffu;
+    i->op1 = &(raspi->r[instr & RN_MASK >> 16]);
+    i->des = &(raspi->r[instr & RD_MASK >> 12]);
+    // modify instruction for immediate idiosyncrasy
+    instr ^= 1 << 25
+    // sorting out shifting
+    setShifting(raspi, instr, (ShiftingInstr*) i);
+    // TODO - attach the function pointer
   }
   /* else if (IS_BLOCK_DATA(instr))
   { // opcode matches block transfer
@@ -143,13 +146,12 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   {
     // opcode matches a branch statement
     BranchInstr *i = (BranchInstr *) base;
-    i->function = 0; // add function pointer
     i->toAdd = instr & BRANCH_CTRL;
     i->offset = instr & BRANCH_OFFSET;
-    i->pc = &raspi->pc;
-
+    i->pc = &(raspi->pc);
+    // TODO - attach the function pointer
   }
-  return (BaseOpInstr *) & (raspi->dm[index]);
+  return (BaseInstr *) & (raspi->dm[index]);
 }
 
 
