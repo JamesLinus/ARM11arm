@@ -67,7 +67,7 @@
 #define MUL_RM_MASK      0x0000000fu
 #define RM_MASK          0x0000000fu
 #define DATA_OPR_2       0x00000fffu
-#define BRANCH_OFFSET    0x003fffffu
+#define BRANCH_OFFSET    0x00ffffffu
 #define BRANCH_CTRL      0x00800000u
 #define S_DATA_OFFSET    0x00000fffu
 #define S_DATA_UP        0x00800000u
