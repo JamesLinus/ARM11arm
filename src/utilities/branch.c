@@ -6,7 +6,7 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-void branch(PtrToBeCast* base)
+void branch(PtrToBeCast base)
 {
   BranchInstr* i = (BranchInstr*) base;
   if(i->toAdd)
