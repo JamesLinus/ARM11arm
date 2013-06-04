@@ -101,9 +101,41 @@ describe 'unit test for emulate.c' do
   end
 
   describe 'multiply tests' do
+
   end
 
   describe 'data processing tests' do
+    context 'COND as 1110 (always)' do
+      context 'as immediate' do
+        before(:all) do
+          RaspiStruct.new raspi_ptr
+          
+        end
+        context 'and' do
+
+        end
+        context 'eor' do
+        end
+        context 'sub' do
+        end
+        context 'rsb' do
+        end
+        context 'add' do
+        end
+        context 'tst' do
+        end
+        context 'teq' do
+        end
+        context 'cmp' do
+        end
+        context 'orr' do
+        end
+        context 'mov' do
+        end
+      end
+      context 'as register' do
+      end
+    end
   end
 
   describe 'memory accessing' do

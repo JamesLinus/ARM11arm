@@ -9,6 +9,9 @@ class RaspiStruct < FFI::Struct
     :cpsr, :uint32,
     :em,   :pointer,
     :dm,   :pointer
+  def set_reg(i,v)
+    puts @r
+  end
 end
 
 class RaspiRuby
