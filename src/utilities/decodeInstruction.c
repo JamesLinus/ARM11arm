@@ -147,7 +147,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // opcode matches a branch statement
     BranchInstr *i = (BranchInstr *) base;
     i->toAdd = instr & BRANCH_CTRL;
-    i->offset = instr & BRANCH_OFFSET;
+    i->offset = instr & BRANCH_OFFSET << 2;
     i->pc = &(raspi->pc);
     // TODO - attach the function pointer
   }
