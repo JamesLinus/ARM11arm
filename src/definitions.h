@@ -9,10 +9,10 @@
 #define NO_OF_REGISTERS 12
 #define NO_FILE_FOUND    1
 
-#define N_MASK (u32) 31 << 1
-#define Z_MASK (u32) 30 << 1
-#define C_MASK (u32) 29 << 1
-#define V_MASK (u32) 28 << 1
+#define N_MASK (u32) 1 << 31
+#define Z_MASK (u32) 1 << 30
+#define C_MASK (u32) 1 << 29
+#define V_MASK (u32) 1 << 28
 
 #define N_SET(i) ( ( i & N_MASK ) >> 31 )
 #define Z_SET(i) ( ( i & Z_MASK ) >> 30 )
@@ -56,7 +56,6 @@
 #define IS_BRANCH(i)     ((BRANCH_MASK & i) == 0x0a000000u)
 // #define IS_BLOCK_DATA(i) 
 
-// TODO - VERIFY THESE MASKS!!!!
 #define IMMEDIATE_MASK   0x02000000u
 #define DATA_OP_MASK     0x01e00000u
 #define RN_MASK          0x000f0000u
@@ -68,34 +67,24 @@
 #define MUL_RM_MASK      0x0000000fu
 #define RM_MASK          0x0000000fu
 #define DATA_OPR_2       0x00000fffu
-#define DATA_OP2_ROTATE  0x00000f00u
-#define DATA_OP2_IMM     0x000000ffu
-#define DATA_OP2_SHIFT   0x00000060u
-#define DATA_OP2_CTRL    0x00000010u
-#define DATA_OP2_INT     0x00000f80u
 #define BRANCH_OFFSET    0x003fffffu
 #define BRANCH_CTRL      0x00800000u
 #define S_DATA_OFFSET    0x00000fffu
 #define S_DATA_UP        0x00800000u
 #define SET_COND_MASK    0x00100000u
-#define ACCUM_MASK       0x00020000u
+#define ACCUM_MASK       0x00200000u
 #define P_INDEX_MASK     0x01000000u
 #define LOAD_STORE_MASK  0x00100000u
 #define OP_ROTATE        0x00000f00u
-#define OP_IMMD          0x0000000fu
+#define OP_IMMD          0x000000ffu
 #define OP_SHIFT         0x00000ff0u
 #define OP_SHIFT_TYPE    0x00000006u
 
 #define MSB 0x80000000u
-#define LSL(i,v) (v << i)
+#define LSL(i,v) (i << v)
 #define LSR(i,v) (i >> v)
 #define ASR(i,v) (LSR(i,v) | (i & MSB))
-#define ROR(i,v) (i >> v) | (i << (0x20u - v))
-
-#define J_DATA      0x00u
-#define J_S_DATA    0x01u
-#define J_MUL       0x02u
-#define J_BRANCH    0x03u
+#define ROR(i,v) (i >> v) | ((0x20u - v) << i)
 
 // Set up program state as a C Struct
 typedef struct
