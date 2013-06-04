@@ -24,7 +24,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     // get value to rotate right by
     u8  val   = rawOperand & OP_ROTATE >> 8u;
     // generate operand by rotate right
-    i->_op2   = ROR(imm, 1 << val);
+    i->_op2   = ROR(imm, val << 1);
     // set the exposed pointer to internal literal
     i->op2    = &(i->_op2);
     // set shift value to 0
@@ -48,7 +48,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     else  // shift by a constant
     {
       // set literal value of shift
-      i->_shift = shift & 0xff0u;
+      i->_shift = shift & 0xf8u;
       // set pointer to internal literal
       i->shift  = &(i->_shift);
     }
