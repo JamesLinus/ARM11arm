@@ -2,7 +2,7 @@ CC      = gcc
 CFLAGS  = -pie -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 BIN=../bin/
 
-PROG=emulate
+PROG=emulate assemble
 LIST=$(addprefix $(BIN)/, $(PROG))
 
 all: $(LIST)

@@ -2,11 +2,10 @@
 # More info at https://github.com/guard/guard#readme
 
 guard :rspec do
-  watch(%r{spec/.*/.*\.rb})  { 'spec' }
-  watch('spec/spec_helper.rb')  { 'spec' }
-  watch(%r{src/.*\.(c|h)})  { 'spec' }
+  watch(%r{spec/.*/*.*\.rb})  { 'spec' }
+  watch(%r{src/.*\.(c|h)})   { 'spec' }
+  watch(%r{spec/.*/*.*\.c} )  { `make tests` }
 end
-
 
 guard 'bundler' do
   watch('Gemfile')

@@ -12,12 +12,12 @@
 #include <ctype.h>
 
 #include "emulate.h"
-#include "utilities/opstructs.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "utilities/opstructs.h"
 #include "definitions.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,19 +25,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // #include "utilities/dataProcessing.c"
-#include "utilities/branch.c"
-#include "utilities/multiply.c"
-#include "utilities/dataProcessing.c"
-#include "utilities/singleDataTransfer.c"
+// #include "utilities/branch.c"
+// #include "utilities/multiply.c"
+// #include "utilities/singleDataTransfer.c"
 #include "utilities/binaryLoading.c"
-
-OpFunction opJumpTable[5] = 
-{
-  dataProcessing,
-  singleDataTransfer,
-  multiply,
-  branch,
-};
 
 u32 isMul(u32 i) {
   return IS_MUL(i);
@@ -47,7 +38,7 @@ u32 isMul(u32 i) {
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "utilities/decodeInstruction.c"
+// #include "utilities/decodeInstruction.c"
 
 int checkFlags(Arm* raspi, u8 cond)
 {
@@ -58,7 +49,7 @@ int checkFlags(Arm* raspi, u8 cond)
   case NE_FLAG:
     if ( Z_SET(raspi->cpsr)) goto next;
   case GE_FLAG:
-    if ( N_SET(raspi->cpsr) != V_SET(raspi->cpsr) goto next;
+    if ( N_SET(raspi->cpsr) != V_SET(raspi->cpsr)) goto next;
   case LT_FLAG:
     if ( N_SET(raspi->cpsr) == V_SET(raspi->cpsr)) goto next;
   case GT_FLAG:
@@ -102,7 +93,7 @@ Arm *makeRaspi()
   Arm *raspi = (Arm *) calloc(1, sizeof(Arm));
   // allocate space for all the memory
   raspi->em = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
-  raspi->dm = (BaseOpInstr *) calloc(1, sizeof(BaseOpInstr) * MEMSIZE);
+  raspi->dm = (BaseInstr *) calloc(1, sizeof(BaseInstr) * MEMSIZE);
   // allocate space for all the registers
   raspi->r  = (u32 *) calloc(1, sizeof(u32) * NO_OF_REGISTERS);
   // load the contents of the file @ mempath

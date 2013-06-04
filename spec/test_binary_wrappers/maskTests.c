@@ -16,7 +16,7 @@
 int main(int argc, char** argv)
 {
   u8 res = 0;
-  u32 instr = (u32) atoi(argv[1]);
+  u32 instr = (u32) atoi(argv[2]);
   if (*(argv[1]) == 'D')
   {
     res = IS_DATA(instr);
@@ -33,5 +33,6 @@ int main(int argc, char** argv)
   {
     res = IS_BRANCH(instr);
   }
+  printf("%d",res);
   return 0;
 }

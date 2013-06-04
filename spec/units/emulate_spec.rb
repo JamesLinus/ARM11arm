@@ -33,6 +33,7 @@ describe 'unit test for emulate.c' do
         total.should eq(0)
       end
     end
+
     context 'file does not exist' do
       it 'detects incorrect nonexistant files' do
         res = Emulate.fileExists('./bogus')
@@ -41,29 +42,53 @@ describe 'unit test for emulate.c' do
         res.should eq(0)
       end
     end
+
   end
 
   describe 'decoding instruction' do
 
     describe 'masking checks' do
 
-      it 'verifies data opcode'
-    #    Emulate.isMul '3ffffff'.to_i(16)
-    #    250.times do
-    #      test = ((rand(16)*2**28) + rand('3ffffff'.to_i(16)))
-    #      if res != 1
-    #        puts (sprintf "%320b", mask)
-    #        puts (sprintf "%320b", test)
-    #      end
-    #      res.should eq(1)
-    #    end
-    #  end
+      before(:all) do
+        @cond, @bytes = [[],[]]
+        cond = 2**28
+        250.times do
+          @cond << rand(16)*cond
+          @bytes << rand(256)
+        end
+        @run = './spec/test_binary_wrappers/maskTests'
+      end
 
-      it 'verifies multiply opcode'
+      it 'verifies data opcode' do
+        for nibble in @cond
+          `#{@run} D #{(nibble + rand(67108863))}`.should eq('1')
+        end
+      end
 
-      it 'verifies single data transfer opcode'
+      it 'verifies multiply opcode' do
+        for i in 0..(@cond.size) - 1
+          test = (@cond[i] + (2**8*@bytes[i]) + 144 + (@bytes[i] >> 8))
+          `#{@run} M #{test}`.should eq('1')
+        end
+      end
 
-      it 'verifies branch opcode'
+      it 'verifies single data transfer opcode' do
+        for i in 0..(@cond.size) - 1
+          test = (@cond[i] + (2**26) + rand(8)*2**23 + rand(1)*2**20)
+          test += 2**8*@bytes[i] + @bytes[@cond.size - i - 1]
+          `#{@run} S #{test}`.should eq('1')
+        end
+      end
+
+      it 'verifies branch opcode' do
+        s = @cond.size
+        for i in 0..(@cond.size) - 1
+          test  = @cond[i] + 10*2**24 + (@bytes[i]*2**16)
+          test += @bytes[s - i - 1]*2**8
+          test += @bytes[(2*i + 1) % s]
+          `#{@run} B #{test}`.should eq('1')
+        end
+      end
 
     end
 

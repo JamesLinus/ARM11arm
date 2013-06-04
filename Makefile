@@ -1,6 +1,10 @@
 build:
+	make -C ./spec/test_binary_wrappers
 	make -C ./src all
 	rm -rf bin/*.dSYM
+
+tests:
+	make -C ./spec/test_binary_wrappers
 
 run:
 	make clean
@@ -10,10 +14,6 @@ run:
 clean:
 	make -C ./src clean
 	rm -rf bin/*.dSYM
-
-test:
-	make -C ./src all
-	make -C ./tests test
-
+	
 docs:
 	make -C ./doc all
