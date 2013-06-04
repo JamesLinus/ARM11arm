@@ -219,13 +219,13 @@ void mov(PtrToBeCast base)
 
 void setflags(u32* cpsr, u32 result, u8 carryOut)
 {
-  if(carryOut != 0)
-  {
-
-  }
   if(result == 0)
   {
-
+    *cpsr |= Z_MASK;
+  } else
+  {
+    *cpsr &= ~Z_MASK;
   }
+  // need code for other two flags
 
 }
