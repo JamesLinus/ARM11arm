@@ -20,7 +20,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
   if (instr & IMMEDIATE_MASK)  // if immediate is set
   {
     // get immediate part of operand
-    u32 imm   = rawOperand & IMMD;
+    u32 imm   = rawOperand & OP_IMMD;
     // get value to rotate right by
     u8  val   = rawOperand & OP_ROTATE >> 8u;
     // generate operand by rotate right
