@@ -30,22 +30,21 @@ int checkFlags(u32 *cpsr, u8 cond)
   switch (cond)
   {
   case EQ_FLAG:
-    if (!Z_SET(*cpsr))  goto next;
+    if (!Z_SET(*cpsr))  return 1;
   case NE_FLAG:
-    if ( Z_SET(*cpsr)) goto next;
+    if ( Z_SET(*cpsr)) return 1;
   case GE_FLAG:
-    if ( N_SET(*cpsr) != V_SET(*cpsr)) goto next;
+    if ( N_SET(*cpsr) != V_SET(*cpsr)) return 1;
   case LT_FLAG:
-    if ( N_SET(*cpsr) == V_SET(*cpsr)) goto next;
+    if ( N_SET(*cpsr) == V_SET(*cpsr)) return 1;
   case GT_FLAG:
-    if ( Z_SET(*cpsr) && ( N_SET(*cpsr) != V_SET(*cpsr))) goto next;
+    if ( Z_SET(*cpsr) && ( N_SET(*cpsr) != V_SET(*cpsr))) return 1;
   case LE_FLAG:
-    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) goto next;
+    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) return 1;
   case AL_FLAG:
-    goto next;
+    return 1;
   }
-next:
-  // this on as yet not implemented opcode
+
   return 0;
 }
 

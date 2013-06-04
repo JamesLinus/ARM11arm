@@ -86,6 +86,7 @@
 #define OP_IMMD          0x000000ffu
 #define OP_SHIFT         0x00000ff0u
 #define OP_SHIFT_TYPE    0x00000006u
+#define SET_FLAGS_S      0x01u
 
 #define MSB 0x80000000u
 #define LSL(i,v) (i << v)
