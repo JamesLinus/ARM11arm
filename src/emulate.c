@@ -113,6 +113,7 @@ int main(int argc, char **argv)
 {
   char *path; switch (argc)
   {
+  // case 0 for testing purposes
   case 0: path = (char *)argv; break;
   case 2: path = argv[0]; break;
   default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;

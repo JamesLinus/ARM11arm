@@ -47,7 +47,14 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   }
   else if (IS_S_DATA(instr))
   { // opcode matches single data transfer
-
+    SingleDataInstr* i = (SingleDataInstr*) base;
+    i.function = 0; // add function pointer
+    i.p = instr & S_DATA_P >> 23; 
+    i.u = instr & S_DATA_U >> 22; 
+    i.l = instr & S_DATA_L >> 19;
+    i.rb = raspi.r[instr & RN_MASK >> 16];
+    i.rd = raspi.r[instr & RD_MASK >> 12];
+    i.roffset = imediateOrReg(instr);
   }
   /* else if (IS_BLOCK_DATA(instr))
   { // opcode matches block transfer
@@ -56,6 +63,7 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   else if (IS_BRANCH(instr))
   { // opcode matches a branch statement 
     BranchInstr* i = (BranchInstr*) base;
+    i.function = 0; // add function pointer
     i.toAdd = instr & BRANCH_CTRL;
     i.offset = instr & BRANCH_OFFSET;
     i.pc = &raspi.pc;
