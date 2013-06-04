@@ -14,7 +14,8 @@
 #define EXECUTE_H
 
 void branch(PtrToBeCast base);
-void singleDataTransfer(PtrToBeCast *base);
-void multiply(Arm *raspi, BaseInstr *i);
+void singleDataTransfer(PtrToBeCast base);
+void multiply(PtrToBeCast base);
+void dataProcessingInstruction(PtrToBeCast base);
 
 #endif

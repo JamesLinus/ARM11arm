@@ -25,7 +25,7 @@ void branch(PtrToBeCast base)
   }
 }
 
-void singleDataTransfer(PtrToBeCast *base)
+void singleDataTransfer(PtrToBeCast base)
 {
   SingleDataInstr *i = (SingleDataInstr *) base;
 
@@ -74,7 +74,53 @@ void singleDataTransfer(PtrToBeCast *base)
   }
 }
 
-void multiply(Arm *raspi, BaseInstr *i)
+void multiply(PtrToBeCast base)
+{
+  MultiplyInstr* i = (MultiplyInstr*) base;
+
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->des) = ((*(i->op1)) * (*(i->op2))) + (*(i->acc));
+  }
+}
+
+void and(PtrToBeCast base)
+{
+
+}
+void eor(PtrToBeCast base)
+{
+
+}
+void sub(PtrToBeCast base)
+{
+
+}
+void rsb(PtrToBeCast base)
+{
+
+}
+void add(PtrToBeCast base)
+{
+
+}
+void tst(PtrToBeCast base)
+{
+
+}
+void teq(PtrToBeCast base)
+{
+
+}
+void cmp(PtrToBeCast base)
+{
+
+}
+void orr(PtrToBeCast base)
+{
+
+}
+void mov(PtrToBeCast base)
 {
 
 }
