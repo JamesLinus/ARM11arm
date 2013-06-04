@@ -51,21 +51,20 @@ u32 isMul(u32 i) {
 
 int checkFlags(Arm* raspi, u8 cond)
 {
-  u32 cpsr = raspi->cpsr;
   switch (cond)
   {
   case EQ_FLAG:
-    if (!Z_SET(cpsr))  goto next;
+    if (!Z_SET(raspi->cpsr))  goto next;
   case NE_FLAG:
-    if ( Z_SET(cpsr)) goto next;
+    if ( Z_SET(raspi->cpsr)) goto next;
   case GE_FLAG:
-    if ( N_SET(cpsr) != V_SET(cpsr)) goto next;
+    if ( N_SET(raspi->cpsr) != V_SET(raspi->cpsr) goto next;
   case LT_FLAG:
-    if ( N_SET(cpsr) == V_SET(cpsr)) goto next;
+    if ( N_SET(raspi->cpsr) == V_SET(raspi->cpsr)) goto next;
   case GT_FLAG:
-    if ( Z_SET(cpsr) && ( N_SET(cpsr) != V_SET(cpsr))) goto next;
+    if ( Z_SET(raspi->cpsr) && ( N_SET(raspi->cpsr) != V_SET(raspi->cpsr))) goto next;
   case LE_FLAG:
-    if (!Z_SET(cpsr) && ( N_SET(cpsr) == V_SET(cpsr))) goto next;
+    if (!Z_SET(raspi->cpsr) && ( N_SET(raspi->cpsr) == V_SET(raspi->cpsr))) goto next;
   case AL_FLAG:
     goto next;
   }
