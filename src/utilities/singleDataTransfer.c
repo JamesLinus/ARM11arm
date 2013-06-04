@@ -6,7 +6,7 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-void singleDataTransfer(Arm* raspi, BaseOpInstr* i)
+void singleDataTransfer(PtrToBeCast* base)
 {
 
 }

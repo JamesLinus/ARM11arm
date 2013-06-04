@@ -126,6 +126,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   {
     // opcode matches single data transfer
     SingleDataInstr *i = (SingleDataInstr *) base;
+    i->function = (Execute)&singleDataTransfer;
     // extract the p u and l flags
     i->p = (instr & P_INDEX_MASK >> 23) & 0xffu;
     i->u = (instr & S_DATA_UP >> 22) & 0xffu;
@@ -146,6 +147,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   {
     // opcode matches a branch statement
     BranchInstr *i = (BranchInstr *) base;
+    i->function = (Execute)&branch;
     i->toAdd = instr & BRANCH_CTRL;
     i->offset = instr & BRANCH_OFFSET << 2;
     i->pc = &(raspi->pc);

@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // #include "utilities/dataProcessing.c"
-// #include "utilities/branch.c"
+#include "utilities/branch.c"
 // #include "utilities/multiply.c"
-// #include "utilities/singleDataTransfer.c"
+#include "utilities/singleDataTransfer.c"
 #include "utilities/binaryLoading.c"
 
 u32 isMul(u32 i) {
