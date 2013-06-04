@@ -5,8 +5,9 @@
 // Group: 21
 // Memebers: amv12, lmj112, skd212
 //
-// TODO - Move the 2^16 bits into a const
 ///////////////////////////////////////////////////////////////////////////////
+
+#define MAX_MEMORY_SIZE 65536
 
 FILE* openFile(char* path)
 {
@@ -41,6 +42,8 @@ uint32_t* loadBinaryFile(char* path, uint32_t* memory)
   FILE *arm_bin = 0;
   // the size of the binary file
   long unsigned int size = 0;
+
+  // file opens twice (use of auxiliary method) for testing purposes
   arm_bin = openFile(path);
 
   // if the file is null
@@ -58,7 +61,7 @@ uint32_t* loadBinaryFile(char* path, uint32_t* memory)
   size = 1 + (size >> 2);
 
   // assert no emulator memory overflow
-  if (size > 65536)
+  if (size > MAX_MEMORY_SIZE)
   {
     // output error to stdout
     fprintf(stderr, "Emulator memory overflow\n");
