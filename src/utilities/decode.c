@@ -8,6 +8,11 @@
 
 #include "decode.h"
 
+#ifndef EXECUTE_H
+#define EXECUTE_H
+#include "execute.h"
+#endif
+
 u32 lsl(u32 a, u32 b) { return LSL(a,b); }
 u32 lsr(u32 a, u32 b) { return LSR(a,b); }
 u32 asr(u32 a, u32 b) { return ASR(a,b); }

@@ -58,6 +58,43 @@ u32 fetch(Arm *raspi)
   return raspi->em[raspi->pc++];
 }
 
+void printReg(char* name, int index, u32 i)
+{
+  printf("  %s[%d] - %08x - ", name, index, i);
+  printBin(i);
+}
+
+void printBin(u32 i)
+{
+  for (int j = 0; j < 32; j++)
+  {
+    printf("%d", (i >> (32 - j)) & 0x1u);
+  } printf("\n");  
+}
+
+void printOut(Arm *raspi)
+{
+  printf("ARM11 Raspi State\n=================\n\n");
+  u32 r;
+  for (int i = 0; i < 12; i++)
+  {
+    printReg("       Register", i+1, raspi->r[i]);
+  }
+  printReg("  Stack Pointer", 13, raspi->sp);
+  printReg("  Link Register", 14, raspi->lr);
+  printReg("Program Counter", 15, raspi->pc);
+  printReg("     CPSR Flags", 16, raspi->cpsr);
+  printf("\n\n");
+  for (int i = 0; i < MEMSIZE; i++)
+  {
+    if (r = raspi->em[i]) 
+    {
+      printf("Memory %d, %4x holds value %d, ", i, i, r);
+      printBin(r);
+    }
+  }
+}
+
 int runRaspi(Arm *raspi)
 {
   //u32 instr;

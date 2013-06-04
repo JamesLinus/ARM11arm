@@ -2,7 +2,7 @@ require 'make_preflight'
 require 'ffi'
 
 class RaspiStruct < FFI::Struct
-  layout :r, [:uint8, 17],
+  layout :r, :pointer,
     :sp,   :uint32,
     :lr,   :uint32,
     :pc,   :uint32,

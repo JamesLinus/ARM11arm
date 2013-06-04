@@ -44,6 +44,7 @@ u32 fetch(Arm *raspi);
 int runRaspi(Arm *raspi);
 Arm *makeRaspi();
 int main(int argc, char **argv);
-
+void printBin(u32 i);
+void printOut(Arm *raspi);
 
 #endif
