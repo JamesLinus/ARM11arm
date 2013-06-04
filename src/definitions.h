@@ -101,7 +101,7 @@ typedef struct
   u32 pc;        // R[15] <- program counter
   u32 cpsr;      // R[16] <- flags
   u32 *em;           // encoded memory
-  BaseOpInstr *dm;       // decoded memory
+  BaseInstr *dm;       // decoded memory
 } Arm;
 
 static u16 lit[0x20] =
@@ -111,5 +111,3 @@ static u16 lit[0x20] =
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
   0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
 };
-
-typedef void(*OpFunction)(Arm*, BaseOpInstr*);

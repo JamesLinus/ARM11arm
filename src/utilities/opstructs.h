@@ -6,52 +6,52 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef struct 
-{
-  u8 jump;
-  char padding[64];
-} BaseOpInstr;
+// required for C lexigraphical compilation
+typedef void* PtrToBeCast;
+typedef void (*Execute)(PtrToBeCast);
 
 typedef struct 
 {
-  u8 jump;
   u8 cond;
-  u8 immd;
+  Execute function;
+  char padding[32];
+} BaseInstr;
+
+typedef struct
+{
+  u8 cond;
+  Execute function;
   u8 opcode;
-  u8 setcond;
-  u32 *rn;
-  u32 *rd;
-  u16 operand2;
-} DataInstr;
+  u32* op1;
+  u32* op2;
+  u32* des;
+} DataProcessingInstr;
 
 typedef struct
 {
-  u8 jump;
   u8 cond;
-  u8 accum;
-  u8 setcond;
-  u32 *rd;
-  u32 *rn;
-  u32 *rs;
-  u32 *rm;
-} MulInstr;
+  Execute function;
+  u32* cpsr;
+  u32* op1;
+  u32* op2;
+  u32* acc;
+  u32* des;
+} MultiplyInstr;
 
-typedef struct
+typedef struct 
 {
-  u8 jump;
   u8 cond;
-  u8 immd;
-  u8 pindex;
-  u8 up;
-  u8 ls;
-  u32 *rn;
-  u32 *rd;
-  u16 offset;
+  Execute function;
+  u8 p; u8 u; u8 l;
+  u32* rb;
+  u32* rd;
+  u32* roffset;
 } SingleDataInstr;
 
 typedef struct
 {
   u8 jump;
   u8 cond;
-  u32 offset;
+  u32 offset;   // to be signed on execution
+  u32* pc;
 } BranchInstr;
