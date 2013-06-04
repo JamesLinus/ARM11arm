@@ -15,7 +15,7 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
 
   if (IS_DATA(instr))
   { // opcode matches data processing
-    DataProcessingInstr* i = (DataProcessingInstr*) &base;
+    DataProcessingInstr* i = (DataProcessingInstr*) base;
     i.opcode = instr & DATA_OP_MASK;
     switch(i.opcode)
     {
@@ -37,13 +37,13 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   }
   else if (IS_MUL(instr))
   { // opcode matches multiplication (not long)
-    MultiplyInstr* i = (MultiplyInstr*) &base;
-      i.function = 0; // add function pointer || needs to take argument for flags 1 pr 0 to be used in a cond
-      i.cpsr = raspi.cpsr;
-      i.op1 = raspi.r[instr & RM_MASK];
-      i.op2 = raspi.r[instr & RS_MASK >> 8];
-      i.acc = raspi.r[instr & RN_MASK >> 12];
-      i.des = raspi.r[instr & RD_MASK >> 16];
+    MultiplyInstr* i = (MultiplyInstr*) base;
+    i.function = 0; // add function pointer || needs to take argument for flags 1 pr 0 to be used in a cond
+    i.cpsr = &raspi.cpsr;
+    i.op1 = raspi.r[instr & RM_MASK];
+    i.op2 = raspi.r[instr & RS_MASK >> 8];
+    i.acc = raspi.r[instr & RN_MASK >> 12];
+    i.des = raspi.r[instr & RD_MASK >> 16];
   }
   else if (IS_S_DATA(instr))
   { // opcode matches single data transfer
@@ -55,6 +55,10 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   } */
   else if (IS_BRANCH(instr))
   { // opcode matches a branch statement 
+    BranchInstr* i = (BranchInstr*) base;
+    i.toAdd = instr & BRANCH_CTRL;
+    i.offset = instr & BRANCH_OFFSET;
+    i.pc = &raspi.pc;
 
   }
   return (BaseOpInstr*) &(raspi->dm[index]);
@@ -66,7 +70,7 @@ u32* imediateOrReg(u32 instr)
   if(instr & IMMEDIATE_MASK)
   {
     // only shifted 7 due to multiply by 2
-    return &ROR((instr & DATA_OP2_ROTATE) >> 7, opr2 & DATA_OP2_IMM)
+    return &opr2 = ROR((instr & DATA_OP2_ROTATE) >> 7, opr2 & DATA_OP2_IMM)
   } else
   {
     u32 shift;
@@ -82,10 +86,10 @@ u32* imediateOrReg(u32 instr)
     }
     switch(instr & DATA_OP2_SHIFT >> 5)
     {
-      case 1: return opr2 << shift;
-      case 2: return opr2 >> shift;
-      case 3: return ASR(shift, opr2);
-      case 4: return ROR(shift, opr2);
+      case 1: return &opr2 = opr2 << shift;
+      case 2: return &opr2 = opr2 >> shift;
+      case 3: return &opr2 = ASR(shift, opr2);
+      case 4: return &opr2 = ROR(shift, opr2);
     }
   }
 }

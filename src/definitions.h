@@ -68,7 +68,8 @@
 #define DATA_OP2_SHIFT   0x00000060u
 #define DATA_OP2_CTRL    0x00000010u
 #define DATA_OP2_INT     0x00000f80u
-#define BRANCH_OFFSET    0x00ffffffu
+#define BRANCH_OFFSET    0x003fffffu
+#define BRANCH_CTRL      0x00800000u
 #define S_DATA_OFFSET    0x00000fffu
 #define S_DATA_UP        0x00800000u
 #define SET_COND_MASK    0x00100000u
