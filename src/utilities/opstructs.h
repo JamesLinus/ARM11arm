@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////
+// C Group Project - First Year
+// ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+// File: opstructs.h
+// Group: 21
+// Memebers: amv12, lmj112, skd212
+///////////////////////////////////////////////////////////////////////////////
+
 typedef struct 
 {
   u8 jump;
@@ -13,7 +21,7 @@ typedef struct
   u8 setcond;
   u32 *rn;
   u32 *rd;
-  u16 operand;
+  u16 operand2;
 } DataInstr;
 
 typedef struct
