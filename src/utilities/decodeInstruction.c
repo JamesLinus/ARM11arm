@@ -127,13 +127,13 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // opcode matches single data transfer
     SingleDataInstr *i = (SingleDataInstr *) base;
     // extract the p u and l flags
-    i->p = (instr & P_INDEX_MASK >> 23) & 0xffu;
-    i->u = (instr & S_DATA_UP >> 22) & 0xffu;
-    i->l = (instr & LOAD_STORE_MASK >> 19) & 0xffu;
+    i->p = instr & P_INDEX_MASK >> 23;
+    i->u = instr & S_DATA_UP >> 22;
+    i->l = instr & LOAD_STORE_MASK >> 19;
     i->op1 = &(raspi->r[instr & RN_MASK >> 16]);
     i->des = &(raspi->r[instr & RD_MASK >> 12]);
     // modify instruction for immediate idiosyncrasy
-    instr ^= 1 << 25;
+    instr ^= IMMEDIATE_MASK;
     // sorting out shifting
     setShifting(raspi, instr, (ShiftingInstr*) i);
     // TODO - attach the function pointer

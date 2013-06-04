@@ -6,7 +6,7 @@
 // Memebers: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#define NO_OF_REGS 17
+#define NO_OF_REGS 16
 #define MEMSIZE 65536
 
 typedef uint8_t   u8;

@@ -12,7 +12,7 @@ class RaspiStruct < FFI::Struct
 end
 
 class RaspiRuby
-  attr_accessor :r, :sp, :lr, :pc, :cpsr, :em, :dm
+  attr_accessor :r, :sp, :lr, :pc, :cpsr, :em
 
   def initialize(ptr)
     str = RaspiStruct.new ptr
@@ -20,7 +20,7 @@ class RaspiRuby
       [str[:sp], str[:lr], str[:pc], str[:cpsr]]
     @r = array_from_ptr(str[:r], 12)
     memsize = (str[:dm].address - str[:em].address) / 4
-    @r, @em, @dm = [
+    @r, @em = [
       array_from_ptr(str[:r] , 12),
       array_from_ptr(str[:em], memsize)
     ]
