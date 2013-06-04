@@ -133,7 +133,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->op1 = &(raspi->r[instr & RN_MASK >> 16]);
     i->des = &(raspi->r[instr & RD_MASK >> 12]);
     // modify instruction for immediate idiosyncrasy
-    instr ^= 1 << 25
+    instr ^= 1 << 25;
     // sorting out shifting
     setShifting(raspi, instr, (ShiftingInstr*) i);
     // TODO - attach the function pointer
