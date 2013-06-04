@@ -12,9 +12,9 @@ void branch(PtrToBeCast* base)
   if(i->toAdd)
   {
     // we want to increment the pc before decode/possible execute
-    i->pc += i->offset - 1;
+    i->pc += i->offset;
   } else
   {
-    i->pc -= i->offset - 1;
+    i->pc -= i->offset;
   }
 }
