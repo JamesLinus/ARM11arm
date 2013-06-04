@@ -37,7 +37,13 @@ BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
   }
   else if (IS_MUL(instr))
   { // opcode matches multiplication (not long)
-
+    MultiplyInstr* i = (MultiplyInstr*) &base;
+      i.function = 0; // add function pointer || needs to take argument for flags 1 pr 0 to be used in a cond
+      i.cpsr = raspi.cpsr;
+      i.op1 = raspi.r[instr & RM_MASK];
+      i.op2 = raspi.r[instr & RS_MASK >> 8];
+      i.acc = raspi.r[instr & RN_MASK >> 12];
+      i.des = raspi.r[instr & RD_MASK >> 16];
   }
   else if (IS_S_DATA(instr))
   { // opcode matches single data transfer
