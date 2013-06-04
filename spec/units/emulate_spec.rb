@@ -14,9 +14,11 @@ describe 'unit test for emulate.c' do
   describe 'initialization' do
 
     context 'file exists' do
+
       it 'zeros all struct elements' do
-        raspi_ptr.zeroed.should eq(true)
+        RaspiStruct.new(raspi_ptr).zeroed.should eq(true)
       end
+
       it 'loads file at path into state memory' do
         struct = RaspiStruct.new raspi_ptr
         Emulate.loadBinaryFile add01, struct[:em]
@@ -31,6 +33,7 @@ describe 'unit test for emulate.c' do
         # all bytes after the loaded mem should be 0
         total.should eq(0)
       end
+      
     end
 
     context 'file does not exist' do

@@ -77,7 +77,12 @@ typedef struct   // for type checking only
 // DATA PROCESSING instructions require nothing more
 // than that determined by the default base, hence
 // repeated typedef for readability only
-typedef ShiftingInstr DataProcessingInstr;
+typedef struct   //  < BaseInstr
+{
+  BASE
+  SHIFTING_ARGS
+  u8 s;
+} DataProcessingInstr;
 
 // SINGLE DATA PROCESSING instructions also make use
 // of the staple args and require immediate shifting
@@ -101,6 +106,7 @@ typedef struct    //  < BaseInstr
   u32 *op2;
   u32 *acc;
   u32 *des;
+  u8     s;
 } MultiplyInstr;
 
 //////////////////////////////////////////////////////

@@ -1,6 +1,8 @@
 require 'make_preflight'
 require 'ffi'
 
+MEMSIZE = 65536
+
 class RaspiStruct < FFI::Struct
   layout :r, :pointer,
     :sp,   :uint32,
@@ -9,9 +11,23 @@ class RaspiStruct < FFI::Struct
     :cpsr, :uint32,
     :em,   :pointer,
     :dm,   :pointer
-  def set_reg(i,v)
-    puts self.r
-  end
+    def regs
+      regs = FFI::Pointer.new self[:r]
+      regs.read_array_of_type(:uint32, :read_uint32, 12)
+    end
+    def encoded_mem
+      em = FFI::Pointer.new self[:em]
+      em.read_array_of_type(:uint32, :read_uint32, MEMSIZE)
+    end
+    def zeroed
+      r = self.regs
+      em = self.encoded_mem
+      sum = (self[:sp] + self[:pc] + self[:cpsr] + self[:lr])
+      return false unless sum.zero?
+      r.map  { |n| return false unless n.zero? }
+      em.map { |n| return false unless n.zero? }
+      return true
+    end
 end
 
 class DataProcessingStruct < FFI::Struct

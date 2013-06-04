@@ -60,7 +60,7 @@ u32 fetch(Arm *raspi)
 
 void printReg(char* name, int index, u32 i)
 {
-  printf("  %s[%d] - %08x - ", name, index, i);
+  printf("  %s[%2d] - %08x - ", name, index, i);
   printBin(i);
 }
 
@@ -74,7 +74,10 @@ void printBin(u32 i)
 
 void printOut(Arm *raspi)
 {
-  printf("ARM11 Raspi State\n=================\n\n");
+  char* buff = "                     ";
+  printf("%s================================\n",   buff);
+  printf("%s       ARM11 Raspi State        \n",   buff);
+  printf("%s================================\n\n", buff);
   u32 r;
   for (int i = 0; i < 12; i++)
   {
