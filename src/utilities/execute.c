@@ -84,43 +84,101 @@ void multiply(PtrToBeCast base)
   }
 }
 
+// inefficent a lot of repetition will find a better solution later
 void and(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op1)) & (*(i->op2)); 
+  } 
 }
 void eor(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op1)) ^ (*(i->op2)); 
+  }
 }
 void sub(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op1)) - (*(i->op2)); 
+  }
 }
 void rsb(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op2)) - (*(i->op1)); 
+  }
 }
 void add(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op1)) + (*(i->op2)); 
+  }
 }
 void tst(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    //(*(i->op1)) & (*(i->op2));
+  }
 }
 void teq(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    //(*(i->op1)) ^ (*(i->op2))
+  }
 }
 void cmp(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    //(*(i->op1)) - (*(i->op2))
+  }
 }
 void orr(PtrToBeCast base)
 {
-
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op1)) | (*(i->op2)); 
+  }
 }
 void mov(PtrToBeCast base)
 {
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  if (checkFlags(i->cpsr, i->cond))
+  {
+    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->des) = (*(i->op2)); 
+  }
+}
+
+void setflags(u32* cpsr, u32 result, u8 carryOut)
+{
+
+
 
 }
