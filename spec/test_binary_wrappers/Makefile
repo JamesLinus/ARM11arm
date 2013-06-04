@@ -1,9 +1,13 @@
 CC      = gcc
 CFLAGS  = -pie -g -std=c99 -Werror -pedantic
 
-all: maskTests
+SRCS = $(wildcard *.c)
 
-maskTests: maskTests.c
-	$(CC) -o maskTests $(CFLAGS) maskTests.c
+PROGS = $(patsubst %.c,%,$(SRCS))
+
+all: $(PROGS)
+
+%: %.c
+	$(CC) $(CFLAGS)  -o $@ $<
 	rm -rf *.dSYM
 
