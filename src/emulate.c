@@ -18,107 +18,7 @@
 // DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-#define NO_OF_REGISTERS 12
-#define NO_FILE_FOUND    1
-
-#define N_MASK (u32) 1 << 31
-#define Z_MASK (u32) 1 << 30
-#define C_MASK (u32) 1 << 29
-#define V_MASK (u32) 1 << 28
-
-#define N_SET(i) ( ( i & N_MASK ) >> 31 )
-#define Z_SET(i) ( ( i & Z_MASK ) >> 30 )
-#define C_SET(i) ( ( i & C_MASK ) >> 29 )
-#define V_SET(i) ( ( i & V_MASK ) >> 28 )
-
-#define EQ_FLAG 0x00u
-#define NE_FLAG 0x01u
-#define GE_FLAG 0x0au
-#define LT_FLAG 0x0bu
-#define GT_FLAG 0x0cu
-#define LE_FLAG 0x0du
-#define AL_FLAG 0x0eu
-
-#define AND 0x00u
-#define EOR 0x01u
-#define SUB 0x02u
-#define RSB 0x03u
-#define ADD 0x04u
-#define ADC 0x05u
-#define SBC 0x06u
-#define RSC 0x07u
-#define TST 0x08u
-#define TEQ 0x09u
-#define CMP 0x0au
-#define CMN 0x0bu
-#define ORR 0x0cu
-#define MOV 0x0du
-#define BIC 0x0eu
-#define MVN 0x0fu
-
-#define MUL_MASK         0x0fC000f0u
-#define DATA_MASK        0x0c000000u
-#define BLOCK_DATA_MASK  0x08000000u
-#define S_DATA_MASK      0x04000000u
-#define BRANCH_MASK      0x0a000000u
-
-#define IMMEDIATE_MASK   0x01000000u
-#define DATA_OP_MASK     0x01e00000u
-#define RN_MASK          0x000f0000u
-#define RD_MASK          0x0000f000u
-#define RS_MASK          0x00000f00u
-#define RM_MASK          0x0000000fu
-#define DATA_OPR_2       0x00000fffu
-#define BRANCH_OFFSET    0x00ffffffu
-#define S_DATA_OFFSET    0x00000fffu
-#define S_DATA_UP        0x00800000u
-#define SET_COND_MASK    0x00100000u
-#define ACCUM_MASK       0x00000100u
-#define P_INDEX_MASK     0x01000000u
-#define LOAD_STORE_MASK  0x00100000u
-#define OP_ROTATE        0x00000f00u
-#define OP_IMMD          0x0000000fu
-#define OP_SHIFT         0x00000ff0u
-#define OP_SHIFT_TYPE    0x00000006u
-
-#define MSB 0x80000000u
-#define LSL(i,v) (v << i)
-#define LSR(i,v) (i >> v)
-#define ASR(i,v) (LSR(i,v) | (i & MSB))
-#define ROR(i,v) (i >> v) | (i << (0x20u - v))
-
-#define J_DATA      0x00u
-#define J_S_DATA    0x01u
-#define J_MUL       0x02u
-#define J_BRANCH    0x03u
-
-// Set up program state as a C Struct
-typedef struct
-{
-  u32 e[MEMSIZE];
-  u32 d[MEMSIZE];
-} Memory;
-
-typedef struct
-{
-  u32 *r;        // registers
-  u32 sp;        // R[13] <- stack pointer
-  u32 lr;        // R[14] <- link register
-  u32 pc;        // R[15] <- program counter
-  u32 cpsr;      // R[16] <- flags
-  u32 *em;           // encoded memory
-  BaseOpInstr *dm;       // decoded memory
-} Arm;
-
-static u16 lit[0x20] =
-{
-  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-  0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-  0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-  0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-};
-
-typedef void(*OpFunction)(Arm*, BaseOpInstr*);
+#include "definitions.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXECUTION FUNCTIONS
@@ -139,66 +39,15 @@ OpFunction opJumpTable[5] =
   branch,
 };
 
+u32 isMul(u32 i) {
+  return IS_MUL(i);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-u32 maskFits(u32 i, u32 m) { return ((i & m) == 0x0u); }
-
-BaseOpInstr* decodeInstruction(Arm* raspi, u32 index)
-{
-  u32 instr = raspi->em[index];
-  if (maskFits(instr, DATA_MASK))
-  { // opcode matches data processing
-    DataInstr* i = (DataInstr*) &(raspi->dm[index]);
-    i->jump     = J_DATA;
-    i->cond     = instr >> 28;
-    i->immd     = instr & IMMEDIATE_MASK >> 25;
-    i->opcode   = instr & DATA_OP_MASK >> 21;
-    i->setcond  = instr & SET_COND_MASK >> 20;
-    i->rn       = &(raspi->r[instr & RN_MASK >> 16]);
-    i->rd       = &(raspi->r[instr & RD_MASK >> 12]);
-    i->operand2 = instr & DATA_OP_MASK;
-  }
-  else if (maskFits(instr, MUL_MASK))
-  { // opcode matches multiplication (not long)
-    MulInstr* i = (MulInstr*) &(raspi->dm[index]);
-    i->jump     = J_MUL;
-    i->cond     = instr >> 28;
-    i->accum    = instr & ACCUM_MASK >> 21;
-    i->setcond  = instr & SET_COND_MASK >> 20;
-    // note that rn and rd are swapped for mul
-    i->rd       = &(raspi->r[instr & RN_MASK >> 16]);
-    i->rn       = &(raspi->r[instr & RD_MASK >> 12]);
-    i->rs       = &(raspi->r[instr & RS_MASK >>  8]);
-    i->rm       = &(raspi->r[instr & RM_MASK]);
-  }
-  else if (maskFits(instr, S_DATA_MASK))
-  { // opcode matches single data transfer
-    SingleDataInstr* i = (SingleDataInstr*) &(raspi->dm[index]);
-    i->jump     = J_S_DATA;
-    i->cond     = instr >> 28;
-    i->immd     = instr & IMMEDIATE_MASK >> 25; 
-    i->pindex   = instr & P_INDEX_MASK >> 24;
-    i->up       = instr & S_DATA_UP >> 23;
-    i->ls       = instr & LOAD_STORE_MASK >> 20;
-    i->rn       = &(raspi->r[instr & RN_MASK >> 16]);
-    i->rd       = &(raspi->r[instr & RD_MASK >> 12]);
-    i->offset   = instr & S_DATA_OFFSET;
-  }
-  else if (maskFits(instr, BLOCK_DATA_MASK))
-  { // opcode matches block transfer
-    // TODO - Implement!
-  }
-  else if (maskFits(instr, BRANCH_MASK))
-  { // opcode matches a branch statement 
-    BranchInstr* i = (BranchInstr*) &(raspi->dm[index]);
-    i->jump     = J_BRANCH;
-    i->cond     = instr >> 28;
-    i->offset   = instr & BRANCH_OFFSET;
-  }
-  return (BaseOpInstr*) &(raspi->dm[index]);
-}
+#include "utilities/decodeInstruction.c"
 
 int checkFlags(Arm* raspi, u8 cond)
 {
@@ -224,8 +73,6 @@ next:
   // this on as yet not implemented opcode
   return 0;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // UTILITY FUNCITONS

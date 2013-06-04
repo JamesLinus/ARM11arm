@@ -14,7 +14,7 @@ puts
 puts '////////////////////////////////////////////////////////'
 puts "\e[1;32m  BUILDING BINARIES\e[0m"
 puts '////////////////////////////////////////////////////////'
-IO.popen 'make build 2>&1' do |io|
+IO.popen 'make build 2>&1;' do |io|
   make = io.read
   puts make
   if make =~ /: error:/ or make =~ /: warning:/

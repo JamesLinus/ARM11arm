@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////
+// C Group Project - First Year
+// ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+// File: dataProcessing.c
+// Group: 21
+// Memebers: amv12, lmj112, skd212
+///////////////////////////////////////////////////////////////////////////////
+
 // PRE - Required that cond field is satisfied
 //     - Required that BaseOpInstr is actually
 //       data instruction struct
@@ -61,3 +69,5 @@ void dataProcessing(Arm* raspi, BaseOpInstr* b)
     // case BIC: case MVN:
   }
 }
+
+typedef void ()

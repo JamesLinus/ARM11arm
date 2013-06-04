@@ -44,6 +44,30 @@ describe 'unit test for emulate.c' do
   end
 
   describe 'decoding instruction' do
+
+    describe 'masking checks' do
+
+      it 'verifies data opcode' do
+        Emulate.isMul '3ffffff'.to_i(16)
+        250.times do
+          test = ((rand(16)*2**28) + rand('3ffffff'.to_i(16)))
+          res = Emulate.IS_DATA test
+          if res != 1
+            puts (sprintf "%320b", mask)
+            puts (sprintf "%320b", test)
+          end
+          res.should eq(1)
+        end
+      end
+
+      it 'verifies multiply opcode'
+
+      it 'verifies single data transfer opcode'
+
+      it 'verifies branch opcode'
+
+    end
+
   end
 
   describe 'single data transfer tests' do
