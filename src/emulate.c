@@ -24,10 +24,8 @@
 // EXECUTION FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-// #include "utilities/dataProcessing.c"
-#include "utilities/branch.c"
-// #include "utilities/multiply.c"
-#include "utilities/singleDataTransfer.c"
+#include "utilities/execute
+.c"
 #include "utilities/binaryLoading.c"
 
 u32 isMul(u32 i) {
@@ -40,22 +38,22 @@ u32 isMul(u32 i) {
 
 #include "utilities/decodeInstruction.c"
 
-int checkFlags(Arm* raspi, u8 cond)
+int checkFlags(u32* cpsr, u8 cond)
 {
   switch (cond)
   {
   case EQ_FLAG:
-    if (!Z_SET(raspi->cpsr))  goto next;
+    if (!Z_SET(*cpsr))  goto next;
   case NE_FLAG:
-    if ( Z_SET(raspi->cpsr)) goto next;
+    if ( Z_SET(*cpsr)) goto next;
   case GE_FLAG:
-    if ( N_SET(raspi->cpsr) != V_SET(raspi->cpsr)) goto next;
+    if ( N_SET(*cpsr) != V_SET(*cpsr)) goto next;
   case LT_FLAG:
-    if ( N_SET(raspi->cpsr) == V_SET(raspi->cpsr)) goto next;
+    if ( N_SET(*cpsr) == V_SET(*cpsr)) goto next;
   case GT_FLAG:
-    if ( Z_SET(raspi->cpsr) && ( N_SET(raspi->cpsr) != V_SET(raspi->cpsr))) goto next;
+    if ( Z_SET(*cpsr) && ( N_SET(*cpsr) != V_SET(*cpsr))) goto next;
   case LE_FLAG:
-    if (!Z_SET(raspi->cpsr) && ( N_SET(raspi->cpsr) == V_SET(raspi->cpsr))) goto next;
+    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) goto next;
   case AL_FLAG:
     goto next;
   }
