@@ -56,14 +56,20 @@
 #define IS_BRANCH(i)     ((BRANCH_MASK & i) == 0x0a000000u)
 // #define IS_BLOCK_DATA(i) 
 
-#define IMMEDIATE_MASK   0x01000000u
+#define IMMEDIATE_MASK   0x02000000u
 #define DATA_OP_MASK     0x01e00000u
 #define RN_MASK          0x000f0000u
 #define RD_MASK          0x0000f000u
 #define RS_MASK          0x00000f00u
 #define RM_MASK          0x0000000fu
 #define DATA_OPR_2       0x00000fffu
-#define BRANCH_OFFSET    0x00ffffffu
+#define DATA_OP2_ROTATE  0x00000f00u
+#define DATA_OP2_IMM     0x000000ffu
+#define DATA_OP2_SHIFT   0x00000060u
+#define DATA_OP2_CTRL    0x00000010u
+#define DATA_OP2_INT     0x00000f80u
+#define BRANCH_OFFSET    0x003fffffu
+#define BRANCH_CTRL      0x00800000u
 #define S_DATA_OFFSET    0x00000fffu
 #define S_DATA_UP        0x00800000u
 #define SET_COND_MASK    0x00100000u

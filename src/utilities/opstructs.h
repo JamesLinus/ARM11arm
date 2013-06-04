@@ -50,8 +50,8 @@ typedef struct
 
 typedef struct
 {
-  u8 jump;
   u8 cond;
+  u32 toAdd;
   u32 offset;   // to be signed on execution
   u32* pc;
 } BranchInstr;
