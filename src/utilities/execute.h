@@ -18,4 +18,15 @@ void singleDataTransfer(PtrToBeCast base);
 void multiply(PtrToBeCast base);
 void dataProcessingInstruction(PtrToBeCast base);
 
+void and(PtrToBeCast base);
+void eor(PtrToBeCast base);
+void sub(PtrToBeCast base);
+void rsb(PtrToBeCast base);
+void add(PtrToBeCast base);
+void tst(PtrToBeCast base);
+void teq(PtrToBeCast base);
+void cmp(PtrToBeCast base);
+void orr(PtrToBeCast base);
+void mov(PtrToBeCast base);
+
 #endif
