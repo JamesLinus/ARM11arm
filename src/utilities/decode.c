@@ -41,18 +41,18 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // start a switch on the opcode
     switch (opcode)
     { // use switch to set the function 
-      case AND: break;
-      case EOR: break;
-      case SUB: break;
-      case RSB: break;
-      case ADD: break;
+      case AND: &and; break;
+      case EOR: &eor; break;
+      case SUB: &sub; break;
+      case RSB: &rsb; break;
+      case ADD: &add; break;
       // case ADC: case SBC: case RSC:
-      case TST: break;
-      case TEQ: break;
-      case CMP: break;
+      case TST: &tst; break;
+      case TEQ: &teq; break;
+      case CMP: &cmp; break;
       // case CMN:
-      case ORR: break;
-      case MOV: break;
+      case ORR: &orr; break;
+      case MOV: &mov; break;
       // case BIC: case MVN:
     }
   }
