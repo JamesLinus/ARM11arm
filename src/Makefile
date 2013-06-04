@@ -7,7 +7,7 @@ LIST=$(addprefix $(BIN)/, $(PROG))
 
 all: $(LIST)
 
-clean: $(LIST)
+clean:
 	rm $(LIST)
 
 $(BIN)/assemble: assemble.c assemble.h

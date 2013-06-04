@@ -38,7 +38,7 @@ u32 isMul(u32 i) {
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-// #include "utilities/decodeInstruction.c"
+#include "utilities/decodeInstruction.c"
 
 int checkFlags(Arm* raspi, u8 cond)
 {

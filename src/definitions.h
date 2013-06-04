@@ -56,11 +56,16 @@
 #define IS_BRANCH(i)     ((BRANCH_MASK & i) == 0x0a000000u)
 // #define IS_BLOCK_DATA(i) 
 
+// TODO - VERIFY THESE MASKS!!!!
 #define IMMEDIATE_MASK   0x02000000u
 #define DATA_OP_MASK     0x01e00000u
 #define RN_MASK          0x000f0000u
 #define RD_MASK          0x0000f000u
 #define RS_MASK          0x00000f00u
+#define MUL_RD_MASK      0x000f0000u
+#define MUL_RN_MASK      0x0000f000u
+#define MUL_RS_MASK      0x00000f00u
+#define MUL_RM_MASK      0x0000000fu
 #define RM_MASK          0x0000000fu
 #define DATA_OPR_2       0x00000fffu
 #define DATA_OP2_ROTATE  0x00000f00u
@@ -73,7 +78,7 @@
 #define S_DATA_OFFSET    0x00000fffu
 #define S_DATA_UP        0x00800000u
 #define SET_COND_MASK    0x00100000u
-#define ACCUM_MASK       0x00000100u
+#define ACCUM_MASK       0x00020000u
 #define P_INDEX_MASK     0x01000000u
 #define LOAD_STORE_MASK  0x00100000u
 #define OP_ROTATE        0x00000f00u
