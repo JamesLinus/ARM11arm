@@ -9,11 +9,11 @@
 void branch(PtrToBeCast* base)
 {
   BranchInstr* i = (BranchInstr*) base;
-  if(i.toAdd)
+  if(i->toAdd)
   {
-    i.pc += i.offset;
+    i->pc += i->offset;
   } else
   {
-    i.pc += i.offset;
+    i->pc += i->offset;
   }
 }
