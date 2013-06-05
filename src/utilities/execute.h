@@ -13,7 +13,7 @@
 #ifndef EXECUTE_H
 #define EXECUTE_H
 
-void setflags(u32* cpsr, u32 result, u8 carryOut);
+void setflags(u32* cpsr, u32 result);
 
 void branch(PtrToBeCast base);
 void singleDataTransfer(PtrToBeCast base);
