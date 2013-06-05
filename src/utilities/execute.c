@@ -15,7 +15,6 @@ void branch(PtrToBeCast base)
   {
     if (i->toAdd)
     {
-      // we want to increment the pc before decode/possible execute
       i->pc += i->offset;
     }
     else
@@ -83,7 +82,7 @@ void multiply(PtrToBeCast base)
     *(i->des) = ((*(i->op1)) * (*(i->op2))) + (*(i->acc));
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
@@ -98,7 +97,7 @@ void and(PtrToBeCast base)
     *(i->des) = (*(i->op1)) & (*(i->op2)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   } 
 }
@@ -111,7 +110,7 @@ void eor(PtrToBeCast base)
     *(i->des) = (*(i->op1)) ^ (*(i->op2)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
@@ -124,7 +123,7 @@ void sub(PtrToBeCast base)
     *(i->des) = (*(i->op1)) - (*(i->op2)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
@@ -137,7 +136,7 @@ void rsb(PtrToBeCast base)
     *(i->des) = (*(i->op2)) - (*(i->op1)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
@@ -150,7 +149,7 @@ void add(PtrToBeCast base)
     *(i->des) = (*(i->op1)) + (*(i->op2)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
@@ -162,7 +161,7 @@ void tst(PtrToBeCast base)
     *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
     if(i->s)
     {
-      setflags(i->cpsr, (*(i->op1)) & (*(i->op2)), 0);
+      setflags(i->cpsr, (*(i->op1)) & (*(i->op2)));
     } 
   }
 }
@@ -174,7 +173,7 @@ void teq(PtrToBeCast base)
     *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
     if(i->s)
     {
-      setflags(i->cpsr, (*(i->op1)) ^ (*(i->op2)), 0);
+      setflags(i->cpsr, (*(i->op1)) ^ (*(i->op2)));
     } 
   }
 }
@@ -186,7 +185,7 @@ void cmp(PtrToBeCast base)
     *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
     if(i->s)
     {
-      setflags(i->cpsr, (*(i->op1)) - (*(i->op2)), 0);
+      setflags(i->cpsr, (*(i->op1)) - (*(i->op2)));
     } 
   }
 }
@@ -199,7 +198,7 @@ void orr(PtrToBeCast base)
     *(i->des) = (*(i->op1)) | (*(i->op2)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
@@ -212,12 +211,12 @@ void mov(PtrToBeCast base)
     *(i->des) = (*(i->op2)); 
     if(i->s)
     {
-      setflags(i->cpsr, *(i->des), 0);
+      setflags(i->cpsr, *(i->des));
     } 
   }
 }
 
-void setflags(u32* cpsr, u32 result, u8 carryOut)
+void setflags(u32* cpsr, u32 result)
 {
   if(result == 0)
   {
@@ -226,6 +225,12 @@ void setflags(u32* cpsr, u32 result, u8 carryOut)
   {
     *cpsr &= ~Z_MASK;
   }
-  // need code for other two flags
+  // set n flag
+
+}
+
+void setCflag(u32* cpsr, u8 carryOut)
+{
+
 
 }
