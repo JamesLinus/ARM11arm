@@ -54,7 +54,7 @@ describe 'unit test for emulate.c' do
       before(:all) do
         @cond, @bytes = [[],[]]
         cond = 2**28
-        100.times do
+        1000.times do
           @cond << rand(16)*cond
           @bytes << rand(256)
         end
@@ -63,14 +63,14 @@ describe 'unit test for emulate.c' do
 
       it 'verifies data opcode' do
         for nibble in @cond
-          `#{@run} D #{(nibble + rand(67108863))}`.should eq('1')
+          `#{@run} #{(nibble + rand(67108863))}`.should eq('D')
         end
       end
 
       it 'verifies multiply opcode' do
         for i in 0..(@cond.size) - 1
           test = (@cond[i] + (2**8*@bytes[i]) + 144 + (@bytes[i] >> 8))
-          `#{@run} M #{test}`.should eq('1')
+          `#{@run} #{test}`.should eq('M')
         end
       end
 
@@ -78,7 +78,7 @@ describe 'unit test for emulate.c' do
         for i in 0..(@cond.size) - 1
           test = (@cond[i] + (2**26) + rand(8)*2**23 + rand(1)*2**20)
           test += 2**8*@bytes[i] + @bytes[@cond.size - i - 1]
-          `#{@run} S #{test}`.should eq('1')
+          `#{@run} #{test}`.should eq('S')
         end
       end
 
@@ -88,7 +88,7 @@ describe 'unit test for emulate.c' do
           test  = @cond[i] + 10*2**24 + (@bytes[i]*2**16)
           test += @bytes[s - i - 1]*2**8
           test += @bytes[(2*i + 1) % s]
-          `#{@run} B #{test}`.should eq('1')
+          `#{@run} #{test}`.should eq('B')
         end
       end
 
@@ -103,46 +103,6 @@ describe 'unit test for emulate.c' do
   end
 
   describe 'multiply tests' do
-
-  end
-
-  describe 'data processing tests' do
-    context 'COND as 1110 (always)' do
-      context 'as immediate' do
-        before(:all) do
-          @op1s, @op2s = [[],[]]
-          max = 2**32
-          100.times do
-            @op1s << rand(max)
-            @op2s << rand(max)
-          end
-        end
-        it 'AND' do
-          #for op1, op2 in @op1s
-          
-        end
-        context 'EOR' do
-        end
-        context 'SUB' do
-        end
-        context 'RSB' do
-        end
-        context 'ADD' do
-        end
-        context 'TST' do
-        end
-        context 'TEQ' do
-        end
-        context 'CMP' do
-        end
-        context 'ORR' do
-        end
-        context 'MOV' do
-        end
-      end
-      context 'as register' do
-      end
-    end
   end
 
   describe 'memory accessing' do

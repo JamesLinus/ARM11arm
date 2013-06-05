@@ -52,6 +52,9 @@ int checkFlags(u32 *cpsr, u8 cond)
 // UTILITY FUNCITONS
 ///////////////////////////////////////////////////////////////////////////////
 
+inline u32 MEMGET(Arm *raspi, u32 index) { return raspi->em[index]; }
+//inline u32 MEMSET(Arm *raspi, u32 index, )
+
 u32 fetch(Arm *raspi)
 {
   return raspi->em[raspi->pc++];
@@ -59,24 +62,43 @@ u32 fetch(Arm *raspi)
 
 void printReg(char* name, int index, u32 i)
 {
-  printf("  %s[%2d] - %08x - ", name, index, i);
-  printBin(i);
+  printf("    %s[\x1b[36m%2d\x1b[0m]  -  0x%08x  -  ", name, index, i);
+  printBin(i, 1);
 }
 
-void printBin(u32 i)
+#define COL_ONE "\x1b[1;36m1\x1b[0m"
+
+void printBin(u32 i, int newline)
 {
   for (int j = 0; j < 32; j++)
   {
-    printf("%d", (i >> (32 - j)) & 0x1u);
-  } printf("\n");  
+    if ((i >> (32 - j - 1)) & 0x1u)
+    {
+      printf("%s", COL_ONE);
+    }
+    else
+    {
+      printf("0"); 
+    }
+  } 
+  if (newline) 
+  { 
+    printf("\n"); 
+  }
+  else
+  {
+    printf("");
+  }
 }
 
 void printOut(Arm *raspi)
 {
-  char* buff = "                     ";
-  printf("%s================================\n",   buff);
-  printf("%s       ARM11 Raspi State        \n",   buff);
-  printf("%s================================\n\n", buff);
+  printf("\n  ============================================================================\n");
+  printf("\x1b[32m");
+  printf(  "  |-                      --+< ARM11 Raspi State >+--                       -|\n");
+  printf("\x1b[0m");
+  printf(  "  ============================================================================\n");
+  printf("                   Printing state of raspi on function call.\n\n\n");
   u32 r;
   for (int i = 0; i < 12; i++)
   {
@@ -87,13 +109,21 @@ void printOut(Arm *raspi)
   printReg("Program Counter", 15, raspi->pc);
   printReg("     CPSR Flags", 16, raspi->cpsr);
   printf("\n\n");
+  printf("  +======================+==============+====================================+\n");
+  printf("  |-      Mem Addr      -|-     Hex    -|-              Bin                 -|\n");
+  printf("  +======================+==============+====================================+\n");
+  int print = 0;
   for (int i = 0; i < MEMSIZE; i++)
   {
     if (r = raspi->em[i]) 
     {
-      printf("Memory %d, %4x holds value %d, ", i, i, r);
-      printBin(r);
+      print = 1;
+      printf("  |-   [ 0x%08x ]   -|- 0x%08x -|- ", i, r);
+      printBin(r, 0); printf(" -|\n");
     }
+  }
+  if (print) { 
+    printf("  +======================+==============+====================================+\n"); 
   }
 }
 
@@ -129,9 +159,11 @@ int main(int argc, char **argv)
   char *path; switch (argc)
   {
     // case 0 for testing purposes
-  case 0: path = (char *)argv; break;
-  case 2: path = argv[0]; break;
-  default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;
+    case 0: path = (char *)argv; break;
+    case 2: path = argv[0]; break;
+    default: 
+      fprintf(stderr, "No FILE provided.\n"); 
+      return NO_FILE_FOUND;
   }
   Arm *raspi = makeRaspi(path);
   loadBinaryFile(path, raspi->em);
