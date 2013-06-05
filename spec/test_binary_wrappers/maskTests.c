@@ -15,14 +15,18 @@ int main(int argc, char** argv)
 {
   int i = 0;
   u32 instr = (u32) atoi(argv[1]);
-  if (IS_DATA(instr)) {
-    i++;
-    printf("D");
-  }
 
   if (IS_MUL(instr)) {
     i++;
     printf("M");
+    return 0;
+  } 
+  
+  if (IS_DATA(instr)) 
+  {
+    i++;
+    printf("D");
+    return 0;
   }
 
   if (IS_S_DATA(instr)) {

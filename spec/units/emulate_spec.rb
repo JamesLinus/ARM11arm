@@ -54,7 +54,7 @@ describe 'unit test for emulate.c' do
       before(:all) do
         @cond, @bytes = [[],[]]
         cond = 2**28
-        1000.times do
+        100.times do
           @cond << rand(16)*cond
           @bytes << rand(256)
         end
@@ -62,8 +62,9 @@ describe 'unit test for emulate.c' do
       end
 
       it 'verifies data opcode' do
-        for nibble in @cond
-          `#{@run} #{(nibble + rand(67108863))}`.should eq('D')
+        for nibble in @cond 
+          ["D", "M"].should include 
+            `#{@run} #{(nibble + rand(67108863))}`
         end
       end
 
