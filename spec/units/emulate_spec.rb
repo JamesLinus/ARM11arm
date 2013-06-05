@@ -103,46 +103,6 @@ describe 'unit test for emulate.c' do
   end
 
   describe 'multiply tests' do
-
-  end
-
-  describe 'data processing tests' do
-    context 'COND as 1110 (always)' do
-      context 'as immediate' do
-        before(:all) do
-          @op1s, @op2s = [[],[]]
-          max = 2**32
-          100.times do
-            @op1s << rand(max)
-            @op2s << rand(max)
-          end
-        end
-        it 'AND' do
-          #for op1, op2 in @op1s
-          
-        end
-        context 'EOR' do
-        end
-        context 'SUB' do
-        end
-        context 'RSB' do
-        end
-        context 'ADD' do
-        end
-        context 'TST' do
-        end
-        context 'TEQ' do
-        end
-        context 'CMP' do
-        end
-        context 'ORR' do
-        end
-        context 'MOV' do
-        end
-      end
-      context 'as register' do
-      end
-    end
   end
 
   describe 'memory accessing' do
