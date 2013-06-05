@@ -1,15 +1,30 @@
+class DataInstr
+  def initialize(cond, immd, opcode, set_cond, rn, rd, op2)
+    @instr = cond + '00' + immd + opcode +
+      set_cond + rn + rd + op2
+  end
+  def get_instr
+    @instr.to_i(2)
+  end
+end
+
 describe 'data processing tests' do
+
+  let(:raspi) { RaspiStruct.new Emulate.makeRaspi() }
+
   context 'COND as 1110 (always)' do
-    context 'as immediate' do
+    context 'as register' do
+
+      before(:all) do
+        @is = []
+        150.times do
+          DataInstr.new '1110', '1', '0000', '0', ''
+        end
+      end
+
       it 'AND' do
-        I = '1'
-        S = '0'
-        Rn = '0001'
-        Rd = '0002'
-        Operand2 = '0000' + '11011110'
-        i = '1110' + '00' + I + '0000' + S + Rn + Rd + Operand2
-        raspi = RaspiStruct.new Emulate.makeRaspi()
         Emulate.loadBinaryFile 'spec/official_tests/add01', raspi[:em] 
+        system './spec/test_binary_wrappers/maskTests ' + raspi.get_emem(0).to_s
         Emulate.printOut raspi
       end
       context 'EOR' do
