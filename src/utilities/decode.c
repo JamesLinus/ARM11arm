@@ -31,6 +31,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->op1    = &(raspi->r[instr & RN_MASK]);
     // set pointer to destination register
     i->des    = &(raspi->r[instr & RD_MASK]);
+    i->s      = (instr >> 20) & SET_FLAGS_S;
     // set the shift function and immediate settings
     setShifting(raspi, instr, (ShiftingInstr*) i);
     // start a switch on the opcode
@@ -59,6 +60,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->op1 = &(raspi->r[instr & MUL_RM_MASK]);
     // retrive op2 similarly from instr
     i->op2 = &(raspi->r[instr & MUL_RS_MASK >> 8 ]);
+    i->s   = (instr >> 20) & SET_FLAGS_S;
     if (instr & ACCUM_MASK)
     {
       i->acc = &(raspi->r[instr & MUL_RN_MASK >> 12]);
