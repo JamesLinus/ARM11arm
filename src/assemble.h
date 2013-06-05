@@ -3,7 +3,7 @@
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 // File: assemble.h
 // Group: 21
-// Memebers: amv12, lmj112, skd212
+// Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char **argv);
