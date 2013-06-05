@@ -229,11 +229,10 @@ void setflags(u32* cpsr, u32 result)
   //for setting N flag
   *(cpsr) |= (result & N_MASK);
 
-  // need code for other two flags
-
 }
 
-void setCflag(u32* cpsr, u8 carryOut)
+void setCflag(u32* cpsr, u32 carryOut)
 {
-
+  *cpsr &= ~C_MASK;	
+  *cpsr |= (carryOut << 29);
 }
