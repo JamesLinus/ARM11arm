@@ -10,29 +10,46 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "../../src/emulate.h"
-#include "../../src/utilities/opstructs.h"
-#include "../../src/definitions.h"
 
 int main(int argc, char** argv)
 {
-  u8 res = 0;
-  u32 instr = (u32) atoi(argv[2]);
-  if (*(argv[1]) == 'D')
-  {
-    res = IS_DATA(instr);
+  int i = 0;
+  u32 instr = (u32) atoi(argv[1]);
+  if (IS_DATA(instr)) {
+    i++;
+    printf("D");
   }
-  else if (*(argv[1]) == 'M')
-  {
-    res = IS_MUL(instr);
+
+  if (IS_MUL(instr)) {
+    i++;
+    printf("M");
   }
-  else if (*(argv[1]) == 'S')
-  {
-    res = IS_S_DATA(instr);
+
+  if (IS_S_DATA(instr)) {
+    i++;
+    printf("S");
   }
-  else if (*(argv[1]) == 'B')
-  {
-    res = IS_BRANCH(instr);
+
+  if (IS_BRANCH(instr)) {
+    i++;
+    printf("B");
   }
-  printf("%d",res);
+
+  if (i != 1) 
+  {
+    printf("  -  ");
+    for (int j = 0; j < 32; j++)
+    {
+      if ((instr >> (32 - j - 1)) & 0x1u)
+      {
+        printf("1");
+      }
+      else
+      {
+        printf("0"); 
+      }
+    }
+  }
+
   return 0;
 }

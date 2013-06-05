@@ -68,7 +68,7 @@ void printReg(char* name, int index, u32 i)
 
 #define COL_ONE "\x1b[1;36m1\x1b[0m"
 
-inline void printBin(u32 i, int newline)
+void printBin(u32 i, int newline)
 {
   for (int j = 0; j < 32; j++)
   {
@@ -159,9 +159,11 @@ int main(int argc, char **argv)
   char *path; switch (argc)
   {
     // case 0 for testing purposes
-  case 0: path = (char *)argv; break;
-  case 2: path = argv[0]; break;
-  default: fprintf(stderr, "No FILE provided.\n"); return NO_FILE_FOUND;
+    case 0: path = (char *)argv; break;
+    case 2: path = argv[0]; break;
+    default: 
+      fprintf(stderr, "No FILE provided.\n"); 
+      return NO_FILE_FOUND;
   }
   Arm *raspi = makeRaspi(path);
   loadBinaryFile(path, raspi->em);
