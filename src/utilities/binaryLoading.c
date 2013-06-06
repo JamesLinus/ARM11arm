@@ -3,7 +3,7 @@
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 // File: binaryLoading.c
 // Group: 21
-// Memebers: amv12, lmj112, skd212
+// Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "binaryLoading.h"

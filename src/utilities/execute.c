@@ -3,7 +3,7 @@
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 // File: execute.c
 // Group: 21
-// Memebers: amv12, lmj112, skd212
+// Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "execute.h"
@@ -216,6 +216,7 @@ void mov(PtrToBeCast base)
   }
 }
 
+
 void setflags(u32* cpsr, u32 result)
 {
   if(result == 0)
@@ -225,12 +226,13 @@ void setflags(u32* cpsr, u32 result)
   {
     *cpsr &= ~Z_MASK;
   }
-  // set n flag
+  //for setting N flag
+  *(cpsr) |= (result & N_MASK);
 
 }
 
 void setCflag(u32* cpsr, u32 carryOut)
 {
-
-
+  *cpsr &= ~C_MASK;	
+  *cpsr |= (carryOut << 29);
 }
