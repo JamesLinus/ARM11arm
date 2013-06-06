@@ -7,11 +7,32 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "decode.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 u32 lsl(u32 a, u32 b) { return LSL(a,b); }
 u32 lsr(u32 a, u32 b) { return LSR(a,b); }
 u32 asr(u32 a, u32 b) { return ASR(a,b); }
 u32 ror(u32 a, u32 b) { return ROR(a,b); }
+
+// TESTING ONLY - BIT OF A HACK  ////////////////
+void setmem(Arm *raspi, char* binStr, int i)
+{
+  raspi->em[1] = atoi(binStr);
+  for (int j = 0; j < 32; j++)
+  {
+    raspi->em[1] <<= 1;
+    raspi->em[1] += (binStr[j] == '1');
+  } 
+}
+
+void runFunction(BaseInstr *i)
+{
+  //return void;
+  (i->function)(i);
+}
+/////////////////////////////////////////////////
 
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
@@ -26,12 +47,12 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // opcode matches data processing
     DataProcessingInstr *i = (DataProcessingInstr *) base;
     // isolate the opcode
-    u8 opcode = instr & DATA_OP_MASK >> 21;
+    u8 opcode = (instr & DATA_OP_MASK) >> 21;
     // set pointer to op1 register
-    i->op1    = &(raspi->r[instr & RN_MASK]);
+    i->op1    = &(raspi->r[(instr & RN_MASK) >> 16]);
     // set pointer to destination register
-    i->des    = &(raspi->r[instr & RD_MASK]);
-    i->s      = (instr >> 20) & SET_FLAGS_S;
+    i->des    = &(raspi->r[(instr & RD_MASK) >> 12]);
+    i->s      = (instr >> 20) & 0x01u;
     // set the shift function and immediate settings
     setShifting(raspi, instr, (ShiftingInstr*) i);
     // start a switch on the opcode
@@ -59,15 +80,15 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // get the op1 from the instruction
     i->op1 = &(raspi->r[instr & MUL_RM_MASK]);
     // retrive op2 similarly from instr
-    i->op2 = &(raspi->r[instr & MUL_RS_MASK >> 8 ]);
+    i->op2 = &(raspi->r[(instr & MUL_RS_MASK) >> 8 ]);
     i->s   = (instr >> 20) & SET_FLAGS_S;
     if (instr & ACCUM_MASK)
     {
-      i->acc = &(raspi->r[instr & MUL_RN_MASK >> 12]);
+      i->acc = &(raspi->r[(instr & MUL_RN_MASK) >> 12]);
     }
     else { i->acc = 0; }
     // set the destination register
-    i->des = &(raspi->r[instr & MUL_RD_MASK >> 16]);
+    i->des = &(raspi->r[(instr & MUL_RD_MASK) >> 16]);
     // TODO - attach the function pointer
   }
   else if (IS_S_DATA(instr))
@@ -76,11 +97,11 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     SingleDataInstr *i = (SingleDataInstr *) base;
     i->function = (Execute)&singleDataTransfer;
     // extract the p u and l flags
-    i->p = instr & P_INDEX_MASK >> 23;
-    i->u = instr & S_DATA_UP >> 22;
-    i->l = instr & LOAD_STORE_MASK >> 19;
-    i->op1 = &(raspi->r[instr & RN_MASK >> 16]);
-    i->des = &(raspi->r[instr & RD_MASK >> 12]);
+    i->p = (instr & P_INDEX_MASK) >> 23;
+    i->u = (instr & S_DATA_UP) >> 22;
+    i->l = (instr & LOAD_STORE_MASK) >> 19;
+    i->op1 = &(raspi->r[(instr & RN_MASK) >> 16]);
+    i->des = &(raspi->r[(instr & RD_MASK) >> 12]);
     // modify instruction for immediate idiosyncrasy
     instr ^= IMMEDIATE_MASK;
     // sorting out shifting
@@ -95,10 +116,10 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   {
     // opcode matches a branch statement
     BranchInstr *i = (BranchInstr *) base;
-    i->function = (Execute)&branch;
-    i->toAdd = instr & BRANCH_CTRL;
-    i->offset = instr & BRANCH_OFFSET << 2;
-    i->pc = &(raspi->pc);
+    i->function    = (Execute)&branch;
+    i->toAdd       = instr & BRANCH_CTRL;
+    i->offset      = (instr & BRANCH_OFFSET) << 2;
+    i->pc          = &(raspi->pc);
     // TODO - attach the function pointer
   }
   return (BaseInstr *) & (raspi->dm[index]);
@@ -115,7 +136,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     // get immediate part of operand
     u32 imm   = rawOperand & OP_IMMD;
     // get value to rotate right by
-    u8  val   = rawOperand & OP_ROTATE >> 8u;
+    u8  val   = (rawOperand & OP_ROTATE) >> 8u;
     // generate operand by rotate right
     i->_op2   = ROR(imm, (val << 1));
     // set the exposed pointer to internal literal
@@ -128,15 +149,15 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
   else  // operand 2 is a register
   {
     // isolate shift information
-    u8 shift   = rawOperand & OP_SHIFT >> 4u;
+    u8 shift   = (rawOperand & OP_SHIFT) >> 4u;
     // reset the shifting type
-    shiftType  = shift & OP_SHIFT_TYPE >> 1u;
+    shiftType  = (shift & OP_SHIFT_TYPE) >> 1u;
     // assign pointer to the op2 as a raspi register
     i->op2     = &(raspi->r[rawOperand & RM_MASK]);
     if (shift & 0x01u) // if bit 4 is 1
     {
       // then shift by value in register
-      i->shift = &(raspi->r[shift & 0x0fu >> 4]);
+      i->shift = &(raspi->r[(shift & 0x0fu) >> 4]);
     }
     else  // shift by a constant
     {

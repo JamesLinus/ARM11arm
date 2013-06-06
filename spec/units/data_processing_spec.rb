@@ -1,13 +1,13 @@
 class DataInstr
   def initialize(cond, immd, opcode, set_cond, rn, rd, op2)
-    @instr = cond + '00' + immd + opcode +
-      set_cond + rn + rd + op2
+    @instr = (cond + '00' + immd + opcode +
+      set_cond + rn + rd + op2)
   end
   def set_operand(op)
     @instr = @instr[-12] + op
   end
-  def get_instr
-    @instr.to_i(2)
+  def str_instr
+    @instr
   end
 end
 
@@ -20,7 +20,7 @@ describe 'data processing tests' do
       @raspi.set_reg(1, 4)
       @raspi.set_reg(2, 5)
       @a, @b = [[],[]]
-      250.times do
+      1.times do
         @a << rand(2**31)
         @b << rand(2**31)
       end
@@ -33,14 +33,15 @@ describe 'data processing tests' do
         # stores the result in register 3
         i = DataInstr.new('1110', '0', '0000',
           '10', '0100', '0101', '00000000' + '0110')
+        Emulate.setmem @raspi, i.str_instr, 1 
         @a.zip(@b).each do |a, b|
           @raspi.set_emem(4, a)
           @raspi.set_emem(5, b)
-          Emulate.printOut @raspi
+          base = BaseInstrStruct.new Emulate.decodeInstruction @raspi, 1
+          # Emulate.printOut @raspi
+          # Emulate.runFunction base
         end
-
         # system './spec/test_binary_wrappers/maskTests ' + @raspi.get_emem(0).to_s
-        Emulate.printOut @raspi
       end
       context 'EOR' do
       end

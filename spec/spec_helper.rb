@@ -59,6 +59,12 @@ class DataProcessingStruct < FFI::Struct
     :des,       :pointer
 end
 
+class BaseInstrStruct < FFI::Struct
+  layout :cond, :uint8,
+    :cpsr,      :pointer,
+    :function,  :pointer
+end
+
 class RaspiRuby
   attr_accessor :r, :sp, :lr, :pc, :cpsr, :em
 
