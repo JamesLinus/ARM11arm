@@ -16,7 +16,7 @@
 // required for C lexigraphical compilation
 typedef void *PtrToBeCast;
 // functions to apply shifting
-typedef u32 (*Shifter)(u32, u32);
+typedef u32 (*Shifter)(u32*, u32, u32);
 // typedef of execute function with dummy pointer arg
 // will really take a BaseStruct address representing
 // all the below types

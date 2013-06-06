@@ -8,10 +8,29 @@
 
 #include "decode.h"
 
-u32 lsl(u32 a, u32 b) { return LSL(a,b); }
-u32 lsr(u32 a, u32 b) { return LSR(a,b); }
-u32 asr(u32 a, u32 b) { return ASR(a,b); }
-u32 ror(u32 a, u32 b) { return ROR(a,b); }
+u32 lsl(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a >> (32 - (b - 1))) & FIRST_BIT_MASK);
+  return LSL(a,b); 
+}
+
+u32 lsr(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  return LSR(a,b); 
+}
+
+u32 asr(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  return ASR(a,b); 
+}
+
+u32 ror(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  return ROR(a,b); 
+}
 
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
@@ -37,18 +56,18 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // start a switch on the opcode
     switch (opcode)
     { // use switch to set the function 
-      case AND: &and; break;
-      case EOR: &eor; break;
-      case SUB: &sub; break;
-      case RSB: &rsb; break;
-      case ADD: &add; break;
+      case AND: i->function = &and; break;
+      case EOR: i->function = &eor; break;
+      case SUB: i->function = &sub; break;
+      case RSB: i->function = &rsb; break;
+      case ADD: i->function = &add; break;
       // case ADC: case SBC: case RSC:
-      case TST: &tst; break;
-      case TEQ: &teq; break;
-      case CMP: &cmp; break;
+      case TST: i->function = &tst; break;
+      case TEQ: i->function = &teq; break;
+      case CMP: i->function = &cmp; break;
       // case CMN:
-      case ORR: &orr; break;
-      case MOV: &mov; break;
+      case ORR: i->function = &orr; break;
+      case MOV: i->function = &mov; break;
       // case BIC: case MVN:
     }
   }
@@ -68,7 +87,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     else { i->acc = 0; }
     // set the destination register
     i->des = &(raspi->r[instr & MUL_RD_MASK >> 16]);
-    // TODO - attach the function pointer
+    i->function = &multiply;
   }
   else if (IS_S_DATA(instr))
   {
@@ -85,7 +104,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     instr ^= IMMEDIATE_MASK;
     // sorting out shifting
     setShifting(raspi, instr, (ShiftingInstr*) i);
-    // TODO - attach the function pointer
+    i->function = &singleDataTransfer;
   }
   /* else if (IS_BLOCK_DATA(instr))
   { // opcode matches block transfer
@@ -99,7 +118,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->toAdd = instr & BRANCH_CTRL;
     i->offset = instr & BRANCH_OFFSET << 2;
     i->pc = &(raspi->pc);
-    // TODO - attach the function pointer
+    i->function = &branch;
   }
   return (BaseInstr *) & (raspi->dm[index]);
 }

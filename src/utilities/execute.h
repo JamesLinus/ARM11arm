@@ -14,6 +14,7 @@
 #define EXECUTE_H
 
 void setflags(u32* cpsr, u32 result);
+void setCflag(u32* cpsr, u32 carryOut);
 
 void branch(PtrToBeCast base);
 void singleDataTransfer(PtrToBeCast base);
