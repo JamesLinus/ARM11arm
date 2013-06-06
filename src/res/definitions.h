@@ -3,7 +3,7 @@
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 // File: definitions.h
 // Group: 21
-// Memebers: amv12, lmj112, skd212
+// Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef EMULATE_H
@@ -87,6 +87,7 @@
 #define OP_SHIFT         0x00000ff0u
 #define OP_SHIFT_TYPE    0x00000006u
 #define SET_FLAGS_S      0x01u
+#define FIRST_BIT_MASK   0x00000001u
 
 #define MSB 0x80000000u
 #define LSL(i,v) (i << v)

@@ -3,7 +3,7 @@
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 // File: execute.h
 // Group: 21
-// Memebers: amv12, lmj112, skd212
+// Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef EMULATE_H
@@ -14,6 +14,7 @@
 #define EXECUTE_H
 
 void setflags(u32* cpsr, u32 result);
+void setCflag(u32* cpsr, u32 carryOut);
 
 void branch(PtrToBeCast base);
 void singleDataTransfer(PtrToBeCast base);

@@ -3,7 +3,7 @@
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 // File: execute.c
 // Group: 21
-// Memebers: amv12, lmj112, skd212
+// Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "execute.h"
@@ -32,7 +32,7 @@ void singleDataTransfer(PtrToBeCast base)
 
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
 
     if (i->p)
     {
@@ -95,7 +95,7 @@ void and(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op1)) & (*(i->op2)); 
     if(i->s)
     {
@@ -108,7 +108,7 @@ void eor(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op1)) ^ (*(i->op2)); 
     if(i->s)
     {
@@ -121,7 +121,7 @@ void sub(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op1)) - (*(i->op2)); 
     if(i->s)
     {
@@ -134,7 +134,7 @@ void rsb(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op2)) - (*(i->op1)); 
     if(i->s)
     {
@@ -147,7 +147,7 @@ void add(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op1)) + (*(i->op2)); 
     if(i->s)
     {
@@ -160,7 +160,7 @@ void tst(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     if(i->s)
     {
       setflags(i->cpsr, (*(i->op1)) & (*(i->op2)));
@@ -172,7 +172,7 @@ void teq(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     if(i->s)
     {
       setflags(i->cpsr, (*(i->op1)) ^ (*(i->op2)));
@@ -184,7 +184,7 @@ void cmp(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     if(i->s)
     {
       setflags(i->cpsr, (*(i->op1)) - (*(i->op2)));
@@ -196,7 +196,7 @@ void orr(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op1)) | (*(i->op2)); 
     if(i->s)
     {
@@ -209,7 +209,7 @@ void mov(PtrToBeCast base)
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   if (checkFlags(i->cpsr, i->cond))
   {
-    *(i->op2) = (*(i->exShift))(*(i->op2), *(i->shift));
+    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
     *(i->des) = (*(i->op2)); 
     if(i->s)
     {
@@ -231,11 +231,10 @@ void setflags(u32* cpsr, u32 result)
   //for setting N flag
   *(cpsr) |= (result & N_MASK);
 
-  // need code for other two flags
-
 }
 
-void setCflag(u32* cpsr, u8 carryOut)
+void setCflag(u32* cpsr, u32 carryOut)
 {
-
+  *cpsr &= ~C_MASK;	
+  *cpsr |= (carryOut << 29);
 }
