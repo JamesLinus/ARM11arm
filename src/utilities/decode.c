@@ -11,6 +11,27 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// TESTING ONLY - BIT OF A HACK  ////////////////
+void setmem(Arm *raspi, char* binStr, int i)
+{
+  raspi->em[1] = atoi(binStr);
+  for (int j = 0; j < 32; j++)
+  {
+    raspi->em[1] <<= 1;
+    raspi->em[1] += (binStr[j] == '1');
+  } 
+}
+
+void runFunction(BaseInstr *i)
+{
+  //return void;
+  ShiftingInstr *instr = (ShiftingInstr*) i;
+  printf("\n\nop1 addr is %d\n\n", *(instr->op1));
+  printf("\n\nop2 addr is %d\n\n", *(instr->op2));
+}
+/////////////////////////////////////////////////
+
+
 u32 lsl(u32* cpsr, u32 a, u32 b) 
 { 
   setCflag(cpsr, (a >> (32 - (b - 1))) & FIRST_BIT_MASK);
@@ -34,24 +55,6 @@ u32 ror(u32* cpsr, u32 a, u32 b)
   setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
   return ROR(a,b); 
 }
-
-// TESTING ONLY - BIT OF A HACK  ////////////////
-void setmem(Arm *raspi, char* binStr, int i)
-{
-  raspi->em[1] = atoi(binStr);
-  for (int j = 0; j < 32; j++)
-  {
-    raspi->em[1] <<= 1;
-    raspi->em[1] += (binStr[j] == '1');
-  } 
-}
-
-void runFunction(BaseInstr *i)
-{
-  //return void;
-  (i->function)(i);
-}
-/////////////////////////////////////////////////
 
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
@@ -172,6 +175,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     shiftType  = (shift & OP_SHIFT_TYPE) >> 1u;
     // assign pointer to the op2 as a raspi register
     i->op2     = &(raspi->r[rawOperand & RM_MASK]);
+    // printf("Interested in THIS --- %d\n\n", rawOperand & RM_MASK);
     if (shift & 0x01u) // if bit 4 is 1
     {
       // then shift by value in register

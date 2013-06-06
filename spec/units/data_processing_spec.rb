@@ -39,7 +39,7 @@ describe 'data processing tests' do
           @raspi.set_emem(5, b)
           base = BaseInstrStruct.new Emulate.decodeInstruction @raspi, 1
           # Emulate.printOut @raspi
-          # Emulate.runFunction base
+          Emulate.runFunction base
         end
         # system './spec/test_binary_wrappers/maskTests ' + @raspi.get_emem(0).to_s
       end
