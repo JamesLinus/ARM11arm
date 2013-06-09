@@ -1,12 +1,15 @@
 CC      = gcc
-CFLAGS  = -pie -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -pie -g -std=c99 -Werror -pedantic
 BIN=../bin/
-OBJ=../obj/
+OBJ=../obj
+UTILS=./utilities/
 
 PROG=emulate assemble
+MODS=decode.o errorDump.o execute.o binaryLoading.o
+OS=$(addprefix $(OBJ)/, $(MODS))
 LIST=$(addprefix $(BIN)/, $(PROG))
 
-all: $(LIST)
+all: $(LIST) $(OS)
 
 clean:
 	rm $(LIST)
@@ -14,5 +17,8 @@ clean:
 $(BIN)/assemble: assemble.c assemble.h
 	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c
 
-$(BIN)/emulate: emulate.c utilities/binaryLoading.c utilities/decode.c utilities/execute.c
-	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities/binaryLoading.c utilities/decode.c utilities/execute.c utilities/errorDump.c
+$(BIN)/emulate: emulate.c emulate.h $(OS)
+	$(CC) $(CFLAGS) -o $(BIN)/emulate emulate.c $(OS)
+
+$(OBJ)/%.o: $(UTILS)/%.c $(UTILS)/%.h
+	$(CC) $(CFLAGS) -c -o $@ $<
