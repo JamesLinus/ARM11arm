@@ -115,7 +115,6 @@ void decodeTillBranch(PtrToBeCast base)
 // UTILITY FUNCITONS
 ///////////////////////////////////////////////////////////////////////////////
 
-
 Arm *makeRaspi()
 {
   // allocate and initialise the raspi struct

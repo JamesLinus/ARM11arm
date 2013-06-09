@@ -42,4 +42,9 @@ class RaspiStruct < FFI::Struct
   def get_emem(i)
     self[:em].get_int(i << 2)
   end
+
+  def get_mem(i)
+    Emulate.memget self, i
+  end
+
 end
