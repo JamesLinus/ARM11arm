@@ -71,7 +71,7 @@ describe 'official test suite' do
         run_file bin + 'rsb01'
         emem = raspi.encoded_mem
         raspi.get_reg(1).should eq(0x00000002)
-        raspi.get_reg(2).should eq(0xffffffff)
+        raspi.get_reg(2).should eq(0xffffffff | -1)
         emem[0].should eq(0xe3a01002)
         emem[1].should eq(0xe2612001)
       end

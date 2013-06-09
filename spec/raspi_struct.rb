@@ -14,7 +14,7 @@ class RaspiStruct < FFI::Struct
 
   def encoded_mem
     em = FFI::Pointer.new self[:em]
-    em.read_array_of_type(:uint32, :read_uint32, MEMSIZE)
+    em = em.read_array_of_type(:uint32, :read_uint32, MEMSIZE)
   end
 
   def zeroed

@@ -48,31 +48,36 @@ exec:
   // if it in any way doesn't satisfy the conditions, then
   // jump to the next label- avoid execution of this instruction
   // entirely
-  crrt->function(crrt);
   switch (crrt->cond)
   {
   case EQ_FLAG:
-    if (Z_SET(*cpsr))  goto next;
+    if ( Z_SET(*cpsr)) goto next;
+    break;
   case NE_FLAG:
     if (!Z_SET(*cpsr)) goto next;
+    break;
   case GE_FLAG:
-    if ( N_SET(*cpsr) == V_SET(*cpsr)) goto next;
-  case LT_FLAG:
     if ( N_SET(*cpsr) != V_SET(*cpsr)) goto next;
+    break;
+  case LT_FLAG:
+    if ( N_SET(*cpsr) == V_SET(*cpsr)) goto next;
+    break;
   case GT_FLAG:
-    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) goto next;
-  case LE_FLAG:
     if ( Z_SET(*cpsr) || ( N_SET(*cpsr) != V_SET(*cpsr))) goto next;
+    break;
+  case LE_FLAG:
+    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) goto next;
+    break;
   case AL_FLAG: break;
   } 
   // if we pass the condition checks, then proceed to
   // call the function saved into the base instr struct
-  
+  crrt->function(crrt);
 next:
   // if at any point we hit halt, then the halting function
   // will have been called and therefore the cpsr flags should
   // be set to all 0's. If this is the case, then __finish__
-  if (!raspi->halt | raspi->em[raspi->pc] == 0) goto fini;
+  if (!raspi->halt || raspi->em[raspi->pc] == 0) goto fini;
   // else jump back to execution after we've
   // fetched the next instruction
   goto exec;
