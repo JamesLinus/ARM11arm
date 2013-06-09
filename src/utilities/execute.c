@@ -209,3 +209,9 @@ void branch(PtrToBeCast base)
   i->pc -= i->offset;
 }
 
+void terminate(PtrToBeCast base)
+{
+  TerminateInstr *i = (TerminateInstr *) base;
+  *(i->halt) = 0;
+}
+

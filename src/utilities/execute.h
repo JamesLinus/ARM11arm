@@ -48,4 +48,6 @@ void cmp(PtrToBeCast base);
 void orr(PtrToBeCast base);
 void mov(PtrToBeCast base);
 
+void terminate(PtrToBeCast base);
+
 #endif

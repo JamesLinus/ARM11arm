@@ -109,6 +109,12 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->offset      = (instr & BRANCH_OFFSET) << 2;
     i->pc          = &(raspi->pc);
   }
+  else if (instr == 0)
+  {
+    TerminateInstr *i = (TerminateInstr *) base;
+    i->function = (Execute)&terminate;
+    i->halt = &(raspi->halt);
+  }
   return (BaseInstr *) & (raspi->dm[index]);
 }
 

@@ -33,7 +33,7 @@ typedef void (*Execute)(PtrToBeCast);
 #define BASE         \
   u8 cond;           \
   u32* cpsr;         \
-  Execute function;
+  Execute function;  
 
 //////////////////////////////////////////////////////
 // SHIFTING ARGS /////////////////////////////////////
@@ -60,6 +60,13 @@ typedef struct
   BASE
   char padding[64];
 } BaseInstr;
+
+
+typedef struct
+{
+  BASE
+  u8 *halt;
+} TerminateInstr;
 
 //////////////////////////////////////////////////////
 // SHIFTING INSTRUCTIONS /////////////////////////////

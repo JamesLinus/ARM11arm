@@ -37,6 +37,7 @@ typedef struct
   u32 cpsr;      // R[16] <- flags
   u32 *em;           // encoded memory
   BaseInstr *dm;       // decoded memory
+  u8  halt;      // a specific halting flag
 } Arm;
 
 typedef struct
