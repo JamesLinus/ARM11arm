@@ -34,21 +34,20 @@ void runRaspi(Arm *raspi, int entry)
 {
   // assign variables that will keep swapping,
   // thus avoiding repeated assignment overhead
-  BaseInstr* crrt;  // the current instruction
   // a pointer to the cpsr register for convenience
   u32 *cpsr = &(raspi->cpsr);
   // set the program counter to the given entry point
   raspi->pc = entry;
-  printf("\nStart exec!!\n\n");
+  raspi->halt = 1;
+  // the current instruction
+  BaseInstr* crrt = &(raspi->dm[raspi->pc]);
   // view from hereon out as the 'execution' stage
 exec:
-  // fetch the current instruction
-  crrt = &(raspi->dm[raspi->pc++]);
   // switch on the current instructions condition
   // if it in any way doesn't satisfy the conditions, then
   // jump to the next label- avoid execution of this instruction
   // entirely
-  switch (crrt->cond)
+   switch (crrt->cond)
   {
   case EQ_FLAG:
     if (Z_SET(*cpsr))  goto next;
@@ -64,7 +63,6 @@ exec:
     if ( Z_SET(*cpsr) || ( N_SET(*cpsr) != V_SET(*cpsr))) goto next;
   case AL_FLAG: break;
   } 
-  printf("\n\neeee\n\n");
   // if we pass the condition checks, then proceed to
   // call the function saved into the base instr struct
   crrt->function(crrt);
@@ -72,13 +70,16 @@ next:
   // if at any point we hit halt, then the halting function
   // will have been called and therefore the cpsr flags should
   // be set to all 0's. If this is the case, then __finish__
-  if (!raspi->halt) goto fini;
-  // else jump back to execution
+  if (!raspi->halt | raspi->em[raspi->pc] == 0) goto fini;
+  // else jump back to execution after we've
+  // fetched the next instruction
+  crrt = &(raspi->dm[raspi->pc++]);
   goto exec;
 fini:
   // on finish, dump the current raspberry pi registers and
   // non-zero memory location/value pairs
-  printOut(raspi);
+  return;
+  // printOut(raspi);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,17 +98,15 @@ void decodeTillBranch(PtrToBeCast base)
   // i will be the empty instruction pointer
   EmptyInstr* i = (EmptyInstr*) base;
   // j will be the iterative measure
-  int j = i->entry;
+  u32 j = i->entry;
   // raw will represent the current unprocessed instruction
-  u32 raw = i->raspi->em[j]; 
-  do
+  u32 raw;
+  while (raw = i->raspi->em[j])
   {
-    // fetch next instr (for branch check only, should change this)
-    raw = i->raspi->em[j];
-    // decode the instruction, save into dm[j]
     decodeInstruction(i->raspi, j);
-  } while (!IS_BRANCH(raw) && j < MEMSIZE - 1 && (raw = i->raspi->em[j++]));  
-  // decode only while not branch
+    j++;
+  }
+  i->raspi->pc = i->raspi->pc - 2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
