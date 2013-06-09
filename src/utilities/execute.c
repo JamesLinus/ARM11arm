@@ -13,138 +13,132 @@
 // DATA PROCESSING INSTRUCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-// Execute function
-// Deals with bitwise and functions
-void and(PtrToBeCast base)
+// macros for applying the functions, allows for
+// DRYer function bodies
+#define  APPLY(i, op) (*(i->op1)) op (*(i->op2))
+#define _APPLY(i, op) (*(i->op2)) op (*(i->op1))
+
+// Stage 1 of any data processing instruction, cast the given
+// pointer and calculate the required shift. Return the pointer
+// for further use (though of course as inline, not quite that)
+static inline DataProcessingInstr* castAndShift(PtrToBeCast base)
 {
-  // make appropriate cast
+  // make cast to the data processing struct
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   // calculate the value of op2 using the shifting function
   *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // calculate final result using the above
-  *(i->des) = (*(i->op1)) & (*(i->op2)); 
-  // if required, set the flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // return the casted and shift calculated struct
+  return i;
 }
 
-// Execute function
+// Stage 2 of most data processing, save the result into rd
+// and then handle the flag setting
+static inline void saveAndSet(DataProcessingInstr* i, u32 res)
+{
+  // calculate final result using the above
+  *(i->des) = res; 
+  // if required, set the flags
+  if (i->s) setflags(i->cpsr, *(i->des));
+}
+
+// Execute function                                        !! AND !!
+// Deals with bitwise and functions
+void and(PtrToBeCast base)
+{
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, APPLY(i, &));
+}
+
+// Execute function                                        !! EOR !!
 // Deals with bitwise exclusive or
 void eor(PtrToBeCast base)
 {
-  // make appropriate casting
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make calculation for the appropriate shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // save the result into the destination
-  *(i->des) = (*(i->op1)) ^ (*(i->op2)); 
-  // if required, set flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, APPLY(i, ^));
 }
 
-// Execute function
+// Execute function                                        !! SUB !!
 // Deals with subtraction a - b
 void sub(PtrToBeCast base)
 {
-  // make appropriate casting
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // save to des
-  *(i->des) = (*(i->op1)) - (*(i->op2)); 
-  // if required, set flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, APPLY(i, -));
 }
 
-// Execute function
+// Execute function                                        !! RSB !!
 // Deals with subtraction b - a
 void rsb(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // save into destination
-  *(i->des) = (*(i->op2)) - (*(i->op1)); 
-  // if required, set flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, _APPLY(i, -));
 }
 
-// Execute function
+// Execute function                                        !! ADD !!
 // Deals with addition
 void add(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // save into destination
-  *(i->des) = (*(i->op1)) + (*(i->op2)); 
-  // if required, set flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, APPLY(i, +));
 }
 
-// Execute function
+// Execute function                                        !! TST !!
 // Deals with AND but without writing to destination
 void tst(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make shift for op2
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
   // if required, set flags (sort of redundant, right?)
-  if(i->s) setflags(i->cpsr, (*(i->op1)) & (*(i->op2)));
+  if(i->s) setflags(i->cpsr, APPLY(i, &));
 }
 
-// Execute function
+// Execute function                                        !! TEQ !!
 // Deals with EOR but without writing to destination
 void teq(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make appropriate shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
   // once again, flags
-  if(i->s) setflags(i->cpsr, (*(i->op1)) ^ (*(i->op2)));
+  if(i->s) setflags(i->cpsr, APPLY(i, ^));
 }
 
-// Execute function
+// Execute function                                        !! CMP !!
 // Basically the subtraction, without writing to des
 void cmp(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
   // set flags
-  if(i->s) setflags(i->cpsr, (*(i->op1)) - (*(i->op2)));
+  if(i->s) setflags(i->cpsr, APPLY(i, -));
 }
 
-// Execute function
+// Execute function                                        !! ORR !!
 // Handles bitwise ORing
 void orr(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make the shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // save into destination
-  *(i->des) = (*(i->op1)) | (*(i->op2)); 
-  // handle flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, APPLY(i, |));
 }
 
-// Execute function
+// Execute function                                        !! MOV !!
 // Write to destination operand2
 void mov(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // make shift
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // save to destination
-  *(i->des) = (*(i->op2)); 
-  // handle flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // deal with the casting and shift calculation
+  DataProcessingInstr* i = castAndShift(base);
+  // calc final, save and set flags if appropriate
+  saveAndSet(i, *(i->op2));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -158,7 +152,7 @@ void multiply(PtrToBeCast base)
   // cast to appropriate struct type
   MultiplyInstr* i = (MultiplyInstr*) base;
   // make calculation, move into destination
-  *(i->des) = ((*(i->op1)) * (*(i->op2))) + (*(i->acc));
+  *(i->des) = APPLY(i, *) + (*(i->acc));
   // if required, mark the flags
   if (i->s) setflags(i->cpsr, *(i->des));
 }
@@ -215,27 +209,3 @@ void branch(PtrToBeCast base)
   i->pc -= i->offset;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// FLAG HANDLING
-///////////////////////////////////////////////////////////////////////////////
-
-void setflags(u32* cpsr, u32 result)
-{
-  // set the N flag
-  *(cpsr) |= (result & N_MASK);
-  // if the result indicates...
-  if (!result)
-  {
-    // turn Z on
-    *cpsr |= Z_MASK;
-    return;
-  }
-  // else turn Z off
-  *cpsr &= ~Z_MASK;
-}
-
-void setCflag(u32* cpsr, u32 carryOut)
-{
-  *cpsr &= ~C_MASK;	
-  *cpsr |= (carryOut << 29);
-}
