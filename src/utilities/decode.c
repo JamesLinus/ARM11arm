@@ -15,6 +15,13 @@
 // THE DECODE FUNCTION - GROUND 0
 ///////////////////////////////////////////////////////////////////////////////
 
+// PRE  - Given the raspi pointer, and the index in memory
+//        from which to source the instruction
+// DESC - Break apart the instruction and proceed to reduce
+//        all stateless information into a single form
+// POST - The corresponding index of the decoded memory inside
+//        the raspi will contain a BaseInstr struct which
+//        has been fully initialized with function and arguments
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
   u32 instr = raspi->em[index];

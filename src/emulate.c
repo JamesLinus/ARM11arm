@@ -21,32 +21,51 @@
 // EXECUTION FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+// PRE  - Given - Arm struct pointer with memory preloaded
+//              - Decoded memory setup with dummy function
+//              - First memory address to use for execution
+// DESC - Use the decoded memory path to run the execution function after
+//        making the relevant flag checks. Nothing need be known about
+//        the encoded memory.
+// POST - The raspi's registers and memory represent their real life
+//        siblings had the same machine code been executed on a 
+//        raspberry pi.
+void runRaspi(Arm *raspi, int entry)
+{
+  BaseInstr* crrt;
+  u32 *cpsr = &(raspi->cpsr);
+  raspi->pc = entry;
+exec:
+  crrt = &(raspi->dm[raspi->pc++]);
+  switch (crrt->cond)
+  {
+  case EQ_FLAG:
+    if (Z_SET(*cpsr))  goto next;
+  case NE_FLAG:
+    if (!Z_SET(*cpsr)) goto next;
+  case GE_FLAG:
+    if ( N_SET(*cpsr) == V_SET(*cpsr)) goto next;
+  case LT_FLAG:
+    if ( N_SET(*cpsr) != V_SET(*cpsr)) goto next;
+  case GT_FLAG:
+    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) goto next;
+  case LE_FLAG:
+    if (Z_SET(*cpsr) || ( N_SET(*cpsr) != V_SET(*cpsr))) goto next;
+  case AL_FLAG:
+    goto next;
+  }
+  crrt->function(crrt);
+next:
+  if (!raspi->pc) goto fini;
+  goto exec;
+fini:
+  printOut(raspi);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
-int checkFlags(u32 *cpsr, u8 cond)
-{
-  switch (cond)
-  {
-  case EQ_FLAG:
-    if (Z_SET(*cpsr))  return 1;
-  case NE_FLAG:
-    if (!Z_SET(*cpsr)) return 1;
-  case GE_FLAG:
-    if ( N_SET(*cpsr) == V_SET(*cpsr)) return 1;
-  case LT_FLAG:
-    if ( N_SET(*cpsr) != V_SET(*cpsr)) return 1;
-  case GT_FLAG:
-    if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) return 1;
-  case LE_FLAG:
-    if (Z_SET(*cpsr) || ( N_SET(*cpsr) != V_SET(*cpsr))) return 1;
-  case AL_FLAG:
-    return 1;
-  }
-  return 0;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // UTILITY FUNCITONS
@@ -80,5 +99,6 @@ int main(int argc, char **argv)
   Arm *raspi = makeRaspi(path);
   loadBinaryFile(path, raspi->em);
   // begin the emulation
+  runRaspi(raspi,0);
   return 0;
 }
