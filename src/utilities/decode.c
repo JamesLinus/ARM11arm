@@ -26,8 +26,7 @@ void runFunction(BaseInstr *i)
 {
   //return void;
   ShiftingInstr *instr = (ShiftingInstr*) i;
-  printf("\n\nop1 addr is %d\n\n", *(instr->op1));
-  printf("\n\nop2 addr is %d\n\n", *(instr->op2));
+  instr->function(instr);
 }
 /////////////////////////////////////////////////
 
@@ -64,6 +63,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   base->cond = instr >> 28;
   // set cpsr reg pointer, used in most
   base->cpsr = &(raspi->cpsr);
+  //////////////////////////////////////////////////////////////////
   if (IS_DATA(instr))
   {
     // opcode matches data processing
@@ -95,6 +95,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
       // case BIC: case MVN:
     }
   }
+  //////////////////////////////////////////////////////////////////
   else if (IS_MUL(instr))
   {
     // opcode matches multiplication (not long)
@@ -113,6 +114,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->des = &(raspi->r[(instr & MUL_RD_MASK) >> 16]);
     i->function = &multiply;
   }
+  //////////////////////////////////////////////////////////////////
   else if (IS_S_DATA(instr))
   {
     // opcode matches single data transfer
@@ -130,10 +132,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     setShifting(raspi, instr, (ShiftingInstr*) i);
     i->function = &singleDataTransfer;
   }
-  /* else if (IS_BLOCK_DATA(instr))
-  { // opcode matches block transfer
-
-  } */
+  //////////////////////////////////////////////////////////////////
   else if (IS_BRANCH(instr))
   {
     // opcode matches a branch statement

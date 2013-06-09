@@ -54,7 +54,7 @@ describe 'unit test for emulate.c' do
       before(:all) do
         @cond, @bytes = [[],[]]
         cond = 2**28
-        100.times do
+        50.times do
           @cond << rand(16)*cond
           @bytes << rand(256)
         end

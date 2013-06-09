@@ -65,6 +65,22 @@ class BaseInstrStruct < FFI::Struct
     :function,  :pointer
 end
 
+class DataInstr
+  def initialize(opcode)
+    @opcode = opcode
+  end
+  def instr_val
+    get_cond + '00' + '0' + @opcode + 
+      '0' + '0000' + '0010' + '000000000001'
+  end
+  def get_cond
+    @cond || @cond = '1110'
+  end
+  def set_cond(cond)
+    @cond = cond
+  end
+end
+
 class RaspiRuby
   attr_accessor :r, :sp, :lr, :pc, :cpsr, :em
 
