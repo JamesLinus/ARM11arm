@@ -15,4 +15,4 @@ $(BIN)/assemble: assemble.c assemble.h
 	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c
 
 $(BIN)/emulate: emulate.c utilities/binaryLoading.c utilities/decode.c utilities/execute.c
-	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities/binaryLoading.c utilities/decode.c utilities/execute.c
+	$(CC) -o $(BIN)/emulate $(CFLAGS) emulate.c utilities/binaryLoading.c utilities/decode.c utilities/execute.c utilities/errorDump.c
