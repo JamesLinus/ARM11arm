@@ -2,10 +2,11 @@ CC      = gcc
 CFLAGS  = -pie -g -std=c99 -Werror -pedantic
 BIN=../bin/
 OBJ=../obj
+RES=./res
 UTILS=./utilities/
 
 PROG=emulate assemble
-MODS=decode.o errorDump.o execute.o binaryLoading.o
+MODS=decode.o errorDump.o execute.o binaryLoading.o 
 OS=$(addprefix $(OBJ)/, $(MODS))
 LIST=$(addprefix $(BIN)/, $(PROG))
 

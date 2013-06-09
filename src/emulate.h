@@ -39,6 +39,13 @@ typedef struct
   BaseInstr *dm;       // decoded memory
 } Arm;
 
+typedef struct
+{
+  BASE
+  int entry;
+  Arm* raspi;
+} EmptyInstr;
+
 int checkFlags(u32* cpsr, u8 cond);
 u32 fetch(Arm *raspi);
 void runRaspi(Arm *raspi, int entry);
