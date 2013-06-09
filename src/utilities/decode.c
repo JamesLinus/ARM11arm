@@ -11,49 +11,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// TESTING ONLY - BIT OF A HACK  ////////////////
-void setmem(Arm *raspi, char* binStr, int i)
-{
-  raspi->em[1] = atoi(binStr);
-  for (int j = 0; j < 32; j++)
-  {
-    raspi->em[1] <<= 1;
-    raspi->em[1] += (binStr[j] == '1');
-  } 
-}
-
-void runFunction(BaseInstr *i)
-{
-  //return void;
-  ShiftingInstr *instr = (ShiftingInstr*) i;
-  instr->function(instr);
-}
-/////////////////////////////////////////////////
-
-
-u32 lsl(u32* cpsr, u32 a, u32 b) 
-{ 
-  setCflag(cpsr, (a >> (32 - (b - 1))) & FIRST_BIT_MASK);
-  return LSL(a,b); 
-}
-
-u32 lsr(u32* cpsr, u32 a, u32 b) 
-{ 
-  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
-  return LSR(a,b); 
-}
-
-u32 asr(u32* cpsr, u32 a, u32 b) 
-{ 
-  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
-  return ASR(a,b); 
-}
-
-u32 ror(u32* cpsr, u32 a, u32 b) 
-{ 
-  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
-  return ROR(a,b); 
-}
+///////////////////////////////////////////////////////////////////////////////
+// THE DECODE FUNCTION - GROUND 0
+///////////////////////////////////////////////////////////////////////////////
 
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
@@ -145,6 +105,10 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   return (BaseInstr *) & (raspi->dm[index]);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// SHIFTING CALCULATIONS
+///////////////////////////////////////////////////////////////////////////////
+
 void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
 {
   // retrieve last twelve bits for operand
@@ -199,4 +163,54 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     // ror
     case 0x3u: i->exShift = &ror; break;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// SHIFT FUNCTION WRAPPERS
+///////////////////////////////////////////////////////////////////////////////
+
+u32 lsl(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a >> (32 - (b - 1))) & FIRST_BIT_MASK);
+  return LSL(a,b); 
+}
+
+u32 lsr(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  return LSR(a,b); 
+}
+
+u32 asr(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  return ASR(a,b); 
+}
+
+u32 ror(u32* cpsr, u32 a, u32 b) 
+{ 
+  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  return ROR(a,b); 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TESTING ONLY - TO BE REMOVED
+///////////////////////////////////////////////////////////////////////////////
+
+void setmem(Arm *raspi, char* binStr, int i)
+{
+  raspi->em[1] = atoi(binStr);
+  for (int j = 0; j < 32; j++)
+  {
+    raspi->em[1] <<= 1;
+    raspi->em[1] += (binStr[j] == '1');
+  } 
+}
+
+void runFunction(BaseInstr *i)
+{
+  //return void;
+  ShiftingInstr *instr = (ShiftingInstr*) i;
+  instr->function(instr);
 }

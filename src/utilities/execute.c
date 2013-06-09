@@ -9,22 +9,163 @@
 #include "execute.h"
 #include <stdio.h>
 
+///////////////////////////////////////////////////////////////////////////////
+// DATA PROCESSING INSTRUCTIONS
+///////////////////////////////////////////////////////////////////////////////
+
 // Execute function
-// Offsets the PC for the raspi
-void branch(PtrToBeCast base)
+// Deals with bitwise and functions
+void and(PtrToBeCast base)
 {
-  // make the casting to correct struct
-  BranchInstr *i = (BranchInstr *) base;
-  // if the offset is to add
-  if (i->toAdd)
-  {
-    // then increment the pc
-    i->pc += i->offset;
-    return;
-  }
-  // else decrement
-  i->pc -= i->offset;
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // calculate the value of op2 using the shifting function
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // calculate final result using the above
+  *(i->des) = (*(i->op1)) & (*(i->op2)); 
+  // if required, set the flags
+  if(i->s) setflags(i->cpsr, *(i->des));
 }
+
+// Execute function
+// Deals with bitwise exclusive or
+void eor(PtrToBeCast base)
+{
+  // make appropriate casting
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make calculation for the appropriate shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // save the result into the destination
+  *(i->des) = (*(i->op1)) ^ (*(i->op2)); 
+  // if required, set flags
+  if(i->s) setflags(i->cpsr, *(i->des));
+}
+
+// Execute function
+// Deals with subtraction a - b
+void sub(PtrToBeCast base)
+{
+  // make appropriate casting
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // save to des
+  *(i->des) = (*(i->op1)) - (*(i->op2)); 
+  // if required, set flags
+  if(i->s) setflags(i->cpsr, *(i->des));
+}
+
+// Execute function
+// Deals with subtraction b - a
+void rsb(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // save into destination
+  *(i->des) = (*(i->op2)) - (*(i->op1)); 
+  // if required, set flags
+  if(i->s) setflags(i->cpsr, *(i->des));
+}
+
+// Execute function
+// Deals with addition
+void add(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // save into destination
+  *(i->des) = (*(i->op1)) + (*(i->op2)); 
+  // if required, set flags
+  if(i->s) setflags(i->cpsr, *(i->des));
+}
+
+// Execute function
+// Deals with AND but without writing to destination
+void tst(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make shift for op2
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // if required, set flags (sort of redundant, right?)
+  if(i->s) setflags(i->cpsr, (*(i->op1)) & (*(i->op2)));
+}
+
+// Execute function
+// Deals with EOR but without writing to destination
+void teq(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make appropriate shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // once again, flags
+  if(i->s) setflags(i->cpsr, (*(i->op1)) ^ (*(i->op2)));
+}
+
+// Execute function
+// Basically the subtraction, without writing to des
+void cmp(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // set flags
+  if(i->s) setflags(i->cpsr, (*(i->op1)) - (*(i->op2)));
+}
+
+// Execute function
+// Handles bitwise ORing
+void orr(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make the shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // save into destination
+  *(i->des) = (*(i->op1)) | (*(i->op2)); 
+  // handle flags
+  if(i->s) setflags(i->cpsr, *(i->des));
+}
+
+// Execute function
+// Write to destination operand2
+void mov(PtrToBeCast base)
+{
+  // make appropriate cast
+  DataProcessingInstr* i = (DataProcessingInstr*) base;
+  // make shift
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // save to destination
+  *(i->des) = (*(i->op2)); 
+  // handle flags
+  if(i->s) setflags(i->cpsr, *(i->des));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MULTIPLY FUNCTION
+///////////////////////////////////////////////////////////////////////////////
+
+// Execute function
+// Deals with the multiplication, ideally with 2s complement
+void multiply(PtrToBeCast base)
+{
+  // cast to appropriate struct type
+  MultiplyInstr* i = (MultiplyInstr*) base;
+  // make calculation, move into destination
+  *(i->des) = ((*(i->op1)) * (*(i->op2))) + (*(i->acc));
+  // if required, mark the flags
+  if (i->s) setflags(i->cpsr, *(i->des));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// SINGLE DATA TRANSFER
+///////////////////////////////////////////////////////////////////////////////
 
 // Execute function
 // Deals with single data transfer
@@ -53,160 +194,44 @@ void singleDataTransfer(PtrToBeCast base)
   }
 }
 
-// Execute function
-// Deals with the multiplication, ideally with 2s complement
-void multiply(PtrToBeCast base)
-{
-  // cast to appropriate struct type
-  MultiplyInstr* i = (MultiplyInstr*) base;
-  // make calculation, move into destination
-  *(i->des) = ((*(i->op1)) * (*(i->op2))) + (*(i->acc));
-  // if required, mark the flags
-  if (i->s) setflags(i->cpsr, *(i->des));
-}
+///////////////////////////////////////////////////////////////////////////////
+// BRANCH FUNCTION
+///////////////////////////////////////////////////////////////////////////////
 
 // Execute function
-// Deals with bitwise and functions
-void and(PtrToBeCast base)
+// Offsets the PC for the raspi
+void branch(PtrToBeCast base)
 {
-  // make appropriate cast
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  // calculate the value of op2 using the shifting function
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-  // calculate final result using the above
-  *(i->des) = (*(i->op1)) & (*(i->op2)); 
-  // if required, set the flags
-  if(i->s) setflags(i->cpsr, *(i->des));
+  // make the casting to correct struct
+  BranchInstr *i = (BranchInstr *) base;
+  // if the offset is to add
+  if (i->toAdd)
+  {
+    // then increment the pc
+    i->pc += i->offset;
+    return;
+  }
+  // else decrement
+  i->pc -= i->offset;
 }
 
-void eor(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op1)) ^ (*(i->op2)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  }
-}
-void sub(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op1)) - (*(i->op2)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  }
-}
-void rsb(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op2)) - (*(i->op1)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  }
-}
-void add(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op1)) + (*(i->op2)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  }
-}
-void tst(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    if(i->s)
-    {
-      setflags(i->cpsr, (*(i->op1)) & (*(i->op2)));
-    } 
-  }
-}
-void teq(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    if(i->s)
-    {
-      setflags(i->cpsr, (*(i->op1)) ^ (*(i->op2)));
-    } 
-  }
-}
-void cmp(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    if(i->s)
-    {
-      setflags(i->cpsr, (*(i->op1)) - (*(i->op2)));
-    } 
-  }
-}
-void orr(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op1)) | (*(i->op2)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  }
-}
-void mov(PtrToBeCast base)
-{
-  DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op2)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  }
-}
-
+///////////////////////////////////////////////////////////////////////////////
+// FLAG HANDLING
+///////////////////////////////////////////////////////////////////////////////
 
 void setflags(u32* cpsr, u32 result)
 {
-  if(result == 0)
-  {
-    *cpsr |= Z_MASK;
-  } else
-  {
-    *cpsr &= ~Z_MASK;
-  }
-  //for setting N flag
+  // set the N flag
   *(cpsr) |= (result & N_MASK);
-
+  // if the result indicates...
+  if (!result)
+  {
+    // turn Z on
+    *cpsr |= Z_MASK;
+    return;
+  }
+  // else turn Z off
+  *cpsr &= ~Z_MASK;
 }
 
 void setCflag(u32* cpsr, u32 carryOut)
