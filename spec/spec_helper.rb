@@ -3,48 +3,11 @@ require 'ffi'
 
 MEMSIZE = 65536
 
-class RaspiStruct < FFI::Struct
-  layout :r, :pointer,
-    :sp,   :uint32,
-    :lr,   :uint32,
-    :pc,   :uint32,
-    :cpsr, :uint32,
-    :em,   :pointer,
-    :dm,   :pointer
-  def regs
-    regs = FFI::Pointer.new self[:r]
-    regs.read_array_of_type(:uint32, :read_uint32, 12)
-  end
-  def encoded_mem
-    em = FFI::Pointer.new self[:em]
-    em.read_array_of_type(:uint32, :read_uint32, MEMSIZE)
-  end
-  def zeroed
-    r = self.regs
-    em = self.encoded_mem
-    sum = (self[:sp] + self[:pc] + self[:cpsr] + self[:lr])
-    return false unless sum.zero?
-    r.map  { |n| return false unless n.zero? }
-    em.map { |n| return false unless n.zero? }
-    return true
-  end
+#///////////////////////////////////////////////////////////////////////////////
+# FFI Struct Declarations
+#///////////////////////////////////////////////////////////////////////////////
 
-  def set_reg(i, v)
-    self[:r].put_int((i << 2), v)
-  end
-  
-  def get_reg(i)
-    self[:r].get_int(i << 2)
-  end
-  
-  def set_emem(i, v)
-    self[:em].put_int((i << 2), v)
-  end
-  
-  def get_emem(i)
-    self[:em].get_int(i << 2)
-  end
-end
+require 'raspi_struct'
 
 class DataProcessingStruct < FFI::Struct
   layout :cond, :uint8,
@@ -65,6 +28,10 @@ class BaseInstrStruct < FFI::Struct
     :function,  :pointer
 end
 
+#///////////////////////////////////////////////////////////////////////////////
+# Other Classes
+#///////////////////////////////////////////////////////////////////////////////
+
 class DataInstr
   def initialize(opcode)
     @opcode = opcode
@@ -79,34 +46,4 @@ class DataInstr
   def set_cond(cond)
     @cond = cond
   end
-end
-
-class RaspiRuby
-  attr_accessor :r, :sp, :lr, :pc, :cpsr, :em
-
-  def initialize(ptr)
-    str = RaspiStruct.new ptr
-    @sp, @lr, @pc, @cpsr =
-      [str[:sp], str[:lr], str[:pc], str[:cpsr]]
-    @r = array_from_ptr(str[:r], 12)
-    memsize = (str[:dm].address - str[:em].address) / 4
-    @r, @em = [
-      array_from_ptr(str[:r] , 12),
-      array_from_ptr(str[:em], memsize)
-    ]
-  end
-
-  def array_from_ptr(ptr, size)
-    res = FFI::Pointer.new(ptr)
-    res.read_array_of_type(:uint32, :read_uint32, size)
-  end
-
-  def zeroed
-    sum = sp + lr + pc + cpsr
-    return false unless sum.zero?
-    r.map  { |n| return false unless n.zero? }
-    em.map { |n| return false unless n.zero? }
-    return true
-  end
-
 end
