@@ -62,9 +62,9 @@ exec:
     if (!Z_SET(*cpsr) && ( N_SET(*cpsr) == V_SET(*cpsr))) goto next;
   case LE_FLAG:
     if ( Z_SET(*cpsr) || ( N_SET(*cpsr) != V_SET(*cpsr))) goto next;
-  case AL_FLAG:
-    goto next;
+  case AL_FLAG: break;
   } 
+  printf("\n\neeee\n\n");
   // if we pass the condition checks, then proceed to
   // call the function saved into the base instr struct
   crrt->function(crrt);

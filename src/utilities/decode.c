@@ -31,7 +31,26 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   // set cpsr reg pointer, used in most
   base->cpsr = &(raspi->cpsr);
   //////////////////////////////////////////////////////////////////
-  if (IS_DATA(instr))
+  if (IS_MUL(instr))
+  {
+    // opcode matches multiplication (not long)
+    MultiplyInstr *i = (MultiplyInstr *) base;
+    // get the op1 from the instruction
+    i->op1 = &(raspi->r[instr & MUL_RM_MASK]);
+    // retrive op2 similarly from instr
+    i->op2 = &(raspi->r[(instr & MUL_RS_MASK) >> 8 ]);
+    i->s   = (instr >> 20) & SET_FLAGS_S;
+    if (instr & ACCUM_MASK)
+    {
+      i->acc = &(raspi->r[(instr & MUL_RN_MASK) >> 12]);
+    }
+    else { i->acc = 0; }
+    // set the destination register
+    i->des = &(raspi->r[(instr & MUL_RD_MASK) >> 16]);
+    i->function = &multiply;
+  }
+  //////////////////////////////////////////////////////////////////
+  else if (IS_DATA(instr))
   {
     // opcode matches data processing
     DataProcessingInstr *i = (DataProcessingInstr *) base;
@@ -61,25 +80,6 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
       case MOV: i->function = &mov; break;
       // case BIC: case MVN:
     }
-  }
-  //////////////////////////////////////////////////////////////////
-  else if (IS_MUL(instr))
-  {
-    // opcode matches multiplication (not long)
-    MultiplyInstr *i = (MultiplyInstr *) base;
-    // get the op1 from the instruction
-    i->op1 = &(raspi->r[instr & MUL_RM_MASK]);
-    // retrive op2 similarly from instr
-    i->op2 = &(raspi->r[(instr & MUL_RS_MASK) >> 8 ]);
-    i->s   = (instr >> 20) & SET_FLAGS_S;
-    if (instr & ACCUM_MASK)
-    {
-      i->acc = &(raspi->r[(instr & MUL_RN_MASK) >> 12]);
-    }
-    else { i->acc = 0; }
-    // set the destination register
-    i->des = &(raspi->r[(instr & MUL_RD_MASK) >> 16]);
-    i->function = &multiply;
   }
   //////////////////////////////////////////////////////////////////
   else if (IS_S_DATA(instr))
