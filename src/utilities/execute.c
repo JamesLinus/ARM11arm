@@ -65,20 +65,20 @@ void multiply(PtrToBeCast base)
   if (i->s) setflags(i->cpsr, *(i->des));
 }
 
-// inefficent a lot of repetition will find a better solution later
+// Execute function
+// Deals with bitwise and functions
 void and(PtrToBeCast base)
 {
+  // make appropriate cast
   DataProcessingInstr* i = (DataProcessingInstr*) base;
-  if (checkFlags(i->cpsr, i->cond))
-  {
-    *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
-    *(i->des) = (*(i->op1)) & (*(i->op2)); 
-    if(i->s)
-    {
-      setflags(i->cpsr, *(i->des));
-    } 
-  } 
+  // calculate the value of op2 using the shifting function
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  // calculate final result using the above
+  *(i->des) = (*(i->op1)) & (*(i->op2)); 
+  // if required, set the flags
+  if(i->s) setflags(i->cpsr, *(i->des));
 }
+
 void eor(PtrToBeCast base)
 {
   DataProcessingInstr* i = (DataProcessingInstr*) base;
