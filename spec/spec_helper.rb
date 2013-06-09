@@ -32,18 +32,29 @@ end
 # Other Classes
 #///////////////////////////////////////////////////////////////////////////////
 
+def ROR(val, count)
+  (val >> count) | (val << (32 - count)) & 0xFFFFFFFF
+end
+
 class DataInstr
   def initialize(opcode)
     @opcode = opcode
   end
   def instr_val
-    get_cond + '00' + '0' + @opcode + 
-      '0' + '0000' + '0010' + '000000000001'
+    get_cond + '00' + (@i || '0') + @opcode + 
+      '0' + '0000' + '0010' + get_immd
   end
   def get_cond
     @cond || @cond = '1110'
   end
   def set_cond(cond)
     @cond = cond
+  end
+  def set_immd(immd)
+    @immd = immd
+    @i = '1'
+  end
+  def get_immd
+    @immd || @immd = '000000000001'
   end
 end

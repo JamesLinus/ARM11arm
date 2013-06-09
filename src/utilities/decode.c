@@ -131,9 +131,9 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
   if (instr & IMMEDIATE_MASK)  // if immediate is set
   {
     // get immediate part of operand
-    u32 imm   = rawOperand & OP_IMMD;
+    u32 imm   = 0x00000000u | (rawOperand & OP_IMMD);
     // get value to rotate right by
-    u8  val   = (rawOperand & OP_ROTATE) >> 8u;
+    u8  val   = (rawOperand & OP_ROTATE) >> 0x08u;
     // generate operand by rotate right
     i->_op2   = ROR(imm, (val << 1));
     // set the exposed pointer to internal literal
@@ -160,7 +160,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     else  // shift by a constant
     {
       // set literal value of shift
-      i->_shift = shift & 0xf8u;
+      i->_shift = shift & 0x000000f8u;
       // set pointer to internal literal
       i->shift  = &(i->_shift);
     }
