@@ -30,7 +30,7 @@
 // POST - The raspi's registers and memory represent their real life
 //        siblings had the same machine code been executed on a 
 //        raspberry pi.
-void runRaspi(Arm *raspi, int entry)
+void runRaspi(Arm *raspi, int entry, int suppress)
 {
   // assign variables that will keep swapping,
   // thus avoiding repeated assignment overhead
@@ -40,14 +40,16 @@ void runRaspi(Arm *raspi, int entry)
   raspi->pc = entry;
   raspi->halt = 1;
   // the current instruction
-  BaseInstr* crrt = &(raspi->dm[raspi->pc]);
+  BaseInstr* crrt;
   // view from hereon out as the 'execution' stage
 exec:
+  crrt = &(raspi->dm[raspi->pc++]);
   // switch on the current instructions condition
   // if it in any way doesn't satisfy the conditions, then
   // jump to the next label- avoid execution of this instruction
   // entirely
-   switch (crrt->cond)
+  crrt->function(crrt);
+  switch (crrt->cond)
   {
   case EQ_FLAG:
     if (Z_SET(*cpsr))  goto next;
@@ -65,7 +67,7 @@ exec:
   } 
   // if we pass the condition checks, then proceed to
   // call the function saved into the base instr struct
-  crrt->function(crrt);
+  
 next:
   // if at any point we hit halt, then the halting function
   // will have been called and therefore the cpsr flags should
@@ -73,13 +75,12 @@ next:
   if (!raspi->halt | raspi->em[raspi->pc] == 0) goto fini;
   // else jump back to execution after we've
   // fetched the next instruction
-  crrt = &(raspi->dm[raspi->pc++]);
   goto exec;
 fini:
   // on finish, dump the current raspberry pi registers and
   // non-zero memory location/value pairs
-  return;
-  // printOut(raspi);
+  if (!suppress)
+    printOut(raspi);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,12 +102,13 @@ void decodeTillBranch(PtrToBeCast base)
   u32 j = i->entry;
   // raw will represent the current unprocessed instruction
   u32 raw;
-  while (raw = i->raspi->em[j])
+  Arm *raspi = i->raspi;
+  while (raw = raspi->em[j])
   {
-    decodeInstruction(i->raspi, j);
+    decodeInstruction(raspi, j);
     j++;
   }
-  i->raspi->pc = i->raspi->pc - 2;
+  raspi->pc = raspi->pc - 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,6 +131,7 @@ Arm *makeRaspi()
     instr->function = &decodeTillBranch;
     // assign entry the value of the current array index
     instr->entry = i;
+    instr->raspi = raspi;
   }
   // allocate space for all the registers
   raspi->r  = (u32 *) calloc(1, sizeof(u32) * NO_OF_REGISTERS);
@@ -138,11 +141,12 @@ Arm *makeRaspi()
 
 int main(int argc, char **argv)
 {
-  char *path; switch (argc)
+  char *path; int suppress = 1; 
+  switch (argc)
   {
     // case 0 for testing purposes
     case 0: path = (char *)argv; break;
-    case 2: path = argv[0]; break;
+    case 2: path = argv[0]; suppress = 0; break;
     default: 
       fprintf(stderr, "No FILE provided.\n"); 
       return NO_FILE_FOUND;
@@ -150,6 +154,6 @@ int main(int argc, char **argv)
   Arm *raspi = makeRaspi(path);
   loadBinaryFile(path, raspi->em);
   // begin the emulation
-  runRaspi(raspi,0);
+  runRaspi(raspi, 0, suppress);
   return 0;
 }

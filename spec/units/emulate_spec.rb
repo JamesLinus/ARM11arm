@@ -2,7 +2,7 @@
 require 'emulate_helper'
 
 describe 'unit test for emulate.c' do
-  let(:add01) { './spec/official_tests/add01' }
+  let(:add01) { './spec/binary_cases/add01' }
   let(:memsize) { 65536 }
   let(:raspi_ptr) { Emulate.makeRaspi }
   let(:mem_buff) { FFI::MemoryPointer.new(:uint32, 65536) }

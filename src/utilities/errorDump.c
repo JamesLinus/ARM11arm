@@ -54,7 +54,7 @@ void printOut(Arm *raspi)
   u32 r;
   for (int i = 0; i < 12; i++)
   {
-    printReg("       Register", i+1, raspi->r[i]);
+    printReg("       Register", i, raspi->r[i]);
   }
   printReg("  Stack Pointer", 13, raspi->sp);
   printReg("  Link Register", 14, raspi->lr);

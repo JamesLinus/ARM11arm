@@ -49,7 +49,7 @@ typedef struct
 
 int checkFlags(u32* cpsr, u8 cond);
 u32 fetch(Arm *raspi);
-void runRaspi(Arm *raspi, int entry);
+void runRaspi(Arm *raspi, int entry, int suppress);
 Arm *makeRaspi();
 int main(int argc, char **argv);
 void printBin(u32 i, int newline);

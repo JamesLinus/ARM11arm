@@ -3,7 +3,7 @@ require 'emulate_helper'
 
 describe 'unit test for utilities/binaryLoading.c' do
 
-  let('path') { './spec/binary_cases/' }
+  let(:path) { './spec/binary_cases/' }
 
   context 'with correct file paths' do
 
