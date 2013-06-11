@@ -15,6 +15,7 @@
 
 #define COL_ONE "\x1b[1;36m1\x1b[0m"
 
+void printTestSuite(Arm *raspi);
 void printReg(char* name, int index, u32 i);
 void printBin(u32 i, int newline);
 void printOut(Arm *raspi);
