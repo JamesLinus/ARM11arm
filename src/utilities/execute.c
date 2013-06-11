@@ -185,16 +185,21 @@ void singleDataTransfer(PtrToBeCast base)
   } 
   u32 addr = *i->op1 + *i->op2;
   if (i->pc) addr = 4*(1 + *i->op1) + *i->op2;
-  // switch for the des modifiers
-  switch(code) {
-    //     __L         _UL
-    case 0x01u: case 0x03u:
-    //     P_L         PUL
-    case 0x05u: case 0x07u: *i->des = _memget(i->mem, addr);
-    //     ___         _U_
-    case 0x00u: case 0x02u:
-    //     P__         PU_
-    case 0x04u: case 0x06u: *i->op2 = *i->des;  // for ~L
+  if (addr > MEMSIZE)
+    printf("Error: Out of bounds memory access at address 0x%08x\n", addr);
+  else
+  {
+    // switch for the des modifiers
+    switch(code) {
+      //     __L         _UL
+      case 0x01u: case 0x03u:
+      //     P_L         PUL
+      case 0x05u: case 0x07u: *i->des = _memget(i->mem, addr);
+      //     ___         _U_
+      case 0x00u: case 0x02u:
+      //     P__         PU_
+      case 0x04u: case 0x06u: *i->op2 = *i->des;  // for ~L
+    }
   }
 }
 
@@ -211,7 +216,7 @@ void branch(PtrToBeCast base)
   u32 offset = i->offset;
   if (offset & (1 << 23)) 
     offset = -(~offset & 0x007FFFFFu);
-  *(i->pc) += offset;
+  *(i->pc) += offset + 1;
 }
 
 void terminate(PtrToBeCast base)

@@ -1,0 +1,1 @@
+gcc -Wall -std=c99 emulate.c emulate.h res/opstructs.h res/definitions.h utilities/binaryLoading.c utilities/binaryLoading.h utilities/decode.c utilities/decode.h utilities/errorDump.c utilities/errorDump.h utilities/execute.c utilities/execute.h -o ../bin/emulate
