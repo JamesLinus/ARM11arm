@@ -58,9 +58,7 @@ uint32_t *loadBinaryFile(char *path, uint32_t *memory)
   }
 
   // get the file size
-  size = getSize(arm_bin);
-  // adjust to get it in word size and offset termination character
-  size = 1 + (size >> 2);
+  size = getSize(arm_bin) + 1;
 
   // assert no emulator memory overflow
   if (size > MEMSIZE)
@@ -80,7 +78,7 @@ uint32_t *loadBinaryFile(char *path, uint32_t *memory)
     exit(EXIT_FAILURE);
   }
   // use fread to read to the buffer
-  fread(memory, size, 1, arm_bin);
+  fread(memory, 1, size, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
   return memory;
