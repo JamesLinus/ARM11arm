@@ -51,7 +51,7 @@ exec:
   switch (crrt->cond)
   {
   case EQ_FLAG:
-    if ( Z_SET(*cpsr)) goto next;
+    if (!Z_SET(*cpsr)) goto next;
     break;
   case NE_FLAG:
     if ( Z_SET(*cpsr)) goto next;
@@ -129,6 +129,7 @@ Arm *makeRaspi()
     EmptyInstr* instr = (EmptyInstr*) &(raspi->dm[i]);
     // make the function point to the decodeTillBranch
     instr->function = &decodeTillBranch;
+    instr->cond = AL_FLAG;
     // assign entry the value of the current array index
     instr->entry = i;
     instr->raspi = raspi;
