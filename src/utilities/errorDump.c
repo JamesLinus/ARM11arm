@@ -41,6 +41,23 @@ void printBin(u32 i, int newline)
   }
 }
 
+void printTestSuite(Arm *raspi)
+{
+  printf("Registers:\n");
+  for (int i = 0; i < 13; i++)
+  {
+    printf("$%-3d:%11u (0x%08x)\n",i, raspi->r[i], raspi->r[i]);
+  }
+  printf("PC  :%11u (0x%08x)\n", raspi->pc, raspi->pc);
+  printf("CPSR:%11u (0x%08x)\n", raspi->cpsr, raspi->cpsr);
+  printf("Non-zero memory:\n");
+  for (int i = 0; i < MEMSIZE/4; i++)
+  {
+    if (raspi->em[i])
+      printf("0x%08x: 0x%08x\n", 4*i, raspi->em[i]);
+  }
+}
+
 // Main handler for the dump of all non-0 mem locations,
 // along with all register values from R1 to R16 (inclusive of named)
 void printOut(Arm *raspi)

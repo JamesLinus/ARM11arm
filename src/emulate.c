@@ -85,7 +85,8 @@ fini:
   // on finish, dump the current raspberry pi registers and
   // non-zero memory location/value pairs
   if (!suppress)
-    printOut(raspi);
+    // printOut(raspi);
+    printTestSuite(raspi);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
