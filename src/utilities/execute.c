@@ -215,7 +215,7 @@ void branch(PtrToBeCast base)
   BranchInstr *i = (BranchInstr *) base;
   u32 offset = i->offset;
   if (offset & (1 << 23)) 
-    offset = -(~offset & 0x007FFFFFu);
+    offset = -(~offset & 0x007FFFFFu) - 1;
   *(i->pc) += offset + 1;
 }
 

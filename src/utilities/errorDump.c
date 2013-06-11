@@ -46,11 +46,11 @@ void printTestSuite(Arm *raspi)
   printf("Registers:\n");
   for (int i = 0; i < 13; i++)
   {
-    printf("$%-3d: %10d (0x%08x)\n",i, (long) (0xffffffffu & raspi->r[i]), raspi->r[i]);
+    printf("$%-3d: %10ld (0x%08x)\n",i, (long) (0xffffffffu & raspi->r[i]), raspi->r[i]);
   }
   u32 pc = (raspi->pc + 1) << 2;
-  printf("PC  : %10d (0x%08x)\n", (long) (0xffffffffu & pc), pc);
-  printf("CPSR: %10d (0x%08x)\n", (long) (0xffffffffu & raspi->cpsr), raspi->cpsr);
+  printf("PC  : %10ld (0x%08x)\n", (long) (0xffffffffu & pc), pc);
+  printf("CPSR: %10ld (0x%08x)\n", (long) (0xffffffffu & raspi->cpsr), raspi->cpsr);
   printf("Non-zero memory:\n");
   for (int i = 0; i < MEMSIZE/4; i++)
   {
