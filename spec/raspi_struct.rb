@@ -34,6 +34,10 @@ class RaspiStruct < FFI::Struct
   def get_reg(i)
     self[:r].get_int(i << 2)
   end
+
+  def get_ureg(i)
+    regs[i]
+  end
   
   def set_emem(i, v)
     self[:em].put_int((i << 2), v)

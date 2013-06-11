@@ -29,10 +29,14 @@ describe 'data processing tests' do
       @raspi.get_reg 2
     end
 
+    def u_result
+      @raspi.get_ureg 2
+    end
+
     before(:all) do
       @raspi = RaspiStruct.new Emulate.makeRaspi()
       @a, @b, @c, @d = [[],[], [], []]
-      500.times do
+      5000.times do
         @a << rand(2**31)
         @b << rand(2**31)
         @c << rand( 2**8)
@@ -51,7 +55,7 @@ describe 'data processing tests' do
         @a.zip(@b).each do |a, b|
           reg_set_rand @raspi, a, b
           decode_and_run
-          result.should eq(a & b)
+          u_result.should eq(a & b)
         end
       end
 
@@ -61,7 +65,7 @@ describe 'data processing tests' do
         @a.zip(@b).each do |a, b|
           reg_set_rand @raspi, a, b
           decode_and_run
-          result.should eq(a ^ b)
+          u_result.should eq(a ^ b)
         end
       end
 
@@ -91,12 +95,7 @@ describe 'data processing tests' do
         @a.zip(@b).each do |a, b|
           reg_set_rand @raspi, a, b
           decode_and_run
-          res, exp = [ result, (a + b) ]
-          if exp > 2**31
-            res = res.to_s(2)[1..32].to_i(2)
-            exp = -(exp - 2**32)
-          end
-          res.should eq(exp)
+          u_result.should eq(a + b)
         end
       end
 
@@ -106,7 +105,7 @@ describe 'data processing tests' do
         @a.zip(@b).each do |a, b|
           reg_set_rand @raspi, a, b
           decode_and_run
-          result.should eq(a | b)
+          u_result.should eq(a | b)
         end
       end
 
@@ -116,7 +115,7 @@ describe 'data processing tests' do
         @a.zip(@b).each do |a, b|
           reg_set_rand @raspi, a, b
           decode_and_run
-          result.should eq(b)
+          u_result.should eq(b)
         end
       end
 
@@ -132,7 +131,7 @@ describe 'data processing tests' do
           prime_immediate '0000', c, d
           @raspi.set_reg(0, a) 
           decode_and_run
-          result.should eq(a & ROR(c, 2*d))
+          u_result.should eq(a & ROR(c, 2*d))
         end
       end
 
@@ -142,14 +141,44 @@ describe 'data processing tests' do
           prime_immediate '0001', c, d
           @raspi.set_reg(0, a) 
           decode_and_run
-          res, exp = [result, a ^ ROR(c, 2*d)]
-          if exp > 2**31
-            res = res.to_s(2)[1..32].to_i(2)
-            exp = (exp - 2**32)
-          end
-          result.should eq(exp)
+          u_result.should eq(a ^ ROR(c, 2*d))
         end
       end
+
+      it 'ADD' do
+        # Find R1 (bitwise)EOR Immd
+        @a.zip(@c, @d).each do |a, c, d|
+          prime_immediate '0100', c, d
+          @raspi.set_reg(0, a) 
+          decode_and_run
+          exp = a + ROR(c, 2*d)
+          if exp > 2**32
+            exp -= 2**32
+          end
+          u_result.should eq(exp)
+        end
+      end
+
+      it 'OOR' do
+        # Find R1 (bitwise)OR Immd
+        @a.zip(@c, @d).each do |a, c, d|
+          prime_immediate '1100', c, d
+          @raspi.set_reg(0, a) 
+          decode_and_run
+          u_result.should eq(a | ROR(c, 2*d))
+        end
+      end
+
+      it 'MOV' do
+        # Result should be op2
+        @a.zip(@c, @d).each do |a, c, d|
+          prime_immediate '1101', c, d
+          @raspi.set_reg(0, a) 
+          decode_and_run
+          u_result.should eq(ROR(c, 2*d))
+        end
+      end
+
 
     end
 

@@ -53,18 +53,18 @@ describe 'official test suite' do
       end
     end
 
-    context 'multiplication' do
-    #  it 'mul01' do
-    #    run_file bin + 'mul01'
-    #    emem = raspi.encoded_mem
-    #    raspi.get_reg(1).should eq(0x00000002)
-    #    raspi.get_reg(2).should eq(0x00000004)
-    #    raspi.get_reg(3).should eq(0x00000008)
-    #    emem[0].should eq(0xe3a01002)
-    #    emem[1].should eq(0xe3a02004)
-    #    emem[2].should eq(0xe0030291)
-    #  end
-    end
+#    context 'multiplication' do
+#      it 'mul01' do
+#        run_file bin + 'mul01'
+#        emem = raspi.encoded_mem
+#        raspi.get_reg(1).should eq(0x00000002)
+#        raspi.get_reg(2).should eq(0x00000004)
+#        raspi.get_reg(3).should eq(0x00000008)
+#        emem[0].should eq(0xe3a01002)
+#        emem[1].should eq(0xe3a02004)
+#        emem[2].should eq(0xe0030291)
+#      end
+#    end
 
     context 'right subtract' do
       it 'rsb01' do
@@ -494,7 +494,7 @@ describe 'official test suite' do
       it 'lsl02' do
         run_file bin + 'lsl02'
         emem = raspi.encoded_mem
-        raspi.get_reg(1).should eq(0x80000000)
+        raspi.get_ureg(1).should eq(0x80000000)
         emem[0].should eq(0xe3a010ff)
         emem[1].should eq(0xe1a01f81)
       end

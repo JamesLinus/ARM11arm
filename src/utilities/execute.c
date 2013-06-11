@@ -198,15 +198,10 @@ void branch(PtrToBeCast base)
 {
   // make the casting to correct struct
   BranchInstr *i = (BranchInstr *) base;
-  // if the offset is to add
-  if (i->toAdd)
-  {
-    // then increment the pc
-    i->pc += i->offset;
-    return;
-  }
-  // else decrement
-  i->pc -= i->offset;
+  u32 offset = i->offset;
+  if (offset & (1 << 23)) 
+    offset = -(~offset & 0x007FFFFFu);
+  *(i->pc) += offset;
 }
 
 void terminate(PtrToBeCast base)

@@ -31,7 +31,14 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
   // set cpsr reg pointer, used in most
   base->cpsr = &(raspi->cpsr);
   //////////////////////////////////////////////////////////////////
-  if (IS_MUL(instr))
+  if (!instr)
+  {
+    TerminateInstr *i = (TerminateInstr *) base;
+    i->cond           = AL_FLAG;
+    i->function       = (Execute)&terminate;
+    i->halt           = &(raspi->halt);
+  }
+  else if (IS_MUL(instr))
   {
     // opcode matches multiplication (not long)
     MultiplyInstr *i = (MultiplyInstr *) base;
@@ -105,15 +112,8 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     // opcode matches a branch statement
     BranchInstr *i = (BranchInstr *) base;
     i->function    = (Execute)&branch;
-    i->toAdd       = instr & BRANCH_CTRL;
-    i->offset      = (instr & BRANCH_OFFSET) << 2;
+    i->offset      = (instr & BRANCH_OFFSET);
     i->pc          = &(raspi->pc);
-  }
-  else if (instr == 0)
-  {
-    TerminateInstr *i = (TerminateInstr *) base;
-    i->function = (Execute)&terminate;
-    i->halt = &(raspi->halt);
   }
   return (BaseInstr *) & (raspi->dm[index]);
 }
@@ -146,6 +146,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
   else  // operand 2 is a register
   {
     // isolate shift information
+    // shift is [ SHIFT ][ Rm ]
     u8 shift   = (rawOperand & OP_SHIFT) >> 4u;
     // reset the shifting type
     shiftType  = (shift & OP_SHIFT_TYPE) >> 1u;
@@ -160,7 +161,7 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     else  // shift by a constant
     {
       // set literal value of shift
-      i->_shift = shift & 0x000000f8u;
+      i->_shift = shift >> 3;
       // set pointer to internal literal
       i->shift  = &(i->_shift);
     }

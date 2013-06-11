@@ -54,7 +54,7 @@ exec:
     if ( Z_SET(*cpsr)) goto next;
     break;
   case NE_FLAG:
-    if (!Z_SET(*cpsr)) goto next;
+    if ( Z_SET(*cpsr)) goto next;
     break;
   case GE_FLAG:
     if ( N_SET(*cpsr) != V_SET(*cpsr)) goto next;
@@ -75,9 +75,9 @@ exec:
   crrt->function(crrt);
 next:
   // if at any point we hit halt, then the halting function
-  // will have been called and therefore the cpsr flags should
+  // will have been called and therefore the halt flag should
   // be set to all 0's. If this is the case, then __finish__
-  if (!raspi->halt || raspi->em[raspi->pc] == 0) goto fini;
+  if (!raspi->halt) goto fini;
   // else jump back to execution after we've
   // fetched the next instruction
   goto exec;
@@ -105,14 +105,9 @@ void decodeTillBranch(PtrToBeCast base)
   EmptyInstr* i = (EmptyInstr*) base;
   // j will be the iterative measure
   u32 j = i->entry;
-  // raw will represent the current unprocessed instruction
-  u32 raw;
   Arm *raspi = i->raspi;
-  while (raw = raspi->em[j])
-  {
-    decodeInstruction(raspi, j);
-    j++;
-  }
+  do decodeInstruction(raspi, j++);
+  while (raspi->em[j - 1]);
   raspi->pc = raspi->pc - 1;
 }
 
