@@ -8,10 +8,10 @@
 
 #include<stdint.h>
 
-uint32_t assembleDataProcessing();
+uint32_t assembleDataProcessing(int arguments, char **strings);
 
-uint32_t assembleMultiply();
+uint32_t assembleMultiply(int arguments, char **strings);
 
-uint32_t assembleSingleDataTransfer();
+uint32_t assembleSingleDataTransfer(int arguments char **strings);
 
-uint32_t assembleBranch();
+uint32_t assembleBranch(int arguments char **strings);
