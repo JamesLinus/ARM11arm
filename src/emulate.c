@@ -41,7 +41,6 @@ void runRaspi(Arm *raspi, int entry, int suppress)
   raspi->halt = 1;
   // the current instruction
   BaseInstr* crrt;
-  printOut(raspi);
   // view from hereon out as the 'execution' stage
 exec:
   crrt = &(raspi->dm[raspi->pc++]);
@@ -73,7 +72,6 @@ exec:
   } 
   // if we pass the condition checks, then proceed to
   // call the function saved into the base instr struct
-  printf("About to execute mem location %d\n", raspi->pc);
   crrt->function(crrt);
 next:
   // if at any point we hit halt, then the halting function

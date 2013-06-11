@@ -95,10 +95,18 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     SingleDataInstr *i = (SingleDataInstr *) base;
     i->function = (Execute)&singleDataTransfer;
     // extract the p u and l flags
-    i->p = (instr & P_INDEX_MASK) >> 24;
-    i->u = (instr & S_DATA_UP) >> 23;
-    i->l = (instr & LOAD_STORE_MASK) >> 20;
-    i->op1 = &(raspi->r[(instr & RN_MASK) >> 16]);
+    int p = (instr & P_INDEX_MASK) >> 24,
+        u = (instr & S_DATA_UP) >> 23,
+        l = (instr & LOAD_STORE_MASK) >> 20;
+    i->pul = (p << 2) + (u << 1) + l;
+    int regNo = (instr & RN_MASK) >> 16;
+    switch (regNo)
+    {
+      case 13: i->op1 = &raspi->sp; break;
+      case 14: i->op1 = &raspi->lr; break;
+      case 15: i->op1 = &raspi->pc; i->pc = 0x7u; break;
+      default: i->op1 = &raspi->r[regNo];
+    }
     i->des = &(raspi->r[(instr & RD_MASK) >> 12]);
     i->mem = (u8 *) raspi->em;
     // modify instruction for immediate idiosyncrasy

@@ -171,7 +171,7 @@ void singleDataTransfer(PtrToBeCast base)
   *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
   // generate unique code for each modifier
   // TODO - stop using separate vars for the p u & l
-  int code = (i->p << 2) + (i->u << 1) + i->l;
+  int code = i->pul;
   // switch for the op1 modifiers
   switch(code) {
     //     _U_         _UL
@@ -183,8 +183,9 @@ void singleDataTransfer(PtrToBeCast base)
     //     P__         P_L
     case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
   } 
+  u32 addr = *i->op1;
   // switch for the des modifiers
-  u32* res = (u32*) &i->mem[*i->op1];
+  u32* res = (u32*) &i->mem[addr + i->pc];
   switch(code) {
     //     __L         _UL
     case 0x01u: case 0x03u:

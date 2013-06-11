@@ -98,7 +98,7 @@ typedef struct   //  < BaseInstr
 {
   BASE
   SHIFTING_ARGS
-  u8 p; u8 u; u8 l;
+  u8 pul; u8 pc;
   u8 *mem;
 } SingleDataInstr;
 

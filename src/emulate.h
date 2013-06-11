@@ -48,6 +48,20 @@ typedef struct
   Arm* raspi;
 } EmptyInstr;
 
+static inline u32 _memget(u8 *mem, u32 addr)
+{
+  u8 *picker = mem + addr;
+  u32 *word  = (u32*) picker;
+  return *word; 
+}
+
+static inline void _memset(u8 *mem, u32 addr, u32 val)
+{
+  u8 *picker = mem + addr;
+  u32 *word  = (u32*) picker;
+  *word = val;
+}
+
 int checkFlags(u32* cpsr, u8 cond);
 u32 fetch(Arm *raspi);
 void runRaspi(Arm *raspi, int entry, int suppress);

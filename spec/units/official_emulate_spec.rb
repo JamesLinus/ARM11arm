@@ -359,7 +359,8 @@ describe 'official test suite' do
         emem[2].should eq(0x20200020)
       end
       it 'ldr08' do
-        #run_file bin + 'ldr08'
+        run_file bin + 'ldr08'
+        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_reg(0).should eq(0x20200020)
         raspi.get_reg(2).should eq(0x20200030)
