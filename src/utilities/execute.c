@@ -174,17 +174,26 @@ void singleDataTransfer(PtrToBeCast base)
   int code = (i->p << 2) + (i->u << 1) + i->l;
   // switch for the op1 modifiers
   switch(code) {
+    //     _U_         _UL
     case 0x02u: case 0x03u:
-    case 0x06u: case 0x07u: i->op1   += *(i->op2);
-    case 0x04u: case 0x05u:
-    case 0x00u: case 0x01u: i->op1   -= *(i->op2);
+    //     PU_         PUL
+    case 0x06u: case 0x07u: *i->op1   += *i->op2;  // for  U
+    //     ___         __L
+    case 0x00u: case 0x01u: 
+    //     P__         P_L
+    case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
   } 
   // switch for the des modifiers
+  u32* res = (u32*) &i->mem[*i->op1];
   switch(code) {
+    //     __L         _UL
     case 0x01u: case 0x03u:
-    case 0x05u: case 0x07u: *(i->des) = *(i->op2);
+    //     P_L         PUL
+    case 0x05u: case 0x07u: *i->des    = *res;  // for  L
+    //     ___         _U_
     case 0x00u: case 0x02u:
-    case 0x04u: case 0x06u: *(i->op2) = *(i->des);
+    //     P__         PU_
+    case 0x04u: case 0x06u: *i->op2    = *i->des;  // for ~L
   }
 }
 
