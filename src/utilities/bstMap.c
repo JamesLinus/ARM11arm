@@ -1,6 +1,6 @@
 #include <stdint.h> 
-#include <>
-#include <>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct entry
 {
