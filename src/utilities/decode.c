@@ -38,6 +38,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->function       = (Execute)&terminate;
     i->halt           = &(raspi->halt);
   }
+  //////////////////////////////////////////////////////////////////
   else if (IS_MUL(instr))
   {
     // opcode matches multiplication (not long)

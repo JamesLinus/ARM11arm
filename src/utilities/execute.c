@@ -184,6 +184,10 @@ void singleDataTransfer(PtrToBeCast base)
     case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
   } 
   u32 addr = *i->op1 + *i->op2;
+  printf("The original base is %d\n", *i->op1);
+  printf("The offset is %d\n", *i->op2);
+  printf("The final address is %d\n", addr);
+  printf("The value to be copied is 0x%08x\n", *i->des);
   if (i->pc) addr = 4*(1 + *i->op1) + *i->op2;
   if (addr > MEMSIZE)
     printf("Error: Out of bounds memory access at address 0x%08x\n", addr);
@@ -198,7 +202,7 @@ void singleDataTransfer(PtrToBeCast base)
       //     ___         _U_
       case 0x00u: case 0x02u:
       //     P__         PU_
-      case 0x04u: case 0x06u: *i->op2 = *i->des;  // for ~L
+      case 0x04u: case 0x06u: _memset(i->mem, addr, *i->des);  // for ~L
     }
   }
 }
