@@ -80,9 +80,20 @@ uint32_t *loadBinaryFile(char *path, uint32_t *memory)
     exit(EXIT_FAILURE);
   }
   // use fread to read to the buffer
-  fread(memory, 8, size, arm_bin);
+  fread(memory, size, 1, arm_bin);
   // use fclose to end the feed from the file
   fclose(arm_bin);
   return memory;
+}
+
+uint32_t writeBinaryFile(uint32_t* instr, uint32_t noOfInstr, char* path)
+{
+  FILE* file = fopen(path, "wb");
+  if(fwrite(instr, 4, noOfInstr, file) < noOfInstr)
+  {
+    perror("writeBinaryFile() fgets failed");
+    exit(EXIT_FAILURE);
+  }
+
 }
 
