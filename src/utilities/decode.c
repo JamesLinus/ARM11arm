@@ -46,7 +46,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->op1 = &(raspi->r[instr & MUL_RM_MASK]);
     // retrive op2 similarly from instr
     i->op2 = &(raspi->r[(instr & MUL_RS_MASK) >> 8 ]);
-    i->s   = instr & SET_FLAGS_S;
+    i->s   = (instr >> 20) & 0x1u;
     if (instr & ACCUM_MASK)
     {
       i->acc = &(raspi->r[(instr & MUL_RN_MASK) >> 12]);
@@ -67,7 +67,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->op1    = &(raspi->r[(instr & RN_MASK) >> 16]);
     // set pointer to destination register
     i->des    = &(raspi->r[(instr & RD_MASK) >> 12]);
-    i->s      = instr & SET_FLAGS_S;
+    i->s      = (instr >> 20) & 0x1u;
     // set the shift function and immediate settings
     setShifting(raspi, instr, (ShiftingInstr*) i);
     // start a switch on the opcode
@@ -193,27 +193,31 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
 // SHIFT FUNCTION WRAPPERS
 ///////////////////////////////////////////////////////////////////////////////
 
-u32 lsl(u32* cpsr, u32 a, u32 b) 
+u32 lsl(u32* cpsr, u32 a, u32 b, u32 set) 
 { 
-  setCflag(cpsr, (a >> (32 - (b - 1))) & FIRST_BIT_MASK);
+  if (set)
+    setCflag(cpsr, (a >> (32 - (b - 1))) & FIRST_BIT_MASK);
   return LSL(a,b); 
 }
 
-u32 lsr(u32* cpsr, u32 a, u32 b) 
-{ 
-  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+u32 lsr(u32* cpsr, u32 a, u32 b, u32 set) 
+{
+  if (set)
+    setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
   return LSR(a,b); 
 }
 
-u32 asr(u32* cpsr, u32 a, u32 b) 
+u32 asr(u32* cpsr, u32 a, u32 b, u32 set) 
 { 
-  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  if (set)
+    setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
   return ASR(a,b); 
 }
 
-u32 ror(u32* cpsr, u32 a, u32 b) 
+u32 ror(u32* cpsr, u32 a, u32 b, u32 set) 
 { 
-  setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
+  if (set)
+    setCflag(cpsr, (a << (32 - (b - 1))) & FIRST_BIT_MASK);
   return ROR(a,b); 
 }
 

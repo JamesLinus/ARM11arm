@@ -26,7 +26,7 @@ static inline DataProcessingInstr* castAndShift(PtrToBeCast base)
   // make cast to the data processing struct
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   // calculate the value of op2 using the shifting function
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), i->s);
   // return the casted and shift calculated struct
   return i;
 }
@@ -168,7 +168,7 @@ void singleDataTransfer(PtrToBeCast base)
   // make the appropriate casting
   SingleDataInstr *i = (SingleDataInstr *) base;
   // find the op2 value from appropriate shifting
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift));
+  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), 0);
   // generate unique code for each modifier
   // TODO - stop using separate vars for the p u & l
   int code = i->pul;
