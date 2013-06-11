@@ -48,7 +48,8 @@ void printTestSuite(Arm *raspi)
   {
     printf("$%-3d:%11u (0x%08x)\n",i, raspi->r[i], raspi->r[i]);
   }
-  printf("PC  :%11u (0x%08x)\n", raspi->pc, raspi->pc);
+  u32 pc = (raspi->pc + 1) << 2;
+  printf("PC  :%11u (0x%08x)\n", pc, pc);
   printf("CPSR:%11u (0x%08x)\n", raspi->cpsr, raspi->cpsr);
   printf("Non-zero memory:\n");
   for (int i = 0; i < MEMSIZE/4; i++)
