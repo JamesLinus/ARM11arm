@@ -183,18 +183,19 @@ void singleDataTransfer(PtrToBeCast base)
     //     P__         P_L
     case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
   } 
-  u32 addr = *i->op1;
+  u32 addr = *i->op1 + *i->op2;
+  if (i->pc) addr = (*i->op1 * 4) + *i->op2 + 4;
   // switch for the des modifiers
-  u32* res = (u32*) &i->mem[addr + i->pc];
   switch(code) {
     //     __L         _UL
     case 0x01u: case 0x03u:
     //     P_L         PUL
-    case 0x05u: case 0x07u: *i->des    = *res;  // for  L
+    case 0x05u: case 0x07u: 
+    *i->des = _memget(i->mem, addr);
     //     ___         _U_
     case 0x00u: case 0x02u:
     //     P__         PU_
-    case 0x04u: case 0x06u: *i->op2    = *i->des;  // for ~L
+    case 0x04u: case 0x06u: *i->op2 = *i->des;  // for ~L
   }
 }
 

@@ -360,7 +360,6 @@ describe 'official test suite' do
       end
       it 'ldr08' do
         run_file bin + 'ldr08'
-        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_reg(0).should eq(0x20200020)
         raspi.get_reg(2).should eq(0x20200030)
@@ -371,7 +370,7 @@ describe 'official test suite' do
         emem[5].should eq(0x20200028)
       end
       it 'ldr09' do
-        #run_file bin + 'ldr09'
+        run_file bin + 'ldr09'
         emem = raspi.encoded_mem
         raspi.get_reg(1).should eq(0x20200022)
         raspi.get_reg(2).should eq(0x20200020)
@@ -381,7 +380,7 @@ describe 'official test suite' do
         emem[4].should eq(0x20200020)
       end
       it 'ldr14' do
-        #run_file bin + 'ldr14'
+        run_file bin + 'ldr14'
         emem = raspi.encoded_mem
         raspi.get_reg(0).should eq(0x20200020)
         raspi.get_reg(2).should eq(0x20200030)
@@ -395,7 +394,7 @@ describe 'official test suite' do
 
     context 'store register' do
       it 'str01' do
-        #run_file bin + 'str01'
+        run_file bin + 'str01'
         emem = raspi.encoded_mem
         raspi.get_reg(0).should eq(0x20200000)
         emem[0].should eq(0xe59f0004)
@@ -404,7 +403,7 @@ describe 'official test suite' do
         emem[7].should eq(0x20200000)
       end
       it 'str02' do
-        #run_file bin + 'str02'
+        run_file bin + 'str02'
         emem = raspi.encoded_mem
         raspi.get_reg(1).should eq(0x00000002)
         raspi.get_reg(2).should eq(0x00000005)
@@ -415,7 +414,7 @@ describe 'official test suite' do
         emem[3].should eq(0xe6821004)
       end
       it 'str03' do
-        #run_file bin + 'str03'
+        run_file bin + 'str03'
         emem = raspi.encoded_mem
         raspi.get_reg(0).should eq(0x00000001)
         raspi.get_reg(1).should eq(0x00000063)

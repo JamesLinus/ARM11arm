@@ -70,7 +70,7 @@ void printOut(Arm *raspi)
     if (r = raspi->em[i]) 
     {
       print = 1;
-      printf("  |-   [ 0x%08x ]   -|- 0x%08x -|- ", i, r);
+      printf("  |-   [ 0x%08x ]   -|- 0x%08x -|- ", (i << 2), r);
       printBin(r, 0); printf(" -|\n");
     }
   }
