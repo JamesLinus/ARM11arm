@@ -134,7 +134,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 }
 
 // use (uint32_t)strtol() for hex values passed
-uint32_t assembleMultiply(int arguments, char **strings)
+uint32_t assembleMultiply(uint32_t args, char** strings)
 { 
   uint32_t binaryCode;
   uint32_t rd, rn, rs, rm;
@@ -145,7 +145,7 @@ uint32_t assembleMultiply(int arguments, char **strings)
   rm = strToInt(strings[4], 0);
 
   // mul
-  if(arguments == 4)
+  if(args == 4)
   {
     binaryCode = 0xE0000090u;
   } else // mla
@@ -154,4 +154,9 @@ uint32_t assembleMultiply(int arguments, char **strings)
   }
 
   return binaryCode | (rd | rn | rd | rm);
+}
+
+unint32_t assembleDataTransfer(uint32_t args, char** strings)
+{
+  
 }
