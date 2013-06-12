@@ -2,56 +2,60 @@
 #include <stdlib.h>
 #include <string.h>
 
+// entry to the binary tree
 typedef struct entry
 {
+  // simple textual label
   char* label;
-  uint32_t memAddr;
+  // memory address
+  u32 memAddr;
+  // pointers to left and right 
+  // structs repsectively
   struct entry* right;
   struct entry* left;
-
 } tree_entry;
 
+// PRE  - Given a valid tree_entry
+// POST - Returns the tree depth
 int treeDepth(tree_entry* entry) {
-  if(entry == NULL)
-  {
-    return 0;
-  }
-  int left = treeDepth(entry->left);
+  // if entry's null then tree has terminated
+  if (entry == NULL) return 0;
+  // else find child depths
+  int left  = treeDepth(entry->left);
   int right = treeDepth(entry->right);
-  if(left > right)
-  { 
-    return left + 1; 
-  } else
-  {
+  // and return the largest of the two, plus
+  // one to account for the current node
+  if (left > right) 
+    return left  + 1; 
+  else
     return right + 1;
-  }
 }
 
 // return 0 if left is deeper 1 if right is deeper 
 // deeper is defined as at least bigger by 2 not 1
 // -1 otherwise
+// PRE  - Given a two valid tree_entry pointers
+// POST - Perform a depth comparison, detecting balance
+//        hence range of values is fine
 int treeDepthComp(tree_entry* left, tree_entry* right)
 {
   int depth = treeDepth(left) - treeDepth(right);
-  if(depth > 1)
-  {
-    return 0;
-  } else if(depth < -1)
-  {
-    return 1;
-  } else
-  {
-    return -1;
-  }
+  if      (depth > 1)   return  0;
+  else if (depth < -1)  return  1;
+  else                  return -1;
 }
 
+// PRE  - Given a valid tree_entry pointer
+// POST - Returns a left rotated tree_entry
 tree_entry* leftRotate(tree_entry* entry)
 {
-  tree_entry* nodeB = entry->right;
+  tree_entry* nodeB = entry->right; 
   entry->right = nodeB->left;
   return nodeB->left = entry;
 }
 
+// PRE  - Given a valid tree_entry pointer
+// POST - Returns a right rotated tree_entry
 tree_entry* rightRotate(tree_entry* entry)
 {
   tree_entry* nodeB = entry->left;
@@ -77,24 +81,15 @@ tree_entry* leftRightRotate(tree_entry* entry)
 tree_entry* rebalance(tree_entry* entry)
 {
   if(treeDepthComp(entry->left, entry->right) == 1)
-  {
+    if(treeDepthComp(entry->left, entry->right) == 1)
+      return leftRotate(entry);
+    else 
+      return rightLeftRotate(entry);
+  else if(treeDepthComp(entry->left, entry->right) == 0)
       if(treeDepthComp(entry->left, entry->right) == 1)
-      {
-        return leftRotate(entry);
-      } else 
-      {
-        return rightLeftRotate(entry);
-      }
-  } else if(treeDepthComp(entry->left, entry->right) == 0)
-  {
-      if(treeDepthComp(entry->left, entry->right) == 1)
-      {
         return leftRightRotate(entry);
-      } else 
-      {
+      else 
         return rightRotate(entry);
-      }
-  } 
   return entry;
 }
 
