@@ -195,8 +195,3 @@ uint32_t get(tree_entry* root, char* label)
   }
 
 }
-
-int main(void)
-{
-  return 0;
-}
