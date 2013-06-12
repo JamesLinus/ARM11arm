@@ -22,10 +22,7 @@ enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 uint32_t strToInt(char* reg, uint32_t shift)
 {
-  reg++;
-  uint32_t regNo = (uint32_t)atoi(reg);
-  regNo = regNo << shift;
-  return regNo;  
+  return (uint32_t)atoi(++reg) << shift;  
 }
 
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
@@ -158,11 +155,3 @@ uint32_t assembleMultiply(int arguments, char **strings)
 
   return binaryCode | (rd | rn | rd | rm);
 }
-
-
-
-
-
-
-
-
