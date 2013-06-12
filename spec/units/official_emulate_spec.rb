@@ -395,7 +395,6 @@ describe 'official test suite' do
     context 'store register' do
       it 'str01' do
         run_file bin + 'str01'
-        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_reg(0).should eq(0x20200000)
         emem[0].should eq(0xe59f0004)
@@ -405,6 +404,7 @@ describe 'official test suite' do
       end
       it 'str02' do
         run_file bin + 'str02'
+        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_reg(1).should eq(0x00000002)
         raspi.get_reg(2).should eq(0x00000005)

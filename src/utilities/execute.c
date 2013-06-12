@@ -168,43 +168,43 @@ void singleDataTransfer(PtrToBeCast base)
   // make the appropriate casting
   SingleDataInstr *i = (SingleDataInstr *) base;
   // find the op2 value from appropriate shifting
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), 0);
+  u32 offset = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), 0);
+  u32 basePtr = *i->op1;
   // generate unique code for each modifier
   // TODO - stop using separate vars for the p u & l
   int code = i->pul;
+  int post = 0;
   // switch for the op1 modifiers
   switch(code) {
-    //     _U_         _UL
-    case 0x02u: case 0x03u:
-    //     PU_         PUL
-    case 0x06u: case 0x07u: *i->op1   += *i->op2;  // for  U
-    //     ___         __L
-    case 0x00u: case 0x01u: 
-    //     P__         P_L
-    case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
+    //     Pre and Up
+    case 0x06u: case 0x07u: basePtr += offset;  // for  U
+    //     Pre and Down
+    case 0x04u: case 0x05u: basePtr -= offset;  // for ~U
+    //     Post and Up
+    case 0x00u: case 0x01u: post =  offset;
+    //     Post and Down
+    case 0x02u: case 0x03u: post = -offset;
   } 
-  u32 addr = *i->op1 + *i->op2;
-  printf("The original base is %d\n", *i->op1);
-  printf("The offset is %d\n", *i->op2);
-  printf("The final address is %d\n", addr);
-  printf("The value to be copied is 0x%08x\n", *i->des);
-  if (i->pc) addr = 4*(1 + *i->op1) + *i->op2;
-  if (addr > MEMSIZE)
-    printf("Error: Out of bounds memory access at address 0x%08x\n", addr);
-  else
+  if (i->pc) basePtr += 2;
+  if (basePtr < MEMSIZE)
   {
     // switch for the des modifiers
     switch(code) {
-      //     __L         _UL
+      //     Is Load
       case 0x01u: case 0x03u:
-      //     P_L         PUL
-      case 0x05u: case 0x07u: *i->des = _memget(i->mem, addr);
-      //     ___         _U_
+      case 0x05u: case 0x07u: *i->des = _memget(i->mem, basePtr);
+      //     Is Store
       case 0x00u: case 0x02u:
-      //     P__         PU_
-      case 0x04u: case 0x06u: _memset(i->mem, addr, *i->des);  // for ~L
+      case 0x04u: case 0x06u: _memset(i->mem, basePtr, *i->des);  // for ~L
     }
   }
+  else printf("Error: Out of bounds memory access at address 0x%08x\n", basePtr);
+  switch(code) {
+    //     Pre and Up
+    case 0x06u: case 0x07u: *i->op1   += *i->op2;  // for  U
+    //     Pre and Down
+    case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
+  } 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
