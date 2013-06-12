@@ -404,7 +404,6 @@ describe 'official test suite' do
       end
       it 'str02' do
         run_file bin + 'str02'
-        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_reg(1).should eq(0x00000002)
         raspi.get_reg(2).should eq(0x00000005)

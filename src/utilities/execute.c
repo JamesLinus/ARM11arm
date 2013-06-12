@@ -152,7 +152,7 @@ void multiply(PtrToBeCast base)
   // cast to appropriate struct type
   MultiplyInstr* i = (MultiplyInstr*) base;
   // make calculation, move into destination
-  *(i->des) = APPLY(i, *) + (*(i->acc));
+  *(i->des) = APPLY(i, *) + *(i->acc);
   // if required, mark the flags
   if (i->s) setflags(i->cpsr, *(i->des));
 }
@@ -202,7 +202,7 @@ void singleDataTransfer(PtrToBeCast base)
   switch (code) {
     //     Post and Up
     case 0x02u: case 0x03u: *i->op1 = basePtr + offset; break; // for  U
-    //     Pre and Down
+    //     Post and Down
     case 0x00u: case 0x01u: *i->op1 = basePtr - offset; break; // for ~U
   }
 }
