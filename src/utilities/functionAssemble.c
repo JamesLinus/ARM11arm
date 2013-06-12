@@ -22,10 +22,7 @@ enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 uint32_t strToInt(char* reg, uint32_t shift)
 {
-  reg++;
-  uint32_t regNo = (uint32_t)atoi(reg);
-  regNo = regNo << shift;
-  return regNo;  
+  return (uint32_t)atoi(++reg) << shift;  
 }
 
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
@@ -116,20 +113,31 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   //otherwise leave the S bit as 0
   
   //now comes the hard bit
-  char *reg = strings[1];
 
-  //the first operand is ALWAYS a register   so:
-  uint32_t regNo = strToInt(reg, 16);
-  //setting first operand
-  binaryCode = binaryCode | regNo;
+  //declaring variables for use in switch
+  uint32_t regNo1;
+  uint32_t regNo2;
+
   switch(typeOfInstr)
   {
   case COMPUTE:
-    
+    //setting rn and rd bits
+    regNo1 = strToInt(strings[1], 16);
+    regNo2 = strToInt(strings[2], 12);
+    binaryCode = binaryCode | regNo1;
+    binaryCode = binaryCode | regNo2;  
     break;
   case SINGLE_OPERAND:
+    //setting rd bits
+    //no need to set rn bits
+    regNo1 = strToInt(strings[1], 12);
+    binaryCode = binaryCode | regNo1;
     break;
   case NO_COMPUTE:
+    //setting rn bits
+    //no need to set rd bits
+    regNo1 = strToInt(strings[1], 16);
+    binaryCode = binaryCode | regNo1;
     break;
   }
 
@@ -137,7 +145,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 }
 
 // use (uint32_t)strtol() for hex values passed
-uint32_t assembleMultiply(int arguments, char **strings)
+uint32_t assembleMultiply(uint32_t args, char** strings)
 { 
   uint32_t binaryCode;
   uint32_t rd, rn, rs, rm;
@@ -148,7 +156,7 @@ uint32_t assembleMultiply(int arguments, char **strings)
   rm = strToInt(strings[4], 0);
 
   // mul
-  if(arguments == 4)
+  if(args == 4)
   {
     binaryCode = 0xE0000090u;
   } else // mla
@@ -159,10 +167,7 @@ uint32_t assembleMultiply(int arguments, char **strings)
   return binaryCode | (rd | rn | rd | rm);
 }
 
-
-
-
-
-
-
-
+unint32_t assembleDataTransfer(uint32_t args, char** strings)
+{
+  
+}
