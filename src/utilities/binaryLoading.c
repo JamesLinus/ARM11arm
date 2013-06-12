@@ -92,6 +92,6 @@ uint32_t writeBinaryFile(uint32_t* instr, uint32_t noOfInstr, char* path)
     perror("writeBinaryFile() fgets failed");
     exit(EXIT_FAILURE);
   }
-
+  return 0;
 }
 

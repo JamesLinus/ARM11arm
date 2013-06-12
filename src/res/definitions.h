@@ -93,6 +93,6 @@
 #define LSL(i,v) (i << v)
 #define LSR(i,v) (i >> v)
 #define ASR(i,v) (LSR(i,v) | (i & MSB))
-#define ROR(i,v) (i >> v) | LSL(i, 0x20u - v)
+#define ROR(i,v) (i >> v) | LSL(i, (0x20u - v))
 
 #endif

@@ -17,8 +17,20 @@ describe 'official test suite' do
       it 'add01' do
         run_file bin + 'add01'
         emem = raspi.encoded_mem
-        raspi.get_reg(1).should eq(0x00000001)
-        raspi.get_reg(2).should eq(0x00000003)
+        raspi.get_ureg(0).should eq(0x00000000)
+        raspi.get_ureg(1).should eq(0x00000001)
+        raspi.get_ureg(2).should eq(0x00000003)
+        raspi.get_ureg(3).should eq(0x00000000)
+        raspi.get_ureg(4).should eq(0x00000000)
+        raspi.get_ureg(5).should eq(0x00000000)
+        raspi.get_ureg(6).should eq(0x00000000)
+        raspi.get_ureg(7).should eq(0x00000000)
+        raspi.get_ureg(8).should eq(0x00000000)
+        raspi.get_ureg(9).should eq(0x00000000)
+        raspi.get_ureg(10).should eq(0x00000000)
+        raspi.get_ureg(11).should eq(0x00000000)
+        raspi.pc.should eq(0x00000010)
+        raspi.cprs.should eq(0x00000000)
         emem[0].should eq(0xe3a01001)
         emem[1].should eq(0xe2812002)
       end
@@ -53,18 +65,18 @@ describe 'official test suite' do
       end
     end
 
-#    context 'multiplication' do
-#      it 'mul01' do
-#        run_file bin + 'mul01'
-#        emem = raspi.encoded_mem
-#        raspi.get_reg(1).should eq(0x00000002)
-#        raspi.get_reg(2).should eq(0x00000004)
-#        raspi.get_reg(3).should eq(0x00000008)
-#        emem[0].should eq(0xe3a01002)
-#        emem[1].should eq(0xe3a02004)
-#        emem[2].should eq(0xe0030291)
-#      end
-#    end
+    context 'multiplication' do
+      it 'mul01' do
+        run_file bin + 'mul01'
+        emem = raspi.encoded_mem
+        raspi.get_reg(1).should eq(0x00000002)
+        raspi.get_reg(2).should eq(0x00000004)
+        raspi.get_reg(3).should eq(0x00000008)
+        emem[0].should eq(0xe3a01002)
+        emem[1].should eq(0xe3a02004)
+        emem[2].should eq(0xe0030291)
+      end
+    end
 
     context 'right subtract' do
       it 'rsb01' do
@@ -284,21 +296,21 @@ describe 'official test suite' do
 
   context 'factorial' do
     it 'full factorial program' do
-    #  run_file bin + 'factorial'
-    #  emem = raspi.encoded_mem
-    #  raspi.get_reg(0).should eq(0x00000078)
-    #  raspi.get_reg(2).should eq(0x00000078)
-    #  raspi.get_reg(3).should eq(0x00000100)
-    #  emem[0].should eq(0xe3a00001)
-    #  emem[1].should eq(0xe3a01005)
-    #  emem[2].should eq(0xe0020091)
-    #  emem[3].should eq(0xe1a00002)
-    #  emem[4].should eq(0xe2411001)
-    #  emem[5].should eq(0xe3510000)
-    #  emem[6].should eq(0x1afffffa)
-    #  emem[7].should eq(0xe3a03c01)
-    #  emem[8].should eq(0xe5832000)
-    #  emem[64].should eq(0x78)
+      run_file bin + 'factorial'
+      emem = raspi.encoded_mem
+      raspi.get_reg(0).should eq(0x00000078)
+      raspi.get_reg(2).should eq(0x00000078)
+      raspi.get_reg(3).should eq(0x00000100)
+      emem[0].should eq(0xe3a00001)
+      emem[1].should eq(0xe3a01005)
+      emem[2].should eq(0xe0020091)
+      emem[3].should eq(0xe1a00002)
+      emem[4].should eq(0xe2411001)
+      emem[5].should eq(0xe3510000)
+      emem[6].should eq(0x1afffffa)
+      emem[7].should eq(0xe3a03c01)
+      emem[8].should eq(0xe5832000)
+      emem[64].should eq(0x78)
     end
   end
 
@@ -404,7 +416,6 @@ describe 'official test suite' do
       end
       it 'str02' do
         run_file bin + 'str02'
-        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_reg(1).should eq(0x00000002)
         raspi.get_reg(2).should eq(0x00000005)
@@ -533,6 +544,7 @@ describe 'official test suite' do
     end
     it 'tst03' do
       run_file bin + 'tst03'
+      
       emem = raspi.encoded_mem
       raspi.get_reg(1).should eq(0x00000001)
       raspi.get_reg(2).should eq(0x00000017)
