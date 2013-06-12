@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define BRANCH_COND(i) (uint32_t)(i << 28)
+
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 //to think about ==== what to do about the labels
@@ -167,7 +169,39 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
   return binaryCode | (rd | rn | rd | rm);
 }
 
-unint32_t assembleDataTransfer(uint32_t args, char** strings)
+uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
   
+}
+
+uint32_t assembleBranch(uint32_t args, char** strings)
+{
+  uint32_t binaryCode= 0x0a000000u;
+  // TODO: Not sure yet need to know how the tokeniser is working with labels
+  uint32_t offset;
+
+  if(!strcmp(strings[0], "beq"))
+  {
+    binaryCode |= BRANCH_COND(0);
+  } else if(!strcmp(strings[0], "bne"))
+  {
+    binaryCode |= BRANCH_COND(1);
+  } else if(!strcmp(strings[0], "bge"))
+  {
+    binaryCode |= BRANCH_COND(10);
+  } else if(!strcmp(strings[0], "blt"))
+  {
+    binaryCode |= BRANCH_COND(11);
+  } else if(!strcmp(strings[0], "bgt"))
+  {
+    binaryCode |= BRANCH_COND(12);
+  } else if(!strcmp(strings[0], "ble"))
+  {
+    binaryCode |= BRANCH_COND(13);
+  } else
+  {
+    binaryCode |= BRANCH_COND(14);
+  } 
+
+  return binaryCode | offset;
 }
