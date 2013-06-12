@@ -152,7 +152,8 @@ void multiply(PtrToBeCast base)
   // cast to appropriate struct type
   MultiplyInstr* i = (MultiplyInstr*) base;
   // make calculation, move into destination
-  *(i->des) = APPLY(i, *) + *(i->acc);
+  u32 acc = 0; if (i->acc) acc = *i->acc;
+  *(i->des) = APPLY(i, *) + acc;
   // if required, mark the flags
   if (i->s) setflags(i->cpsr, *(i->des));
 }
