@@ -16,6 +16,18 @@ enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 //to think about ==== what to do about the labels
 
+//helper function takes string argument, ditches the 'r' and returns 
+//an integer value of the register, and shifts it a given amount to 
+//be used as a mask
+
+uint32_t strToInt(char* reg, uint32_t shift)
+{
+  reg++;
+  uint32_t regNo = (uint32_t)atoi(reg);
+  regNo = regNo << shift;
+  return regNo;  
+}
+
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 {
 
@@ -105,13 +117,9 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   
   //now comes the hard bit
   char *reg = strings[1];
-  //want to get rid of the 'r' so i can use atoi() on the reg number
-  reg++;
-  //the first operand is ALWAYS a register   so:
 
-  uint32_t regNo = (uint32_t)atoi(reg);
-  //masking for the first operand
-  regNo = regNo << 18;
+  //the first operand is ALWAYS a register   so:
+  uint32_t regNo = strToInt(reg, 16);
   //setting first operand
   binaryCode = binaryCode | regNo;
   switch(typeOfInstr)
@@ -127,5 +135,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 
   return binaryCode;
 }
+
+
+
 
 
