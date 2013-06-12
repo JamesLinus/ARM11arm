@@ -173,19 +173,15 @@ void singleDataTransfer(PtrToBeCast base)
   // generate unique code for each modifier
   // TODO - stop using separate vars for the p u & l
   int code = i->pul;
-  int post = 0;
   // switch for the op1 modifiers
-  switch(code) {
+  switch (code) {
     //     Pre and Up
     case 0x06u: case 0x07u: basePtr += offset;  // for  U
     //     Pre and Down
     case 0x04u: case 0x05u: basePtr -= offset;  // for ~U
-    //     Post and Up
-    case 0x00u: case 0x01u: post =  offset;
-    //     Post and Down
-    case 0x02u: case 0x03u: post = -offset;
   } 
   if (i->pc) basePtr += 2;
+  u32 *finalDestination = i->des;
   if (basePtr < MEMSIZE)
   {
     // switch for the des modifiers
@@ -195,16 +191,17 @@ void singleDataTransfer(PtrToBeCast base)
       case 0x05u: case 0x07u: *i->des = _memget(i->mem, basePtr);
       //     Is Store
       case 0x00u: case 0x02u:
-      case 0x04u: case 0x06u: _memset(i->mem, basePtr, *i->des);  // for ~L
+      case 0x04u: case 0x06u: 
+        finalDestination = _memset(i->mem, basePtr, *i->des);  // for ~L
     }
   }
   else printf("Error: Out of bounds memory access at address 0x%08x\n", basePtr);
-  switch(code) {
-    //     Pre and Up
-    case 0x06u: case 0x07u: *i->op1   += *i->op2;  // for  U
-    //     Pre and Down
-    case 0x04u: case 0x05u: *i->op1   -= *i->op2;  // for ~U
-  } 
+  switch (code) {
+    //     Post and Up
+    case 0x00u: case 0x01u: *finalDestination += offset;
+    //     Post and Down
+    case 0x02u: case 0x03u: *finalDestination -= -offset;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

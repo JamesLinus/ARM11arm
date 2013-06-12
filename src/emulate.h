@@ -55,11 +55,12 @@ static inline u32 _memget(u8 *mem, u32 addr)
   return *word; 
 }
 
-static inline void _memset(u8 *mem, u32 addr, u32 val)
+static inline u32* _memset(u8 *mem, u32 addr, u32 val)
 {
   u8 *picker = mem + addr;
   u32 *word  = (u32*) picker;
   *word = val;
+  return word;
 }
 
 int checkFlags(u32* cpsr, u8 cond);
