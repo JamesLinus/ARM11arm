@@ -17,6 +17,14 @@ class RaspiStruct < FFI::Struct
     em = em.read_array_of_type(:uint32, :read_uint32, MEMSIZE)
   end
 
+  def cprs
+    self[:cpsr]
+  end
+
+  def pc
+    4*self[:pc] + 4
+  end
+
   def zeroed
     r = self.regs
     em = self.encoded_mem

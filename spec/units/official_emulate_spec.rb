@@ -17,8 +17,20 @@ describe 'official test suite' do
       it 'add01' do
         run_file bin + 'add01'
         emem = raspi.encoded_mem
-        raspi.get_reg(1).should eq(0x00000001)
-        raspi.get_reg(2).should eq(0x00000003)
+        raspi.get_ureg(0).should eq(0x00000000)
+        raspi.get_ureg(1).should eq(0x00000001)
+        raspi.get_ureg(2).should eq(0x00000003)
+        raspi.get_ureg(3).should eq(0x00000000)
+        raspi.get_ureg(4).should eq(0x00000000)
+        raspi.get_ureg(5).should eq(0x00000000)
+        raspi.get_ureg(6).should eq(0x00000000)
+        raspi.get_ureg(7).should eq(0x00000000)
+        raspi.get_ureg(8).should eq(0x00000000)
+        raspi.get_ureg(9).should eq(0x00000000)
+        raspi.get_ureg(10).should eq(0x00000000)
+        raspi.get_ureg(11).should eq(0x00000000)
+        raspi.pc.should eq(0x00000010)
+        raspi.cprs.should eq(0x00000000)
         emem[0].should eq(0xe3a01001)
         emem[1].should eq(0xe2812002)
       end
@@ -532,6 +544,7 @@ describe 'official test suite' do
     end
     it 'tst03' do
       run_file bin + 'tst03'
+      
       emem = raspi.encoded_mem
       raspi.get_reg(1).should eq(0x00000001)
       raspi.get_reg(2).should eq(0x00000017)
