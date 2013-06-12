@@ -12,6 +12,6 @@ uint32_t assembleDataProcessing(int arguments, char **strings);
 
 uint32_t assembleMultiply(int arguments, char **strings);
 
-uint32_t assembleSingleDataTransfer(int arguments char **strings);
+uint32_t assembleSingleDataTransfer(int arguments, char **strings);
 
-uint32_t assembleBranch(int arguments char **strings);
+uint32_t assembleBranch(int arguments, char **strings);
