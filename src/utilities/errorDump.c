@@ -23,22 +23,10 @@ void printBin(u32 i, int newline)
   for (int j = 0; j < 32; j++)
   {
     if ((i >> (32 - j - 1)) & 0x1u)
-    {
       printf("%s", COL_ONE);
-    }
-    else
-    {
-      printf("0"); 
-    }
+    else printf("0"); 
   } 
-  if (newline) 
-  { 
-    printf("\n"); 
-  }
-  else
-  {
-    printf("");
-  }
+  if (newline) printf("\n"); 
 }
 
 void printTestSuite(Arm *raspi)
@@ -87,7 +75,7 @@ void printOut(Arm *raspi)
   int print = 0;
   for (int i = 0; i < MEMSIZE; i++)
   {
-    if (r = raspi->em[i]) 
+    if ((r = raspi->em[i]))
     {
       print = 1;
       printf("  |-   [ 0x%08x ]   -|- 0x%08x -|- ", (i << 2), r);
