@@ -114,4 +114,30 @@ uint32_t assembleDataProcessing(int arguments, char **strings)
   return binaryCode;
 }
 
+// use (uint32_t)strtol() for hex values passed
+uint32_t assembleMultiply(int arguments, char **strings)
+{ 
+  uint32_t binaryCode;
+  uint32_t rd, rn, rs, rm;
+
+  rd = strToInt(strings[1], 16);
+  rn = strToInt(strings[2], 12);
+  rs = strToInt(strings[3], 8);
+  rm = strToInt(strings[4], 0);
+
+  // mul
+  if(arguments == 4)
+  {
+    binaryCode = 0xE0000090u;
+  } else // mla
+  {
+    binaryCode = 0xE0200090u;
+  }
+
+  return binaryCode | (rd | rn | rd | rm);
+}
+
+
+
+
 
