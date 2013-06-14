@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -pie -g -std=c99 -Werror -pedantic
+CFLAGS  = -fPIC -pie -g -std=c99 -Werror -pedantic -enable-shared
 BIN=../bin/
 OBJ=../obj
 RES=./res
