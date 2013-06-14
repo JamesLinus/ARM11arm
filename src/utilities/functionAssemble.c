@@ -41,8 +41,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t bits26and27mask = 0xF3FFFFFF;
   //update to include bits 26 and 27
   binaryCode = binaryCode | bits26and27mask;
-  //TODO set bit 25 - the I bit
-  //******************************
   
   //can use the mnemonic to determine type and layout of instruction
   //use an enum to distinguish
@@ -116,9 +114,81 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   
   //now comes the hard bit
 
+  //helper method for checking if operand2 is an expression or a shifted
+  //register
+  int isExpression(char *operand2)
+  {
+    if(operand2[0] == '#')
+    {
+      return 1;
+    }else
+    {
+      return 0;
+    }
+  }
+
+  //helper method to check if the expression is in hex form
+  int isHex(char *expression)
+  {
+    if(expression[0] == '0' && expression[1] == 'x')
+    {
+      return 1;
+    }else
+    {
+      return 0;
+    }
+  }
+  
+
   //declaring variables for use in switch
   uint32_t regNo1;
   uint32_t regNo2;
+
+  //expression if COMPUTE
+  if(typeOfInstr == COMPUTE)
+  {
+    char *operand2 = string[3];
+  }else  //expression if SINGLE_OPERAND or NO_COMPUTE
+  {
+    char *operand2 = string[2];
+  }
+
+
+  //for setting bit 25 - the I bit
+  if(isExpression(operand2))
+  {
+    uint32_t iBitMask = 1 << 25;
+    binaryCode = binaryCode | iBitMask; 
+  }
+  //otherwise leave the bit as 0
+
+
+  uint32_t encodeOperand2(char *operand2)
+  {   
+  if(isExpression(operand2))
+  {
+    operand2++;
+    if(isHex(operand2))
+    {
+      operand2 = operand2 + 2;
+      // the rest is HEX
+    }
+    else
+    {
+      // the rest is decimal 
+    }
+  }
+  else
+  {
+    // operand2 is a shifted register - OPTIONAL EXTRA	    
+  }
+ 
+  }
+
+  //adding operand2 bits
+  uint32_t operand2Mask = encodeOperand2(operand2);
+  binaryCode = binaryCode | operand2Mask;
+
 
   switch(typeOfInstr)
   {
@@ -141,7 +211,11 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo1 = strToInt(strings[1], 16);
     binaryCode = binaryCode | regNo1;
     break;
-  }
+ }
+   
+  
+
+
 
   return binaryCode;
 }
@@ -171,14 +245,18 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
 
 uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
-  
+  return 0;
 }
 
-uint32_t assembleBranch(uint32_t args, char** strings)
+uint32_t hexstrToInt(char* hex)
+{
+  return (uint32_t)strtol(hex + 1, NULL, 16);
+}
+
+uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
 {
   uint32_t binaryCode= 0x0a000000u;
-  // TODO: Not sure yet need to know how the tokeniser is working with labels
-  uint32_t offset;
+  int32_t offset = hexstrToInt(strings[1]) - memAddr;
 
   if(!strcmp(strings[0], "beq"))
   {
@@ -203,5 +281,5 @@ uint32_t assembleBranch(uint32_t args, char** strings)
     binaryCode |= BRANCH_COND(14);
   } 
 
-  return binaryCode | offset;
+  return (uint32_t)(binaryCode | ((offset >> 2) & 0x00ffffff));
 }
