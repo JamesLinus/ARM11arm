@@ -116,9 +116,44 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   
   //now comes the hard bit
 
+  //helper method for checking if operand2 is an expression or a shifted
+  //register
+  int isExpression(char *operand2)
+  {
+    if(operand2[0] == '#')
+    {
+      return 1;
+    }else
+    {
+      return 0;
+    }
+  }
+
+  //helper method to check if the expression is in hex form
+  int isHex(char *expression)
+  {
+    if(expression[0] == '0' && expression[1] == 'x')
+    {
+      return 1;
+    }else
+    {
+      return 0;
+    }
+  }
+  
+
   //declaring variables for use in switch
   uint32_t regNo1;
   uint32_t regNo2;
+
+  //expression if COMPUTE
+  if(typeOfInstr == COMPUTE)
+  {
+    char *operand2 = string[3];
+  }else  //expression if SINGLE_OPERAND or NO_COMPUTE
+  {
+    char *operand2 = string[2];
+  }
 
   switch(typeOfInstr)
   {
@@ -128,6 +163,23 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo2 = strToInt(strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
+    if(isExpression(operand2))
+    {
+      operand2++;
+      if(isHex(operand2))
+      {
+        operand2 = operand2 + 2;
+	// the rest is HEX
+      }
+      else
+      {
+        // the rest is decimal 
+      }
+    }
+    else
+    {
+      // operand2 is a shifted register	    
+    }
     break;
   case SINGLE_OPERAND:
     //setting rd bits
@@ -141,7 +193,11 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo1 = strToInt(strings[1], 16);
     binaryCode = binaryCode | regNo1;
     break;
-  }
+ }
+   
+  
+
+
 
   return binaryCode;
 }
