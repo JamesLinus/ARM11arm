@@ -155,6 +155,33 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     char *operand2 = string[2];
   }
 
+  uint32_t encodeOperand2(char *operand2)
+  {   
+  if(isExpression(operand2))
+  {
+    operand2++;
+    if(isHex(operand2))
+    {
+      operand2 = operand2 + 2;
+      // the rest is HEX
+    }
+    else
+    {
+      // the rest is decimal 
+    }
+  }
+  else
+  {
+    // operand2 is a shifted register - OPTIONAL EXTRA	    
+  }
+ 
+  }
+
+  //adding operand2 bits
+  uint32_t operand2Mask = encodeOperand2(operand2);
+  binaryCode = binaryCode | operand2Mask;
+
+
   switch(typeOfInstr)
   {
   case COMPUTE:
@@ -163,23 +190,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo2 = strToInt(strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
-    if(isExpression(operand2))
-    {
-      operand2++;
-      if(isHex(operand2))
-      {
-        operand2 = operand2 + 2;
-	// the rest is HEX
-      }
-      else
-      {
-        // the rest is decimal 
-      }
-    }
-    else
-    {
-      // operand2 is a shifted register	    
-    }
     break;
   case SINGLE_OPERAND:
     //setting rd bits
