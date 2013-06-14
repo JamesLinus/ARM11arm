@@ -227,14 +227,18 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
 
 uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
-  
+  return 0;
 }
 
-uint32_t assembleBranch(uint32_t args, char** strings)
+uint32_t hexstrToInt(char* hex)
+{
+  return (uint32_t)strtol(hex + 1, NULL, 16);
+}
+
+uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
 {
   uint32_t binaryCode= 0x0a000000u;
-  // TODO: Not sure yet need to know how the tokeniser is working with labels
-  uint32_t offset;
+  int32_t offset = hexstrToInt(strings[1]) - memAddr;
 
   if(!strcmp(strings[0], "beq"))
   {
@@ -259,5 +263,5 @@ uint32_t assembleBranch(uint32_t args, char** strings)
     binaryCode |= BRANCH_COND(14);
   } 
 
-  return binaryCode | offset;
+  return (uint32_t)(binaryCode | (offset >>= 2));
 }
