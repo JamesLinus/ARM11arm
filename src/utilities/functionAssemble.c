@@ -273,5 +273,5 @@ uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
     binaryCode |= BRANCH_COND(14);
   } 
 
-  return (uint32_t)(binaryCode | (offset >>= 2));
+  return (uint32_t)(binaryCode | ((offset >> 2) & 0x00ffffff));
 }
