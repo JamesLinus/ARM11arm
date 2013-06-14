@@ -152,6 +152,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   {
     char *operand2 = string[2];
   }
+
+
   //for setting bit 25 - the I bit
   if(isExpression(operand2))
   {
@@ -159,6 +161,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     binaryCode = binaryCode | iBitMask; 
   }
   //otherwise leave the bit as 0
+
 
   uint32_t encodeOperand2(char *operand2)
   {   
