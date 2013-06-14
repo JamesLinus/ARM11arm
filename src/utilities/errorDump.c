@@ -32,7 +32,7 @@ void printBin(u32 i, int newline)
 void printTestSuite(Arm *raspi)
 {
   printf("Registers:\n");
-  for (int i = 0; i < 13; i++)
+  for (int i = 0; i < NO_OF_REGISTERS; i++)
   {
     int r = raspi->r[i];
     printf("$%-3d: %10d (0x%08x)\n",i, r, raspi->r[i]);

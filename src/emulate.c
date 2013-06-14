@@ -119,6 +119,14 @@ void decodeTillBranch(PtrToBeCast base)
 // UTILITY FUNCITONS
 ///////////////////////////////////////////////////////////////////////////////
 
+void deallocRaspi(Arm* raspi)
+{
+  free(raspi->em);
+  free(raspi->dm);
+  free(raspi->r);
+  free(raspi);
+}
+
 Arm *makeRaspi()
 {
   // allocate and initialise the raspi struct
@@ -159,5 +167,6 @@ int main(int argc, char **argv)
   loadBinaryFile(path, raspi->em);
   // begin the emulation
   runRaspi(raspi, 0, suppress);
+  deallocRaspi(raspi);
   return 0;
 }
