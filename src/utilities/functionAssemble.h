@@ -14,4 +14,4 @@ uint32_t assembleMultiply(uint32_t arguments, char **strings);
 
 uint32_t assembleSingleDataTransfer(uint32_t arguments, char **strings);
 
-uint32_t assembleBranch(uint32_t arguments, char **strings);
+uint32_t assembleBranch(uint32_t arguments, char **strings, uint32_t memAddr);
