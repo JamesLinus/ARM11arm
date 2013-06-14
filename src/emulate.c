@@ -93,6 +93,8 @@ fini:
 // DECODING FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
+
+
 // ALSO AN EXECUTE FUNCTION - REQUIRED!!!
 // PRE  - Given an Arm pointer with loaded memory
 //        An entry point from whence to begin the decode
@@ -108,7 +110,8 @@ void decodeTillBranch(PtrToBeCast base)
   u32 j = i->entry;
   Arm *raspi = i->raspi;
   do decodeInstruction(raspi, j++);
-  while (raspi->em[j - 1]);
+  // while not a branch statement, or not 0x00u
+  while (!IS_BRANCH(raspi->em[j - 1]) * raspi->em[j - 1]);
   raspi->pc = raspi->pc - 1;
 }
 
