@@ -102,7 +102,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   }
   //now we have the correct opCodeMask we can fill in those bits in the 
   //binaryCode
-  binaryCode = binaryCode & opCodeMask;
+  binaryCode = binaryCode | opCodeMask;
 
   //for setting bit 20 - the S bit
   uint32_t SBitMask = 1 << 19;
@@ -171,11 +171,24 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     if(isHex(operand2))
     {
       operand2 = operand2 + 2;
+
+      // leave the rotate bits at 0, as i dont know what
+      // else im supposed to do with them
+
       // the rest is HEX
+      uint32_t imConstantMask = scanf("%x", operand2);
+      //for now assume that the value is always small enough
+      //to fit into the 8 bits
+      binaryCode = binaryCode | imConstantMask;
+
+      // convert string to hex value, then to binary
+      // then fill up the first 8 bits
     }
     else
     {
       // the rest is decimal 
+      uint32_t imConstantMask = scanf("%i", operand2);
+      binaryCode = binaryCode | imConstantMask;
     }
   }
   else
