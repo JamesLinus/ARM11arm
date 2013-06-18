@@ -170,13 +170,13 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     operand2++;
     if(isHex(operand2))
     {
-      operand2 = operand2 + 2;
+      operand2 +=2;
 
       // leave the rotate bits at 0, as i dont know what
       // else im supposed to do with them
 
       // the rest is HEX
-      uint32_t imConstantMask = scanf("%x", operand2);
+      uint32_t imConstantMask = toInt("%x", operand2);
       //for now assume that the value is always small enough
       //to fit into the 8 bits
       binaryCode = binaryCode | imConstantMask;
@@ -187,7 +187,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     else
     {
       // the rest is decimal 
-      uint32_t imConstantMask = scanf("%i", operand2);
+      uint32_t imConstantMask = toInt("%i", operand2);
       binaryCode = binaryCode | imConstantMask;
     }
   }
@@ -258,6 +258,53 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
 
 uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
+  //instruction always executed 
+  //hence cond bits are set to 1110
+ 
+  //initialises binaryCode to set the bits that are constant for this
+  //instruction (cond bits to 1110 and bit 25 set)
+
+  uint32_t binaryCode = 0xE4000000;
+  
+  //takes the rd arguments, converts to the binary
+  //representation and shifts it the correct amount
+  //to be used as a mask
+
+  uint32_t rd = strToInt(strings[1], 12);
+  binaryCode = binaryCode | rd;
+
+  //the instruction is a ldr
+  if(!strcmp(strings[0], "ldr"))
+  {
+  //the L bit will need to be set
+  uint32_t lBitMask = 0x00100000;
+  binaryCode = binaryCode | lBitMask;
+  
+  }
+  else
+  //the instruction is a str
+  { 
+  //the L bit is left clear
+  }
+
+  //for <address>
+
+  if(strings[2][0] == '=')
+  {
+    //numeric constant
+  }
+  else if
+  {
+    //preindexing
+       
+  }
+  else 
+  {
+    //post indexing
+   
+  }
+  
+  
   return 0;
 }
 
