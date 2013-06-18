@@ -3,24 +3,28 @@ class RaspiStruct < FFI::Struct
     :sp,   :uint32,
     :lr,   :uint32,
     :pc,   :uint32,
-    :cpsr, :uint32,
+    :cpsr, :uint32
+
+  def em
+    Emulate.getmem
+  end
 
   def regs
     regs = FFI::Pointer.new self[:r]
-    regs.read_array_of_type(:uint32, :read_uint32, 12)
+    regs.read_array_of_type(:uint32, :read_uint32, 13)
   end
 
   def encoded_mem
-    em = FFI::Pointer.new self[:em]
+    em = FFI::Pointer.new self.em
     em = em.read_array_of_type(:uint32, :read_uint32, MEMSIZE)
   end
 
-  def cprs
+  def cpsr
     self[:cpsr]
   end
 
   def pc
-    4*self[:pc] + 4
+    (self[:pc] << 2) + 4
   end
 
   def zeroed

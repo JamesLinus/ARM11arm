@@ -235,6 +235,11 @@ void setmem(Arm *raspi, char* binStr, int i)
   } 
 }
 
+u32 *getmem()
+{
+  return mem.e;
+}
+
 void runFunction(BaseInstr *i)
 {
   //return void;

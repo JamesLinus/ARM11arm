@@ -21,9 +21,9 @@ describe 'unit test for emulate.c' do
 
       it 'loads file at path into state memory' do
         struct = RaspiStruct.new raspi_ptr
-        Emulate.loadBinaryFile add01, struct[:em]
+        Emulate.loadBinaryFile add01, struct.em
         ruby_bin = Emulate.get_binary(add01)
-        s, c_bin = [ruby_bin.size, struct[:em]]
+        s, c_bin = [ruby_bin.size, struct.em]
         # the bytes from the first section of the memory
         # should equal the ruby bytes of the whole file
         c_bin.read_bytes(s).should eq(ruby_bin.read_bytes(s))
