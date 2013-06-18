@@ -37,8 +37,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t bits26and27mask = 0xF3FFFFFF;
   //update to include bits 26 and 27
   binaryCode = binaryCode | bits26and27mask;
-  //TODO set bit 25 - the I bit
-  //******************************
   
   //can use the mnemonic to determine type and layout of instruction
   //use an enum to distinguish
@@ -209,23 +207,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo2 = strToInt(strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
-    if(isExpression(operand2))
-    {
-      operand2++;
-      if(isHex(operand2))
-      {
-        operand2 = operand2 + 2;
-	// the rest is HEX
-      }
-      else
-      {
-        // the rest is decimal 
-      }
-    }
-    else
-    {
-      // operand2 is a shifted register	    
-    }
     break;
   case SINGLE_OPERAND:
     //setting rd bits
@@ -306,6 +287,7 @@ uint32_t assembleDataTransfer(uint32_t args, char** strings)
   if(strings[2][0] == '=')
   {
     //numeric constant
+    
   }
   else if
   {
