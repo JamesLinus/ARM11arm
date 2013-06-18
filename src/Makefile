@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -fPIC -pie -g -std=c99 -Werror -pedantic -enable-shared
+CFLAGS  = -fPIC -pie -g -std=c99 -Werror -pedantic
 BIN=../bin/
 OBJ=../obj
 RES=./res
@@ -14,6 +14,7 @@ all: $(LIST) $(OS)
 
 clean:
 	rm $(LIST)
+	rm $(OS)
 
 $(BIN)/assemble: assemble.c assemble.h
 	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c
