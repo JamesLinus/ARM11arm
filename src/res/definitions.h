@@ -13,7 +13,7 @@
 #ifndef FLAG_MASKS
 #define FLAG_MASKS
 
-#define NO_OF_REGISTERS 12
+#define NO_OF_REGISTERS 13
 #define NO_FILE_FOUND    1
 
 #define N_MASK (u32) 1 << 31
