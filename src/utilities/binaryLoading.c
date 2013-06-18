@@ -84,6 +84,7 @@ uint32_t *loadBinaryFile(char *path, uint32_t *memory)
   return memory;
 }
 
+// POST: file saved at path + EXIT_SUCCESS
 uint32_t writeBinaryFile(uint32_t* instr, uint32_t noOfInstr, char* path)
 {
   FILE* file = fopen(path, "wb");
@@ -92,6 +93,7 @@ uint32_t writeBinaryFile(uint32_t* instr, uint32_t noOfInstr, char* path)
     perror("writeBinaryFile() fgets failed");
     exit(EXIT_FAILURE);
   }
-  return 0;
+  fclose(file);
+  return EXIT_SUCCESS;
 }
 

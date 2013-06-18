@@ -14,6 +14,8 @@
 
 #define BRANCH_COND(i) (uint32_t)(i << 28)
 #define toInt(c, str) scanf(c, str)
+#define MAX_CHAR_PER_LINE 512
+#define MAX_ARG_PER_LINE 5
 
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
@@ -145,10 +147,10 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   //expression if COMPUTE
   if(typeOfInstr == COMPUTE)
   {
-    char *operand2 = string[3];
+    char *operand2 = strings[3];
   }else  //expression if SINGLE_OPERAND or NO_COMPUTE
   {
-    char *operand2 = string[2];
+    char *operand2 = strings[2];
   }
 
   switch(typeOfInstr)
@@ -220,8 +222,11 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
   return binaryCode | (rd | rn | rd | rm);
 }
 
+// executed regardless of cond as far as I can tell
 uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
+
+
   return 0;
 }
 
@@ -254,4 +259,43 @@ uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
   } 
 
   return (uint32_t)(binaryCode | ((offset >> 2) & 0x00ffffff));
+}
+
+uint32_t linesInFile(File* file)
+{
+  uint32_t lines = 0;
+  fseek(file, 0, SEEK_SET);
+
+  for(; !feof(file); fseek(file, 1, SEEK_CURR))
+  {
+    if(fgetc(file) == "\n")
+      lines++;
+  }
+  // ++ because there will possibly be one less "\n" than lines
+  return ++lines;
+}
+
+void saveToken(char* value, char* lines)
+{
+  if(value != NULL)
+  {
+    lines = malloc(strlen(value) + 1);
+    strcpy(lines, value);
+  }
+}
+
+char*** tokeniser(File* file)
+{ 
+  char* lines[linesInFile(file)][MAX_ARG_PER_LINE] = { 0 };
+  char line[MAX_CHAR_PER_LINE];
+
+  for(int i = 0; fgets(line, MAX_CHAR_PER_LINE, file); i++)
+  {
+    saveToken(strtok(line, " "), lines[i][0]);
+    for(int j = 1; j < MAX_CHAR_PER_LINE; j++)
+    {
+      saveToken(strtok(NULL, " "), lines[i][j]);
+    }
+  }
+  return lines;
 }
