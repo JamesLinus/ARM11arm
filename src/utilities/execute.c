@@ -191,11 +191,11 @@ void singleDataTransfer(PtrToBeCast base)
       //     Is Load
       case 0x01u: case 0x03u:
       case 0x05u: case 0x07u: 
-        *i->des = _memget((u8*)mem.e, basePtr); break;
+        *i->des = _memget(basePtr); break;
       //     Is Store
       case 0x00u: case 0x02u:
       case 0x04u: case 0x06u: 
-        finalDestination = _memset((u8*)mem.e, basePtr, *i->des);  // for ~L
+        finalDestination = _memset(basePtr, *i->des);  // for ~L
         break;
     }
   }
