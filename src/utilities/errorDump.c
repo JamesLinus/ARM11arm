@@ -44,8 +44,8 @@ void printTestSuite(Arm *raspi)
   printf("Non-zero memory:\n");
   for (int i = 0; i < MEMSIZE/4; i++)
   {
-    if (raspi->em[i])
-      printf("0x%08x: 0x%08x\n", 4*i, raspi->em[i]);
+    if (mem.e[i])
+      printf("0x%08x: 0x%08x\n", 4*i, mem.e[i]);
   }
 }
 
@@ -75,7 +75,7 @@ void printOut(Arm *raspi)
   int print = 0;
   for (int i = 0; i < MEMSIZE; i++)
   {
-    if ((r = raspi->em[i]))
+    if ((r = mem.e[i]))
     {
       print = 1;
       printf("  |-   [ 0x%08x ]   -|- 0x%08x -|- ", (i << 2), r);

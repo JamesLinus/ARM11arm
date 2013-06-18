@@ -4,8 +4,6 @@ class RaspiStruct < FFI::Struct
     :lr,   :uint32,
     :pc,   :uint32,
     :cpsr, :uint32,
-    :em,   :pointer,
-    :dm,   :pointer
 
   def regs
     regs = FFI::Pointer.new self[:r]

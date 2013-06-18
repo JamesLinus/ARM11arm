@@ -25,9 +25,11 @@ typedef uint64_t u64;
 // Set up program state as a C Struct
 typedef struct
 {
-  u32 e[MEMSIZE];
-  u32 d[MEMSIZE];
+  u32* e;
+  BaseInstr* d;
 } Memory;
+
+Memory mem;
 
 typedef struct
 {
@@ -36,8 +38,6 @@ typedef struct
   u32 lr;        // R[14] <- link register
   u32 pc;        // R[15] <- program counter
   u32 cpsr;      // R[16] <- flags
-  u32 *em;           // encoded memory
-  BaseInstr *dm;       // decoded memory
   u8  halt;      // a specific halting flag
 } Arm;
 
