@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #define BRANCH_COND(i) (uint32_t)(i << 28)
+#define toInt(c, str) scanf(c, str)
 
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
@@ -21,11 +22,6 @@ enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 //helper function takes string argument, ditches the 'r' and returns 
 //an integer value of the register, and shifts it a given amount to 
 //be used as a mask
-
-uint32_t strToInt(char* reg, uint32_t shift)
-{
-  return (uint32_t)atoi(++reg) << shift;  
-}
 
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 {
@@ -41,6 +37,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t bits26and27mask = 0xF3FFFFFF;
   //update to include bits 26 and 27
   binaryCode = binaryCode | bits26and27mask;
+  //TODO set bit 25 - the I bit
+  //******************************
   
   //can use the mnemonic to determine type and layout of instruction
   //use an enum to distinguish
@@ -102,7 +100,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   }
   //now we have the correct opCodeMask we can fill in those bits in the 
   //binaryCode
-  binaryCode = binaryCode | opCodeMask;
+  binaryCode = binaryCode & opCodeMask;
 
   //for setting bit 20 - the S bit
   uint32_t SBitMask = 1 << 19;
@@ -211,6 +209,23 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo2 = strToInt(strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
+    if(isExpression(operand2))
+    {
+      operand2++;
+      if(isHex(operand2))
+      {
+        operand2 = operand2 + 2;
+	// the rest is HEX
+      }
+      else
+      {
+        // the rest is decimal 
+      }
+    }
+    else
+    {
+      // operand2 is a shifted register	    
+    }
     break;
   case SINGLE_OPERAND:
     //setting rd bits
@@ -233,7 +248,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   return binaryCode;
 }
 
-// use (uint32_t)strtol() for hex values passed
 uint32_t assembleMultiply(uint32_t args, char** strings)
 { 
   uint32_t binaryCode;
@@ -308,15 +322,10 @@ uint32_t assembleDataTransfer(uint32_t args, char** strings)
   return 0;
 }
 
-uint32_t hexstrToInt(char* hex)
-{
-  return (uint32_t)strtol(hex + 1, NULL, 16);
-}
-
 uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
 {
   uint32_t binaryCode= 0x0a000000u;
-  int32_t offset = hexstrToInt(strings[1]) - memAddr;
+  int32_t offset = atoi(strings[1]) - memAddr;
 
   if(!strcmp(strings[0], "beq"))
   {
