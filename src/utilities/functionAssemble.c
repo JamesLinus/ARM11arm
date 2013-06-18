@@ -13,15 +13,12 @@
 #include <stdlib.h>
 
 #define BRANCH_COND(i) (uint32_t)(i << 28)
-#define toInt(c, str) scanf(c, str)
+#define toInt(c, str, shift) (scanf(c, str) << shift)
 
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 //to think about ==== what to do about the labels
 
-//helper function takes string argument, ditches the 'r' and returns 
-//an integer value of the register, and shifts it a given amount to 
-//be used as a mask
 
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 {
@@ -158,7 +155,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   }
   //otherwise leave the bit as 0
 
-
+  //for encoding operand2
   uint32_t encodeOperand2(char *operand2)
   {   
   if(isExpression(operand2))
@@ -172,7 +169,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
       // else im supposed to do with them
 
       // the rest is HEX
-      uint32_t imConstantMask = toInt("%x", operand2);
+      uint32_t imConstantMask = toInt("%x", operand2, 0);
       //for now assume that the value is always small enough
       //to fit into the 8 bits
       binaryCode = binaryCode | imConstantMask;
@@ -183,7 +180,7 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     else
     {
       // the rest is decimal 
-      uint32_t imConstantMask = toInt("%i", operand2);
+      uint32_t imConstantMask = toInt("%i", operand2, 0);
       binaryCode = binaryCode | imConstantMask;
     }
   }
@@ -203,29 +200,25 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   {
   case COMPUTE:
     //setting rn and rd bits
-    regNo1 = strToInt(strings[1], 16);
-    regNo2 = strToInt(strings[2], 12);
+    regNo1 = toInt("%i", strings[1], 16);
+    regNo2 = toInt("%i", strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
     break;
   case SINGLE_OPERAND:
     //setting rd bits
     //no need to set rn bits
-    regNo1 = strToInt(strings[1], 12);
+    regNo1 = toInt("%i", strings[1], 12);
     binaryCode = binaryCode | regNo1;
     break;
   case NO_COMPUTE:
     //setting rn bits
     //no need to set rd bits
-    regNo1 = strToInt(strings[1], 16);
+    regNo1 = toInt("%i", strings[1], 16);
     binaryCode = binaryCode | regNo1;
     break;
  }
    
-  
-
-
-
   return binaryCode;
 }
 
@@ -234,10 +227,10 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
   uint32_t binaryCode;
   uint32_t rd, rn, rs, rm;
 
-  rd = strToInt(strings[1], 16);
-  rn = strToInt(strings[2], 12);
-  rs = strToInt(strings[3], 8);
-  rm = strToInt(strings[4], 0);
+  rd = toInt("%i", strings[1], 16);
+  rn = toInt("%i", strings[2], 12);
+  rs = toInt("%i", strings[3], 8);
+  rm = toInt("%i", strings[4], 0);
 
   // mul
   if(args == 4)
@@ -265,7 +258,7 @@ uint32_t assembleDataTransfer(uint32_t args, char** strings)
   //representation and shifts it the correct amount
   //to be used as a mask
 
-  uint32_t rd = strToInt(strings[1], 12);
+  uint32_t rd = toInt("%i", strings[1], 12);
   binaryCode = binaryCode | rd;
 
   //the instruction is a ldr
@@ -287,6 +280,7 @@ uint32_t assembleDataTransfer(uint32_t args, char** strings)
   if(strings[2][0] == '=')
   {
     //numeric constant
+    uint32_t numericConst = toInt("%i", ++strings[2], 0);
     
   }
   else if
