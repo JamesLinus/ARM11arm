@@ -202,7 +202,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   return binaryCode;
 }
 
-// use (uint32_t)strtol() for hex values passed
 uint32_t assembleMultiply(uint32_t args, char** strings)
 { 
   uint32_t binaryCode;
@@ -238,7 +237,7 @@ uint32_t hexstrToInt(char* hex)
 uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
 {
   uint32_t binaryCode= 0x0a000000u;
-  int32_t offset = hexstrToInt(strings[1]) - memAddr;
+  int32_t offset = atoi(strings[1]) - memAddr;
 
   if(!strcmp(strings[0], "beq"))
   {
