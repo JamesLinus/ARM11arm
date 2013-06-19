@@ -286,7 +286,7 @@ void saveToken(char* value, char* lines)
 
 char*** tokeniser(char* path)
 { 
-  FILE file = fopen(path, "r");
+  FILE* file = fopen(path, "r");
   char*** lines = calloc(linesInFile(file) * MAX_ARG_PER_LINE, 1);
   char line[MAX_CHAR_PER_LINE];
 
