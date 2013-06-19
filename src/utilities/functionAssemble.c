@@ -261,14 +261,14 @@ uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
   return (uint32_t)(binaryCode | ((offset >> 2) & 0x00ffffff));
 }
 
-uint32_t linesInFile(File* file)
+uint32_t linesInFile(FILE* file)
 {
   uint32_t lines = 0;
   fseek(file, 0, SEEK_SET);
 
-  for(; !feof(file); fseek(file, 1, SEEK_CURR))
+  for(; !feof(file); fseek(file, 1, SEEK_CUR))
   {
-    if(fgetc(file) == "\n")
+    if(fgetc(file) == atoi("\n"))
       lines++;
   }
   // ++ because there will possibly be one less "\n" than lines
@@ -284,9 +284,9 @@ void saveToken(char* value, char* lines)
   }
 }
 
-char*** tokeniser(File* file)
+char*** tokeniser(FILE* file)
 { 
-  char* lines[linesInFile(file)][MAX_ARG_PER_LINE] = { 0 };
+  char*** lines = calloc(linesInFile(file) * MAX_ARG_PER_LINE, 1);
   char line[MAX_CHAR_PER_LINE];
 
   for(int i = 0; fgets(line, MAX_CHAR_PER_LINE, file); i++)
