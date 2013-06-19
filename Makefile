@@ -1,7 +1,7 @@
 build:
 	make -C ./spec/test_binary_wrappers
 	make -C ./src all
-	rm -rf bin/*.dSYM
+	# rm -rf bin/*.dSYM
 
 tests:
 	make -C ./spec/test_binary_wrappers
