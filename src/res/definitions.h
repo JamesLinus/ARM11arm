@@ -57,11 +57,15 @@
 #define S_DATA_MASK      0x04000000u
 #define BRANCH_MASK      0x0a000000u
 
+#define DATA_TEMPLATE    0x00000000u
+#define MUL_TEMPLATE     0x00000090u
+#define S_DATA_TEMPLATE  0x04000000u
+#define BRANCH_TEMPLATE  0x0a000000u
+
 #define IS_MUL(i)        ((MUL_MASK    & i) == 0x00000090u)
 #define IS_DATA(i)       ((DATA_MASK   & i) == 0x00000000u)
 #define IS_S_DATA(i)     ((S_DATA_MASK & i) == 0x04000000u)
 #define IS_BRANCH(i)     ((BRANCH_MASK & i) == 0x0a000000u)
-// #define IS_BLOCK_DATA(i)
 
 #define IMMEDIATE_MASK   0x02000000u
 #define DATA_OP_MASK     0x01e00000u
@@ -94,5 +98,20 @@
 #define LSR(i,v) (i >> v)
 #define ASR(i,v) (LSR(i,v) | (i & MSB))
 #define ROR(i,v) (i >> v) | LSL(i, (0x20u - v))
+
+#define MAX_CHAR_PER_LINE 512
+#define MAX_ARG_PER_LINE 5
+
+#define OPCODE_SHIFT(o)    o << 24
+#define COND_SHIFT(i)   (u32)(i << 28)
+#define SET_SHIFT(i)    (u32)(i << 20)
+
+#define COMPUTES 0
+#define SINGLE_OP_ASSIGNS 1
+#define SETS_CPSR 2
+
+#define REG(i) atoi(i+1)
+
+#define IS_IMMEDIATE(operand) operand[0] == '#'
 
 #endif

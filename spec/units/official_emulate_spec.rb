@@ -103,7 +103,6 @@ describe 'official test suite' do
       end
       it 'opt_add05' do
         run_file bin + 'opt_add05'
-        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_ureg(0).should eq(0x00000000)
         raspi.get_ureg(1).should eq(0x00000004)

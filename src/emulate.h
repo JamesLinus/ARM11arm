@@ -9,16 +9,10 @@
 #ifndef EMULATE_H
 #define EMULATE_H
 
-#include <stdint.h>
-
 #define NO_OF_REGS 16
 #define MEMSIZE 65536
 
-typedef uint8_t   u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-
+#include "res/uints.h"
 #include "res/opstructs.h"
 #include "res/definitions.h"
 
