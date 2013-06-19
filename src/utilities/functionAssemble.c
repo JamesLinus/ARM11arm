@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "functionAssemble.h"
-
+//this define is useless at the moment
 #define TO_INT(c, str, shift) (fscanf(c, str) << shift)
 
 // to think about ==== what to do about the labels
@@ -52,7 +52,7 @@ u32 assembleDataProcessing(u32 arguments, char **args)
   switch(opType)
   {
     case COMPUTES: 
-      processComputes(&binaryCode, args[1], args[2], args[3]);
+      processComplutes(&binaryCode, args[1], args[2], args[3]);
       break;
     case SINGLE_OP_ASSIGNS: 
       processSingleOp(&binaryCode, args[1], args[2]);
@@ -89,36 +89,31 @@ u32 assembleMultiply(u32 args, char** strings)
 // executed regardless of cond as far as I can tell
 u32 assembleDataTransfer(u32 args, char** strings)
 {
-
-
   //the instruction is a ldr
   if(!strcmp(strings[0], "ldr"))
   {
   //the L bit will need to be set
   u32 lBitMask = 0x00100000;
-  binaryCode = binaryCode | lBitMask;
+  binaryCode |= lBitMask;
+  }
+  //otherwise the L bit will be left clear
   
-  }
-  else
-  //the instruction is a str
-  { 
-  //the L bit is left clear
-  }
-
   //for <address>
 
   if(strings[2][0] == '=')
   {
     //numeric constant
-    u32 numericConst = TO_INT("%i", ++strings[2], 0);
-    if(numbericConst < 0xFF)
+    u32 numericConst = (u32)immediateToInt(++strings[2]);
+    if(numbericConst <= 0xFF)
     {
       //use mov instruction instead
+      //binaryCode = equivalent mov instruction
     }
     else 
     {
       //store in 4 bytes at the end of the file and 
       //pass the address using PC as the base register
+      //using pre-indexing address
     }
     
   }
