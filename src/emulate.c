@@ -43,7 +43,7 @@ void runRaspi(Arm *raspi, int entry, int suppress)
   BaseInstr* crrt;
   // view from hereon out as the 'execution' stage
 exec:
-  crrt = &(raspi->dm[raspi->pc++]);
+  crrt = &(mem.d[raspi->pc++]);
   // switch on the current instructions condition
   // if it in any way doesn't satisfy the conditions, then
   // jump to the next label- avoid execution of this instruction
@@ -111,7 +111,7 @@ void decodeTillBranch(PtrToBeCast base)
   Arm *raspi = i->raspi;
   do decodeInstruction(raspi, j++);
   // while not a branch statement, or not 0x00u
-  while (!IS_BRANCH(raspi->em[j - 1]) * raspi->em[j - 1]);
+  while (!IS_BRANCH(mem.e[j - 1]) * mem.e[j - 1]);
   raspi->pc = raspi->pc - 1;
 }
 
@@ -121,8 +121,8 @@ void decodeTillBranch(PtrToBeCast base)
 
 void deallocRaspi(Arm* raspi)
 {
-  free(raspi->em);
-  free(raspi->dm);
+  free(mem.e);
+  free(mem.d);
   free(raspi->r);
   free(raspi);
 }
@@ -132,12 +132,12 @@ Arm *makeRaspi()
   // allocate and initialise the raspi struct
   Arm *raspi = (Arm *) calloc(1, sizeof(Arm));
   // allocate space for all the memory
-  raspi->em = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
-  raspi->dm = (BaseInstr *) calloc(1, sizeof(BaseInstr) * MEMSIZE);
+  mem.e = (u32 *) calloc(1, sizeof(u32) * MEMSIZE);
+  mem.d = (BaseInstr *) calloc(1, sizeof(BaseInstr) * MEMSIZE);
   for (int i = 0; i < MEMSIZE; i++)
   {
     // cast to the empty instruction type for initialization
-    EmptyInstr* instr = (EmptyInstr*) &(raspi->dm[i]);
+    EmptyInstr* instr = (EmptyInstr*) &(mem.d[i]);
     // make the function point to the decodeTillBranch
     instr->function = &decodeTillBranch;
     instr->cond = AL_FLAG;
@@ -163,8 +163,8 @@ int main(int argc, char **argv)
       fprintf(stderr, "No FILE provided.\n"); 
       return NO_FILE_FOUND;
   }
-  Arm *raspi = makeRaspi(path);
-  loadBinaryFile(path, raspi->em);
+  Arm *raspi = makeRaspi();
+  loadBinaryFile(path, mem.e);
   // begin the emulation
   runRaspi(raspi, 0, suppress);
   deallocRaspi(raspi);

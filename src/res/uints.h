@@ -1,20 +1,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: assemble.h
+// File: uints.h
 // Group: 21
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef ASSEMBLE
-#define ASSEMBLE
+#ifndef UINTS
+#define UINTS
 
-#include "res/uints.h"
-#include "res/definitions.h"
+#include <stdint.h>
 
-char*** tokeniser(char* path);
-u32 linesInFile(FILE* file, char* line);
-void saveToken(char* value, char* lines);
-int main(int argc, char **argv);
+typedef uint8_t   u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
 #endif

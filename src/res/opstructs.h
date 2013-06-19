@@ -48,7 +48,7 @@ typedef void (*Execute)(PtrToBeCast);
   u32 _op2;           \
   u32 _shift;         \
   Shifter exShift;    \
-  u32* des;
+  u32* des; u8 destructive;
 
 //////////////////////////////////////////////////////
 // BASE STRUCT ///////////////////////////////////////
@@ -58,7 +58,7 @@ typedef void (*Execute)(PtrToBeCast);
 typedef struct
 {
   BASE
-  char padding[64];
+  char padding[108];
 } BaseInstr;
 
 
@@ -88,7 +88,7 @@ typedef struct   //  < BaseInstr
 {
   BASE
   SHIFTING_ARGS
-  u8 s;
+  u8 s; 
 } DataProcessingInstr;
 
 // SINGLE DATA PROCESSING instructions also make use
@@ -99,7 +99,7 @@ typedef struct   //  < BaseInstr
   BASE
   SHIFTING_ARGS
   u8 pul; u8 pc;
-  u8 s; u8 *mem;
+  u8 s;
 } SingleDataInstr;
 
 //////////////////////////////////////////////////////

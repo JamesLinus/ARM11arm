@@ -15,8 +15,8 @@
 
 // macros for applying the functions, allows for
 // DRYer function bodies
-#define  APPLY(i, op) (*(i->op1)) op (*(i->op2))
-#define _APPLY(i, op) (*(i->op2)) op (*(i->op1))
+#define  APPLY(i, op) *i->op1 op i->_op2
+#define _APPLY(i, op) i->_op2 op *i->op1
 
 // Stage 1 of any data processing instruction, cast the given
 // pointer and calculate the required shift. Return the pointer
@@ -26,7 +26,8 @@ static inline DataProcessingInstr* castAndShift(PtrToBeCast base)
   // make cast to the data processing struct
   DataProcessingInstr* i = (DataProcessingInstr*) base;
   // calculate the value of op2 using the shifting function
-  *(i->op2) = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), i->s);
+  i->_op2 = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), i->s);
+  if (i->destructive) *i->op2 = i->_op2;
   // return the casted and shift calculated struct
   return i;
 }
@@ -153,7 +154,7 @@ void multiply(PtrToBeCast base)
   MultiplyInstr* i = (MultiplyInstr*) base;
   // make calculation, move into destination
   u32 acc = 0; if (i->acc) acc = *i->acc;
-  *(i->des) = APPLY(i, *) + acc;
+  *(i->des) = *i->op1 * *i->op2 + acc;
   // if required, mark the flags
   if (i->s) setflags(i->cpsr, *(i->des));
 }
@@ -191,11 +192,11 @@ void singleDataTransfer(PtrToBeCast base)
       //     Is Load
       case 0x01u: case 0x03u:
       case 0x05u: case 0x07u: 
-        *i->des = _memget(i->mem, basePtr); break;
+        *i->des = _memget(basePtr); break;
       //     Is Store
       case 0x00u: case 0x02u:
       case 0x04u: case 0x06u: 
-        finalDestination = _memset(i->mem, basePtr, *i->des);  // for ~L
+        finalDestination = _memset(basePtr, *i->des);  // for ~L
         break;
     }
   }

@@ -24,8 +24,8 @@
 //        has been fully initialized with function and arguments
 BaseInstr *decodeInstruction(Arm *raspi, u32 index)
 {
-  u32 instr = raspi->em[index];
-  BaseInstr *base = &(raspi->dm[index]);
+  u32 instr = mem.e[index];
+  BaseInstr *base = &(mem.d[index]);
   // cond is the same no matter the instruction
   base->cond = instr >> 28;
   // set cpsr reg pointer, used in most
@@ -109,7 +109,6 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
       default: i->op1 = &raspi->r[regNo];
     }
     i->des = &(raspi->r[(instr & RD_MASK) >> 12]);
-    i->mem = (u8 *) raspi->em;
     // modify instruction for immediate idiosyncrasy
     instr ^= IMMEDIATE_MASK;
     // sorting out shifting
@@ -125,7 +124,7 @@ BaseInstr *decodeInstruction(Arm *raspi, u32 index)
     i->offset      = (instr & BRANCH_OFFSET);
     i->pc          = &(raspi->pc);
   }
-  return (BaseInstr *) & (raspi->dm[index]);
+  return (BaseInstr *) & (mem.d[index]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -138,6 +137,8 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
   u32 rawOperand = instr & DATA_OPR_2;
   // set default shift type
   u8   shiftType = 0x3u;
+  // default destuctive setting
+  i->destructive = 1;
   if (instr & IMMEDIATE_MASK)  // if immediate is set
   {
     // get immediate part of operand
@@ -165,8 +166,10 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     // printf("Interested in THIS --- %d\n\n", rawOperand & RM_MASK);
     if (shift & 0x01u) // if bit 4 is 1
     {
+      // mark as non-destructive shift
+      i->destructive = 0;
       // then shift by value in register
-      i->shift = &(raspi->r[(shift & 0x0fu) >> 4]);
+      i->shift = &(raspi->r[(shift & 0xf0u) >> 4]);
     }
     else  // shift by a constant
     {
@@ -228,12 +231,17 @@ u32 ror(u32* cpsr, u32 a, u32 b, u32 set)
 
 void setmem(Arm *raspi, char* binStr, int i)
 {
-  raspi->em[1] = atoi(binStr);
+  mem.e[1] = atoi(binStr);
   for (int j = 0; j < 32; j++)
   {
-    raspi->em[1] <<= 1;
-    raspi->em[1] += (binStr[j] == '1');
+    mem.e[1] <<= 1;
+    mem.e[1] += (binStr[j] == '1');
   } 
+}
+
+u32 *getmem()
+{
+  return mem.e;
 }
 
 void runFunction(BaseInstr *i)
