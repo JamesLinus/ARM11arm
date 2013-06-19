@@ -12,9 +12,6 @@
 #include <stdlib.h>
 #include "functionAssemble.h"
 
-//this define is useless at the moment
-#define TO_INT(c, str, shift) (fscanf(c, str) << shift)
-
 
 const char *operands[] = {
   "and", "eor", "sub", "rsb", 
