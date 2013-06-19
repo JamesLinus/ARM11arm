@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 #define BRANCH_COND(i) (uint32_t)(i << 28)
-#define toInt(c, str, shift) (scanf(c, str) << shift)
+#define toInt(c, str, shift) (fscanf(c, str) << shift)
 
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
@@ -114,7 +114,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     if(operand2[0] == '#')
     {
       return 1;
-    }else
+    }
+    else
     {
       return 0;
     }
@@ -126,7 +127,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     if(expression[0] == '0' && expression[1] == 'x')
     {
       return 1;
-    }else
+    }
+    else
     {
       return 0;
     }
@@ -138,12 +140,15 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t regNo2;
 
   //expression if COMPUTE
+
+  char *operand2;
+
   if(typeOfInstr == COMPUTE)
   {
-    char *operand2 = string[3];
+     operand2 = strings[3];
   }else  //expression if SINGLE_OPERAND or NO_COMPUTE
   {
-    char *operand2 = string[2];
+     operand2 = strings[2];
   }
 
 
@@ -281,12 +286,43 @@ uint32_t assembleDataTransfer(uint32_t args, char** strings)
   {
     //numeric constant
     uint32_t numericConst = toInt("%i", ++strings[2], 0);
+    if(numbericConst < 0xFF)
+    {
+      //use mov instruction instead
+    }
+    else 
+    {
+      //store in 4 bytes at the end of the file and 
+      //pass the address using PC as the base register
+    }
     
   }
   else if
   {
     //preindexing
-       
+    //get the correct string
+    char *address = strings[2];
+    //get rid of the first '['
+    address++;
+    char *madeString;
+    int i = 0;
+    char *current = address;
+
+    // TODO: finish!!!
+    while(current[0] != ']')
+    { 
+      if(current[0] != ',')
+      {
+        madeString[i] = current[0];
+        current++;
+        i++;
+      }
+      else 
+      {
+          
+      }
+ 
+    }
   }
   else 
   {
