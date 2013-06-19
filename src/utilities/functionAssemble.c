@@ -20,26 +20,6 @@
 // an integer value of the register, and shifts it a given amount to 
 // be used as a mask
 
-char** operands = {
-  "and", "eor", "sub", "rsb", 
-  "add", "adc", "sbc", "rsc", 
-  "tst", "teq", "cmp", "cmn", 
-  "orr", "mov", "bic", "mvn",
-}
-
-int* operandType = {
-  COMPUTES,  COMPUTES,  COMPUTES,  COMPUTES,
-  COMPUTES,  COMPUTES,  COMPUTES,  COMPUTES,
-  SETS_CPSR, SETS_CPSR, SETS_CPSR, SETS_CPSR,
-  COMPUTES,  SINGLE_OP_ASSIGNS, 0, 0, // TODO- Support bic and mvn
-}
-
-int* setcond = {
-  1, 1, 1, 1,
-  1, 1, 1, 1,
-  0, 0, 0, 1,
-  1, 1, 1, 1,
-}
 
 // Includes setting of the SET COND flag
 static inline u32 cmdToOpcode(char* cmd, int* type)
@@ -54,6 +34,7 @@ static inline u32 cmdToOpcode(char* cmd, int* type)
 static inline immediateToInt(char* str)
 {
   int l = 0; while(str[l++]);
+  if (str[0] = '#') str++;
   return strtoul(str, NULL, 10 + ((l > 2) && (str[1] == 'x'))*6);
 }
 
@@ -63,7 +44,7 @@ u32 processOp2(char* operand)
   return val;  //? that it?
 }
 
-// 
+// Entry point for all data processing operations
 u32 assembleDataProcessing(u32 arguments, char **args)
 {
   // assert the correct number of arguments (between 2 and 4)
@@ -236,20 +217,3 @@ void saveToken(char* value, char* lines)
   }
 }
 
-char*** tokeniser(char* path)
-{ 
-  FILE file = fopen(path, "r");
-  char*** lines = calloc(linesInFile(file) * MAX_ARG_PER_LINE, 1);
-  char line[MAX_CHAR_PER_LINE];
-
-  for(int i = 0; fgets(line, MAX_CHAR_PER_LINE, file); i++)
-  {
-    saveToken(strtok(line, " "), lines[i][0]);
-    for(int j = 1; j < MAX_CHAR_PER_LINE; j++)
-    {
-      saveToken(strtok(NULL, " "), lines[i][j]);
-    }
-  }
-  fclose(file);
-  return lines;
-}

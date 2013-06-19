@@ -110,6 +110,9 @@
 #define SINGLE_OP_ASSIGNS 1
 #define SETS_CPSR 2
 
+#define DATA_RD_SHIFT(i) i << 12
+#define DATA_RN_SHIFT(i) i << 16
+
 #define REG(i) atoi(i+1)
 
 #define IS_IMMEDIATE(operand) operand[0] == '#'
