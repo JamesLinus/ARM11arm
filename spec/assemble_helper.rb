@@ -9,7 +9,7 @@ module Assemble extend FFI::Library
   attach_function :tokeniser, [:string], :pointer
 
   #### utilites/functionAssemble.c #############################
-  # attach_function :assembleDataProcessing, [:uint32, :pointer], :uint32
+  attach_function :assembleDataProcessing, [:pointer], :uint32
 
   #### standard C libraries #################################
   attach_function :malloc, [:size_t], :pointer

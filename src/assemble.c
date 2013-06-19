@@ -60,7 +60,6 @@ char*** tokeniser(char* path)
   return lines;
 }
 
-
 u32 linesInFile(FILE* file, char* line)
 {
   int lines = 0;
@@ -68,15 +67,6 @@ u32 linesInFile(FILE* file, char* line)
   while (fgets(line, sizeof line, file) != NULL) lines++;
   fseek(file, 0, SEEK_SET);
   return lines;
-}
-
-void saveToken(char* value, char* lines)
-{
-  if(value != NULL)
-  {
-    lines = malloc(strlen(value) + 1);
-    strcpy(lines, value);
-  }
 }
 
 int main(int argc, char **argv) {
@@ -90,12 +80,14 @@ int main(int argc, char **argv) {
       fprintf(stderr, "No FILE provided.\n"); 
       return NO_FILE_FOUND;
   }
+  
   char*** lines = tokeniser(path);
   for (int i = 0; i < 2; i++)
   {
     for (int j = 0; j < MAX_ARG_PER_LINE; j++)
-      printf("%s,  ", lines[i][j]);
+      if (lines[i][j] != NULL)
+        printf("%s,  ", lines[i][j]);
     printf("\n");
-  }
+  }  
   return EXIT_SUCCESS;
 }

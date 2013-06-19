@@ -6,12 +6,10 @@
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef EMULATE_H
-#include "../emulate.h"
-#endif
-
 #ifndef ERROR_DUMP_H
 #define ERROR_DUMP_H
+
+#include "../emulate.h"
 
 #define COL_ONE "\x1b[1;36m1\x1b[0m"
 
