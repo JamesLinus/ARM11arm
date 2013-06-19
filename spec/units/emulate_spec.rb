@@ -28,7 +28,7 @@ describe 'unit test for emulate.c' do
         # should equal the ruby bytes of the whole file
         c_bin.read_bytes(s).should eq(ruby_bin.read_bytes(s))
         elems = c_bin
-          .read_array_of_type(:uint32, :read_uint32, memsize / 2)
+          .read_array_of_type(:uint32, :read_uint32, (memsize >> 1))
         total = elems[s..memsize].reduce { |a, b| a + b }
         # all bytes after the loaded mem should be 0
         total.should eq(0)

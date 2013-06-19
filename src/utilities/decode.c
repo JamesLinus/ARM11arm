@@ -137,6 +137,8 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
   u32 rawOperand = instr & DATA_OPR_2;
   // set default shift type
   u8   shiftType = 0x3u;
+  // default destuctive setting
+  i->destructive = 1;
   if (instr & IMMEDIATE_MASK)  // if immediate is set
   {
     // get immediate part of operand
@@ -164,8 +166,10 @@ void setShifting(Arm *raspi, u32 instr, ShiftingInstr *i)
     // printf("Interested in THIS --- %d\n\n", rawOperand & RM_MASK);
     if (shift & 0x01u) // if bit 4 is 1
     {
+      // mark as non-destructive shift
+      i->destructive = 0;
       // then shift by value in register
-      i->shift = &(raspi->r[(shift & 0x0fu) >> 4]);
+      i->shift = &(raspi->r[(shift & 0xf0u) >> 4]);
     }
     else  // shift by a constant
     {

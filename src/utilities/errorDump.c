@@ -6,9 +6,9 @@
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "errorDump.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "errorDump.h"
 
 // Small snippet to output a formatted register
 void printReg(char* name, int index, u32 i)
