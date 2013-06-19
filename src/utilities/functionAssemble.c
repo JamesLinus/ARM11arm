@@ -16,11 +16,6 @@
 
 // to think about ==== what to do about the labels
 
-// helper function takes string argument, ditches the 'r' and returns 
-// an integer value of the register, and shifts it a given amount to 
-// be used as a mask
-
-
 // Includes setting of the SET COND flag
 static inline u32 cmdToOpcode(char* cmd, int* type)
 {
@@ -74,10 +69,10 @@ u32 assembleMultiply(u32 args, char** strings)
   u32 binaryCode;
   u32 rd, rn, rs, rm;
 
-  rd = strToInt(strings[1], 16);
-  rn = strToInt(strings[2], 12);
-  rs = strToInt(strings[3], 8);
-  rm = strToInt(strings[4], 0);
+  rd = (immediateToInt(strings[1]++) << 16);
+  rn = (immediateToInt(strings[2]++) << 12);
+  rs = (immediateToInt(strings[3]++) << 8);
+  rm = (immediateToInt(strings[4]++);
 
   // mul
   if(args == 4)
