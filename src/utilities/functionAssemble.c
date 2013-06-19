@@ -194,26 +194,3 @@ u32 assembleBranch(u32 args, char** strings, u32 memAddr)
   return (u32)(binaryCode | ((offset >> 2) & 0x00ffffff));
 }
 
-u32 linesInFile(FILE* file)
-{
-  u32 lines = 0;
-  fseek(file, 0, SEEK_SET);
-
-  for(; !feof(file); fseek(file, 1, SEEK_CUR))
-  {
-    if(fgetc(file) == atoi("\n"))
-      lines++;
-  }
-  // ++ because there will possibly be one less "\n" than lines
-  return ++lines;
-}
-
-void saveToken(char* value, char* lines)
-{
-  if(value != NULL)
-  {
-    lines = malloc(strlen(value) + 1);
-    strcpy(lines, value);
-  }
-}
-

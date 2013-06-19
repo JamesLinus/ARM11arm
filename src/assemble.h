@@ -12,6 +12,9 @@
 #include "res/uints.h"
 #include "res/definitions.h"
 
+char*** tokeniser(char* path);
+u32 linesInFile(FILE* file, char* line);
+void saveToken(char* value, char* lines);
 int main(int argc, char **argv);
 
 #endif
