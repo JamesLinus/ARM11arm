@@ -37,7 +37,7 @@ long unsigned int getSize(FILE *file)
   return size;
 }
 
-uint32_t *loadBinaryFile(char *path, uint32_t *memory)
+u32 *loadBinaryFile(char *path, u32 *memory)
 {
   // declare variables
   // the binary file pointer

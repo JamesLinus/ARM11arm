@@ -6,16 +6,11 @@
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef EMULATE_H
-#include "../emulate.h"
-#endif
-
-#ifndef EXECUTE_H
-#include "execute.h"
-#endif
-
 #ifndef DECODE_H
 #define DECODE_H
+
+#include "execute.h"
+#include "../emulate.h"
 
 u32 lsl(u32* cpsr, u32 a, u32 b, u32 set);
 u32 lsr(u32* cpsr, u32 a, u32 b, u32 set);

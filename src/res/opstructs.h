@@ -58,7 +58,7 @@ typedef void (*Execute)(PtrToBeCast);
 typedef struct
 {
   BASE
-  char padding[64];
+  char padding[108];
 } BaseInstr;
 
 

@@ -6,8 +6,18 @@ RES=./res
 UTILS=./utilities/
 
 PROG=emulate assemble
-MODS=decode.o errorDump.o execute.o binaryLoading.o 
+# Emulate modules /////////////////////////////////////////
+EMODS=decode.o errorDump.o execute.o binaryLoading.o
+EOS=$(addprefix $(OBJ)/, $(EMODS))
+# Assembly modules ////////////////////////////////////////
+AMODS=functionAssemble.o
+AOS=$(addprefix $(OBJ)/, $(AMODS))
+# All modules /////////////////////////////////////////////
+MODS= $(EMODS) $(AMODS)
 OS=$(addprefix $(OBJ)/, $(MODS))
+
+AOS=$(addprefix $(OBJ)/, $(AMODS))
+
 LIST=$(addprefix $(BIN)/, $(PROG))
 
 all: $(LIST) $(OS)
@@ -17,10 +27,10 @@ clean:
 	rm $(OS)
 
 $(BIN)/assemble: assemble.c assemble.h
-	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c
+	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c $(AOS)
 
 $(BIN)/emulate: emulate.c emulate.h $(OS)
-	$(CC) $(CFLAGS) -o $(BIN)/emulate emulate.c $(OS)
+	$(CC) $(CFLAGS) -o $(BIN)/emulate emulate.c $(EOS)
 
 $(OBJ)/%.o: $(UTILS)/%.c $(UTILS)/%.h
 	$(CC) $(CFLAGS) -c -o $@ $<

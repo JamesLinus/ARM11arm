@@ -6,12 +6,10 @@
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef EMULATE_H
-#include "../emulate.h"
-#endif
-
 #ifndef EXECUTE_H
 #define EXECUTE_H
+
+#include "../emulate.h"
 
 // Declared in header due to static
 static inline void setflags(u32* cpsr, u32 result)
