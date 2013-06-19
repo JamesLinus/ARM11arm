@@ -13,31 +13,38 @@
 #include "assemble.h"
 #include "utilities/functionAssemble.h"
 
-char*** tokeniser(char* path)
+Source* initSource(int noOfLines)
+{
+  Source *src = calloc(sizeof(Source), 1);
+  src->noOfLines = noOfLines;
+  src->lines = calloc(noOfLines * sizeof(char*), 1);
+  for (int i = 0; i < noOfLines; i++)
+    src->lines[i] = malloc(MAX_ARG_PER_LINE * sizeof(char*));
+  if (!src->lines)
+  {
+    fprintf(stderr, "Memory allocation error\n");
+    exit(EXIT_FAILURE);
+  }
+  return src;
+}
+
+Source* tokeniser(char* path)
 { 
   // open the assembly file in read only
   FILE *file = fopen(path, "r");
   // declare the temporary char array and li
   char line[MAX_CHAR_PER_LINE], *tmp;
-  int noOfLines = linesInFile(file, line);
+  Source* src = initSource(linesInFile(file, line));
   // if file failed to open then return error
   if (file == NULL)
   {
     fprintf(stderr, "File error\n");
     exit(EXIT_FAILURE);
   }
-  // initialise array of array of pointers to chars (ie, multiple strings)
-  char*** lines = malloc(sizeof(char) * noOfLines);
-  if (!lines)
-  {
-    fprintf(stderr, "Memory allocation error\n");
-    exit(EXIT_FAILURE);
-  }
   // for all the lines in the file
-  for (int i = 0; fgets(line, MAX_CHAR_PER_LINE, file); i++)
+  for (int i = 0; i < src->noOfLines; i++)
   {
-    // allocate the memory for the current line
-    lines[i] = malloc(MAX_ARG_PER_LINE * sizeof(char));
+    fgets(line, MAX_CHAR_PER_LINE, file);
     // apply strtok for the first time
     tmp = strtok(line, ", \n");
     // for all the potential arguments
@@ -45,11 +52,11 @@ char*** tokeniser(char* path)
     {
       // allocate memory for the copied string, say
       // 20 characters will be max length of args
-      lines[i][j] = malloc(sizeof(char) * 20);
+      src->lines[i][j] = malloc(sizeof(char) * 200);
       // if tmp is not null, then copy the string
-      if (tmp != NULL) strcpy(lines[i][j], tmp);
+      if (tmp != NULL) strcpy(src->lines[i][j], tmp );
       // else just make null
-      else lines[i][j] = NULL;
+      else src->lines[i][j] = NULL;
       // repeat the strtok
       tmp = strtok(NULL, ", \n");
     }
@@ -57,14 +64,14 @@ char*** tokeniser(char* path)
   // close the file stream
   fclose(file);
   // return the array of string arrays
-  return lines;
+  return src;
 }
 
 u32 linesInFile(FILE* file, char* line)
 {
   int lines = 0;
   fseek(file, 0, SEEK_SET);
-  while (fgets(line, sizeof line, file) != NULL) lines++;
+  while (fgets(line, MAX_CHAR_PER_LINE, file) != NULL) lines++;
   fseek(file, 0, SEEK_SET);
   return lines;
 }
@@ -80,14 +87,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "No FILE provided.\n"); 
       return NO_FILE_FOUND;
   }
-  
-  char*** lines = tokeniser(path);
-  for (int i = 0; i < 2; i++)
-  {
-    for (int j = 0; j < MAX_ARG_PER_LINE; j++)
-      if (lines[i][j] != NULL)
-        printf("%s,  ", lines[i][j]);
-    printf("\n");
-  }  
+  Source* src = tokeniser(path);
+
   return EXIT_SUCCESS;
 }
