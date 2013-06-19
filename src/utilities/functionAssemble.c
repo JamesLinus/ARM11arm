@@ -14,6 +14,12 @@
 
 #define BRANCH_COND(i) (uint32_t)(i << 28)
 
+#define toInt(c, str, shift) (fscanf(c, str) << shift)
+
+#define MAX_CHAR_PER_LINE 512
+#define MAX_ARG_PER_LINE 5
+
+
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 //to think about ==== what to do about the labels
@@ -21,11 +27,6 @@ enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 //helper function takes string argument, ditches the 'r' and returns 
 //an integer value of the register, and shifts it a given amount to 
 //be used as a mask
-
-uint32_t strToInt(char* reg, uint32_t shift)
-{
-  return (uint32_t)atoi(++reg) << shift;  
-}
 
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 {
@@ -41,6 +42,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t bits26and27mask = 0xF3FFFFFF;
   //update to include bits 26 and 27
   binaryCode = binaryCode | bits26and27mask;
+  //TODO set bit 25 - the I bit
+  //******************************
   
   //can use the mnemonic to determine type and layout of instruction
   //use an enum to distinguish
@@ -121,7 +124,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     if(operand2[0] == '#')
     {
       return 1;
-    }else
+    }
+    else
     {
       return 0;
     }
@@ -133,7 +137,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     if(expression[0] == '0' && expression[1] == 'x')
     {
       return 1;
-    }else
+    }
+    else
     {
       return 0;
     }
@@ -145,50 +150,17 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t regNo2;
 
   //expression if COMPUTE
+
+  char *operand2;
+
   if(typeOfInstr == COMPUTE)
   {
-    char *operand2 = string[3];
-  }else  //expression if SINGLE_OPERAND or NO_COMPUTE
+     operand2 = strings[3];
+  }
+  else  //expression if SINGLE_OPERAND or NO_COMPUTE
   {
-    char *operand2 = string[2];
+     operand2 = strings[2];
   }
-
-
-  //for setting bit 25 - the I bit
-  if(isExpression(operand2))
-  {
-    uint32_t iBitMask = 1 << 25;
-    binaryCode = binaryCode | iBitMask; 
-  }
-  //otherwise leave the bit as 0
-
-
-  uint32_t encodeOperand2(char *operand2)
-  {   
-  if(isExpression(operand2))
-  {
-    operand2++;
-    if(isHex(operand2))
-    {
-      operand2 = operand2 + 2;
-      // the rest is HEX
-    }
-    else
-    {
-      // the rest is decimal 
-    }
-  }
-  else
-  {
-    // operand2 is a shifted register - OPTIONAL EXTRA	    
-  }
- 
-  }
-
-  //adding operand2 bits
-  uint32_t operand2Mask = encodeOperand2(operand2);
-  binaryCode = binaryCode | operand2Mask;
-
 
   switch(typeOfInstr)
   {
@@ -198,6 +170,23 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
     regNo2 = strToInt(strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
+    if(isExpression(operand2))
+    {
+      operand2++;
+      if(isHex(operand2))
+      {
+        operand2 = operand2 + 2;
+	// the rest is HEX
+      }
+      else
+      {
+        // the rest is decimal 
+      }
+    }
+    else
+    {
+      // operand2 is a shifted register	    
+    }
     break;
   case SINGLE_OPERAND:
     //setting rd bits
@@ -220,7 +209,6 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   return binaryCode;
 }
 
-// use (uint32_t)strtol() for hex values passed
 uint32_t assembleMultiply(uint32_t args, char** strings)
 { 
   uint32_t binaryCode;
@@ -243,20 +231,82 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
   return binaryCode | (rd | rn | rd | rm);
 }
 
+// executed regardless of cond as far as I can tell
 uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
-  return 0;
-}
 
-uint32_t hexstrToInt(char* hex)
-{
-  return (uint32_t)strtol(hex + 1, NULL, 16);
+
+  //the instruction is a ldr
+  if(!strcmp(strings[0], "ldr"))
+  {
+  //the L bit will need to be set
+  uint32_t lBitMask = 0x00100000;
+  binaryCode = binaryCode | lBitMask;
+  
+  }
+  else
+  //the instruction is a str
+  { 
+  //the L bit is left clear
+  }
+
+  //for <address>
+
+  if(strings[2][0] == '=')
+  {
+    //numeric constant
+    uint32_t numericConst = toInt("%i", ++strings[2], 0);
+    if(numbericConst < 0xFF)
+    {
+      //use mov instruction instead
+    }
+    else 
+    {
+      //store in 4 bytes at the end of the file and 
+      //pass the address using PC as the base register
+    }
+    
+  }
+  else if
+  {
+    //preindexing
+    //get the correct string
+    char *address = strings[2];
+    //get rid of the first '['
+    address++;
+    char *madeString;
+    int i = 0;
+    char *current = address;
+
+    // TODO: finish!!!
+    while(current[0] != ']')
+    { 
+      if(current[0] != ',')
+      {
+        madeString[i] = current[0];
+        current++;
+        i++;
+      }
+      else 
+      {
+          
+      }
+ 
+    }
+  }
+  else 
+  {
+    //post indexing
+   
+  }
+
+  return 0;
 }
 
 uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
 {
   uint32_t binaryCode= 0x0a000000u;
-  int32_t offset = hexstrToInt(strings[1]) - memAddr;
+  int32_t offset = atoi(strings[1]) - memAddr;
 
   if(!strcmp(strings[0], "beq"))
   {
@@ -282,4 +332,45 @@ uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
   } 
 
   return (uint32_t)(binaryCode | ((offset >> 2) & 0x00ffffff));
+}
+
+uint32_t linesInFile(FILE* file)
+{
+  uint32_t lines = 0;
+  fseek(file, 0, SEEK_SET);
+
+  for(; !feof(file); fseek(file, 1, SEEK_CUR))
+  {
+    if(fgetc(file) == atoi("\n"))
+      lines++;
+  }
+  // ++ because there will possibly be one less "\n" than lines
+  return ++lines;
+}
+
+void saveToken(char* value, char* lines)
+{
+  if(value != NULL)
+  {
+    lines = malloc(strlen(value) + 1);
+    strcpy(lines, value);
+  }
+}
+
+char*** tokeniser(char* path)
+{ 
+  FILE file = fopen(path, "r");
+  char*** lines = calloc(linesInFile(file) * MAX_ARG_PER_LINE, 1);
+  char line[MAX_CHAR_PER_LINE];
+
+  for(int i = 0; fgets(line, MAX_CHAR_PER_LINE, file); i++)
+  {
+    saveToken(strtok(line, " "), lines[i][0]);
+    for(int j = 1; j < MAX_CHAR_PER_LINE; j++)
+    {
+      saveToken(strtok(NULL, " "), lines[i][j]);
+    }
+  }
+  fclose(file);
+  return lines;
 }
