@@ -100,7 +100,7 @@
 #define ROR(i,v) (i >> v) | LSL(i, (0x20u - v))
 
 #define MAX_CHAR_PER_LINE 512
-#define MAX_ARG_PER_LINE 5
+#define MAX_ARG_PER_LINE 7
 
 #define OPCODE_SHIFT(o)    o << 24
 #define COND_SHIFT(i)   (u32)(i << 28)
