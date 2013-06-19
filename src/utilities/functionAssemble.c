@@ -13,12 +13,20 @@
 #include <stdlib.h>
 
 #define BRANCH_COND(i) (uint32_t)(i << 28)
+
 #define toInt(c, str, shift) (fscanf(c, str) << shift)
+
+#define MAX_CHAR_PER_LINE 512
+#define MAX_ARG_PER_LINE 5
+
 
 enum DataProcessingType {COMPUTE, SINGLE_OPERAND, NO_COMPUTE};
 
 //to think about ==== what to do about the labels
 
+//helper function takes string argument, ditches the 'r' and returns 
+//an integer value of the register, and shifts it a given amount to 
+//be used as a mask
 
 uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
 {
@@ -34,6 +42,8 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   uint32_t bits26and27mask = 0xF3FFFFFF;
   //update to include bits 26 and 27
   binaryCode = binaryCode | bits26and27mask;
+  //TODO set bit 25 - the I bit
+  //******************************
   
   //can use the mnemonic to determine type and layout of instruction
   //use an enum to distinguish
@@ -146,84 +156,56 @@ uint32_t assembleDataProcessing(uint32_t arguments, char **strings)
   if(typeOfInstr == COMPUTE)
   {
      operand2 = strings[3];
-  }else  //expression if SINGLE_OPERAND or NO_COMPUTE
+  }
+  else  //expression if SINGLE_OPERAND or NO_COMPUTE
   {
      operand2 = strings[2];
   }
-
-
-  //for setting bit 25 - the I bit
-  if(isExpression(operand2))
-  {
-    uint32_t iBitMask = 1 << 25;
-    binaryCode = binaryCode | iBitMask; 
-  }
-  //otherwise leave the bit as 0
-
-  //for encoding operand2
-  uint32_t encodeOperand2(char *operand2)
-  {   
-  if(isExpression(operand2))
-  {
-    operand2++;
-    if(isHex(operand2))
-    {
-      operand2 +=2;
-
-      // leave the rotate bits at 0, as i dont know what
-      // else im supposed to do with them
-
-      // the rest is HEX
-      uint32_t imConstantMask = toInt("%x", operand2, 0);
-      //for now assume that the value is always small enough
-      //to fit into the 8 bits
-      binaryCode = binaryCode | imConstantMask;
-
-      // convert string to hex value, then to binary
-      // then fill up the first 8 bits
-    }
-    else
-    {
-      // the rest is decimal 
-      uint32_t imConstantMask = toInt("%i", operand2, 0);
-      binaryCode = binaryCode | imConstantMask;
-    }
-  }
-  else
-  {
-    // operand2 is a shifted register - OPTIONAL EXTRA	    
-  }
- 
-  }
-
-  //adding operand2 bits
-  uint32_t operand2Mask = encodeOperand2(operand2);
-  binaryCode = binaryCode | operand2Mask;
-
 
   switch(typeOfInstr)
   {
   case COMPUTE:
     //setting rn and rd bits
-    regNo1 = toInt("%i", strings[1], 16);
-    regNo2 = toInt("%i", strings[2], 12);
+    regNo1 = strToInt(strings[1], 16);
+    regNo2 = strToInt(strings[2], 12);
     binaryCode = binaryCode | regNo1;
     binaryCode = binaryCode | regNo2;  
+    if(isExpression(operand2))
+    {
+      operand2++;
+      if(isHex(operand2))
+      {
+        operand2 = operand2 + 2;
+	// the rest is HEX
+      }
+      else
+      {
+        // the rest is decimal 
+      }
+    }
+    else
+    {
+      // operand2 is a shifted register	    
+    }
     break;
   case SINGLE_OPERAND:
     //setting rd bits
     //no need to set rn bits
-    regNo1 = toInt("%i", strings[1], 12);
+    regNo1 = strToInt(strings[1], 12);
     binaryCode = binaryCode | regNo1;
     break;
   case NO_COMPUTE:
     //setting rn bits
     //no need to set rd bits
-    regNo1 = toInt("%i", strings[1], 16);
+    regNo1 = strToInt(strings[1], 16);
     binaryCode = binaryCode | regNo1;
     break;
  }
    
+  
+
+
+
   return binaryCode;
 }
 
@@ -232,10 +214,10 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
   uint32_t binaryCode;
   uint32_t rd, rn, rs, rm;
 
-  rd = toInt("%i", strings[1], 16);
-  rn = toInt("%i", strings[2], 12);
-  rs = toInt("%i", strings[3], 8);
-  rm = toInt("%i", strings[4], 0);
+  rd = strToInt(strings[1], 16);
+  rn = strToInt(strings[2], 12);
+  rs = strToInt(strings[3], 8);
+  rm = strToInt(strings[4], 0);
 
   // mul
   if(args == 4)
@@ -249,22 +231,10 @@ uint32_t assembleMultiply(uint32_t args, char** strings)
   return binaryCode | (rd | rn | rd | rm);
 }
 
+// executed regardless of cond as far as I can tell
 uint32_t assembleDataTransfer(uint32_t args, char** strings)
 {
-  //instruction always executed 
-  //hence cond bits are set to 1110
- 
-  //initialises binaryCode to set the bits that are constant for this
-  //instruction (cond bits to 1110 and bit 25 set)
 
-  uint32_t binaryCode = 0xE4000000;
-  
-  //takes the rd arguments, converts to the binary
-  //representation and shifts it the correct amount
-  //to be used as a mask
-
-  uint32_t rd = toInt("%i", strings[1], 12);
-  binaryCode = binaryCode | rd;
 
   //the instruction is a ldr
   if(!strcmp(strings[0], "ldr"))
@@ -329,8 +299,7 @@ uint32_t assembleDataTransfer(uint32_t args, char** strings)
     //post indexing
    
   }
-  
-  
+
   return 0;
 }
 
@@ -363,4 +332,45 @@ uint32_t assembleBranch(uint32_t args, char** strings, uint32_t memAddr)
   } 
 
   return (uint32_t)(binaryCode | ((offset >> 2) & 0x00ffffff));
+}
+
+uint32_t linesInFile(FILE* file)
+{
+  uint32_t lines = 0;
+  fseek(file, 0, SEEK_SET);
+
+  for(; !feof(file); fseek(file, 1, SEEK_CUR))
+  {
+    if(fgetc(file) == atoi("\n"))
+      lines++;
+  }
+  // ++ because there will possibly be one less "\n" than lines
+  return ++lines;
+}
+
+void saveToken(char* value, char* lines)
+{
+  if(value != NULL)
+  {
+    lines = malloc(strlen(value) + 1);
+    strcpy(lines, value);
+  }
+}
+
+char*** tokeniser(char* path)
+{ 
+  FILE file = fopen(path, "r");
+  char*** lines = calloc(linesInFile(file) * MAX_ARG_PER_LINE, 1);
+  char line[MAX_CHAR_PER_LINE];
+
+  for(int i = 0; fgets(line, MAX_CHAR_PER_LINE, file); i++)
+  {
+    saveToken(strtok(line, " "), lines[i][0]);
+    for(int j = 1; j < MAX_CHAR_PER_LINE; j++)
+    {
+      saveToken(strtok(NULL, " "), lines[i][j]);
+    }
+  }
+  fclose(file);
+  return lines;
 }
