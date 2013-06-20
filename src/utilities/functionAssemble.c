@@ -108,7 +108,7 @@ u32 assembleMultiply(u32 args, char** strings)
 // executed regardless of cond as far as I can tell
 u32 assembleDataTransfer(u32 args, char** strings) 
 {
-  u32 binaryCode;
+  u32 binaryCode = 0;
   //the instruction is a ldr
   if(!strcmp(strings[0], "ldr"))
   {
