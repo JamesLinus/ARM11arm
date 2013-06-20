@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "assemble.h"
+#include "utilities/bstMap.h"
 #include "utilities/functionAssemble.h"
 
 Source* initSource(int noOfLines)
@@ -76,6 +77,17 @@ u32 linesInFile(FILE* file, char* line)
   return lines;
 }
 
+void assemble(Source *src)
+{
+  // first pass to generate tree
+  tree_entry *symbolTree = createTree();
+  for (int i = 0; i < src->noOfLines; i++)
+    if (IS_SYMBOL(src->lines[i][0]))
+      insert(&symbolTree, src->lines[i][0], (i << 2));
+  fflush(stdout);
+  printf("Is tmp null? %d\n", getAddr(symbolTree, "loop:"));
+}
+
 int main(int argc, char **argv) {
   char *path; int suppress = 1; 
   switch (argc)
@@ -88,6 +100,6 @@ int main(int argc, char **argv) {
       return NO_FILE_FOUND;
   }
   Source* src = tokeniser(path);
-
+  assemble(src);
   return EXIT_SUCCESS;
 }

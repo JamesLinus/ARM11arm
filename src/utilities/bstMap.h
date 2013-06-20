@@ -9,34 +9,22 @@
 #ifndef BST_MAP
 #define BST_MAP
 
+#include "../res/uints.h"
+
 ///  STRUCT FOR ENTRY  ////////////////////////////////////////////////////////
-typedef struct entry
+typedef struct tree_entry tree_entry;
+
+struct tree_entry
 {
   char* label;   // simple textual label
   u32 memAddr;   // memory address
-  struct entry* right;   // pointers to left and right 
-  struct entry* left;    // structs repsectively
-} tree_entry;
+  tree_entry* right;   // pointers to left and right 
+  tree_entry* left;    // structs repsectively
+};
 
-///  TREE CREATION  ///////////////////////////////////////////////////////////
 tree_entry* createTree(void);
-tree_entry* mallocEntry(char* label, uint32_t memAddr);
-void        destroyTree(tree_entry* root);
-
-///  TREE MANIPULATION  ///////////////////////////////////////////////////////
-tree_entry* insert(tree_entry* root, char* label, uint32_t memAddr);
-tree_entry* leftRotate(tree_entry* entry);
-tree_entry* rightRotate(tree_entry* entry);
-tree_entry* rightLeftRotate(tree_entry* entry);
-tree_entry* leftRightRotate(tree_entry* entry);
-tree_entry* rebalance(tree_entry* entry);
-
-///  TREE ANALYSIS  ///////////////////////////////////////////////////////////
-uint32_t    get(tree_entry* root, char* label);
-int         treeDepth(tree_entry* entry);
-int         treeDepthComp(tree_entry* left, tree_entry* right);
-
-///  UTILITIES  ///////////////////////////////////////////////////////////////
-char*       copy(char* str);
+tree_entry* mallocEntry(char* label, u32 addr);
+tree_entry* insert(tree_entry** node, char* label, u32 addr);
+u32 getAddr(tree_entry* node, char* label);
 
 #endif

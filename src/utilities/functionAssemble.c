@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include "functionAssemble.h"
 
-
 const char *operands[] = {
   "and", "eor", "sub", "rsb", 
   "add", "adc", "sbc", "rsc", 
@@ -40,10 +39,9 @@ const int setcond[] = {
 static inline u32 cmdToOpcode(char* cmd, int* type)
 {
   int res = 0;
-  printf("MARKER-------------------------------------\n");
   while (strcmp(operands[res++], cmd));
   *type = operandType[res];
-  return OPCODE_SHIFT(res) || SET_SHIFT(setcond[res]);
+  return OPCODE_SHIFT(res) | SET_SHIFT(setcond[res]);
 }
 
 // Give with 0x prefix for hexidecimal
@@ -64,7 +62,7 @@ u32 processOp2(char* operand)
 u32 assembleDataProcessing(char **args)
 {
   // form the initial code using the template and an AL cond
-  u32 binaryCode  = COND_SHIFT(AL_FLAG) & DATA_TEMPLATE;
+  u32 binaryCode  = COND_SHIFT(AL_FLAG) | DATA_TEMPLATE;
   // add in the opcode value
   int opType = 0;
   binaryCode     |= cmdToOpcode(args[0], &opType);

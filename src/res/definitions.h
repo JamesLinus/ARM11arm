@@ -116,5 +116,6 @@
 #define REG(i) atoi(i+1)
 
 #define IS_IMMEDIATE(operand) operand[0] == '#'
+#define IS_SYMBOL(s) s[strlen(s) - 1] == ':'
 
 #endif

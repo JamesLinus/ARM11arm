@@ -10,7 +10,7 @@ PROG=emulate assemble
 EMODS=decode.o errorDump.o execute.o binaryLoading.o
 EOS=$(addprefix $(OBJ)/, $(EMODS))
 # Assembly modules ////////////////////////////////////////
-AMODS=functionAssemble.o
+AMODS=functionAssemble.o bstMap.o
 AOS=$(addprefix $(OBJ)/, $(AMODS))
 # All modules /////////////////////////////////////////////
 MODS= $(EMODS) $(AMODS)
