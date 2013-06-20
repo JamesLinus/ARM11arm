@@ -102,7 +102,7 @@
 #define MAX_CHAR_PER_LINE 512
 #define MAX_ARG_PER_LINE 7
 
-#define OPCODE_SHIFT(o)    o << 24
+#define OPCODE_SHIFT(o)    o << 21
 #define COND_SHIFT(i)   (u32)(i << 28)
 #define SET_SHIFT(i)    (u32)(i << 20)
 

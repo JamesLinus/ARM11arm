@@ -16,6 +16,7 @@ describe 'official test suite' do
     context 'addition' do
       it 'add01' do
         run_file bin + 'add01'
+        Emulate.printOut raspi
         emem = raspi.encoded_mem
         raspi.get_ureg(0).should eq(0x00000000)
         raspi.get_ureg(1).should eq(0x00000001)

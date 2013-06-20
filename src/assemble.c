@@ -13,6 +13,7 @@
 #include "assemble.h"
 #include "utilities/bstMap.h"
 #include "utilities/functionAssemble.h"
+#include "utilities/binaryLoading.h"
 
 Source* initSource(int noOfLines)
 {
@@ -77,24 +78,47 @@ u32 linesInFile(FILE* file, char* line)
   return lines;
 }
 
+#define COL_ONE "\x1b[1;36m1\x1b[0m"
+
+void printBin(u32 i, int newline)
+{
+  for (int j = 0; j < 32; j++)
+  {
+    if ((i >> (32 - j - 1)) & 0x1u)
+      printf("%s", COL_ONE);
+    else printf("0"); 
+  } 
+  if (newline) printf("\n"); 
+}
+
 void assemble(Source *src)
 {
+  printf("%s\n", src->lines[0][0]);
   // first pass to generate tree
   tree_entry *symbolTree = createTree();
+  int noOfLabels = 0;
   for (int i = 0; i < src->noOfLines; i++)
     if (IS_SYMBOL(src->lines[i][0]))
-      insert(&symbolTree, src->lines[i][0], (i << 2));
-  fflush(stdout);
-  printf("Is tmp null? %d\n", getAddr(symbolTree, "loop:"));
+    {
+      printf("%s\n", src->lines[i][0]);
+      insert(&symbolTree, src->lines[i][0], ((i - noOfLabels) << 2));
+      noOfLabels++;
+    }
+  printf("%s\n", src->lines[0][0]);
+  // initiate the assembling
+  for (int i = 0; i < src->noOfLines; i++)
+  {
+    printBin(assembleDataProcessing(src->lines[i]), 1);
+  }
 }
 
 int main(int argc, char **argv) {
-  char *path; int suppress = 1; 
+  char *path, *out; int suppress = 1; 
   switch (argc)
   {
     // case 0 for testing purposes
     case 0: path = (char *)argv; break;
-    case 2: path = argv[1]; suppress = 0; break;
+    case 2: path = argv[1]; out = argv[2]; suppress = 0; break;
     default: 
       fprintf(stderr, "No FILE provided.\n"); 
       return NO_FILE_FOUND;

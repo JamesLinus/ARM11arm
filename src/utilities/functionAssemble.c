@@ -27,10 +27,10 @@ const int operandType[] = {
 };
 
 const int setcond[] = {
+  0, 0, 0, 0,
+  0, 0, 0, 0,
   1, 1, 1, 1,
-  1, 1, 1, 1,
-  0, 0, 0, 1,
-  1, 1, 1, 1,
+  0, 0, 0, 0,
 };
 
 // to think about ==== what to do about the labels
@@ -38,8 +38,13 @@ const int setcond[] = {
 // Includes setting of the SET COND flag
 static inline u32 cmdToOpcode(char* cmd, int* type)
 {
+  printf("----  %s\n", cmd);
+  fflush(stdout);
   int res = 0;
-  while (strcmp(operands[res++], cmd));
+  while (strcmp(operands[res++], cmd)); res -= 1;
+  printf("res is %d\n", res);
+  printf("set? %d\n", setcond[res]);
+  fflush(stdout);
   *type = operandType[res];
   return OPCODE_SHIFT(res) | SET_SHIFT(setcond[res]);
 }
