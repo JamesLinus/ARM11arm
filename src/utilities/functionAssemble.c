@@ -109,14 +109,12 @@ u32 assembleMultiply(u32 args, char** strings)
 // executed regardless of cond as far as I can tell
 u32 assembleDataTransfer(u32 args, char** strings) 
 {
-
-
-/*
+  u32 binaryCode;
   //the instruction is a ldr
   if(!strcmp(strings[0], "ldr"))
   {
   //the L bit will need to be set
-  u32 lBitMask = 0x00100000;
+  u32 lBitMask = 0x00100000;l
   binaryCode |= lBitMask;
   }
   //otherwise the L bit will be left clear
@@ -129,7 +127,6 @@ u32 assembleDataTransfer(u32 args, char** strings)
     u32 numericConst = (u32)immediateToInt(++strings[2]);
     if(numbericConst <= 0xFF)
     {
-      //use mov instruction instead
       //binaryCode = equivalent mov instruction
     }
     else 
@@ -137,43 +134,48 @@ u32 assembleDataTransfer(u32 args, char** strings)
       //store in 4 bytes at the end of the file and 
       //pass the address using PC as the base register
       //using pre-indexing address
-    }
-    
+    } 
   }
-  else if
+  else if(args == 3)
   {
     //preindexing
     //get the correct string
-    char *address = strings[2];
+    char *rn = strings[2];
     //get rid of the first '['
-    address++;
-    char *madeString;
-    int i = 0;
-    char *current = address;
-
-    // TODO: finish!!!
-    while(current[0] != ']')
-    { 
-      if(current[0] != ',')
-      {
-        madeString[i] = current[0];
-        current++;
-        i++;
-      }
-      else 
-      {
-          
-      }
- 
+    rn++;
+    //base register Rn with offset of zero
+    //get rid of the 'r'
+    rn++;
+    u32 rnMask = (immediateToInt(rn) << 12);
+    return (binaryCode |= rnMask);
     }
+  else if(!(strings[2][strlen(address) - 1] == ']'))
+  {
+    //preindexing still
+    char *rn = strings[2];
+    //get rid of the first '['
+    rn++;
+    u32 rnMask = (immediateToInt(rn) << 12);
+    char *expression = (strings[3] + 1);
+    //get rid of the last ']' to pass it to the immediateToInt
+    //function
+    (expression + strlen(expression) - 1) = '\0';
+    u32 offset = immediateToInt(expression);
+    return (binaryCode |= (rnMask | offset));
+    //optional stuff here not covered yet
   }
   else 
   {
     //post indexing
-   
+    char *rn = strings[2];
+    //get rid of first '['
+    rn++;
+    //get rid of last ']'
+    (rn + strlen(rn) - 1) = '\0';
+    u32 rnMask = (immediateToInt(rn) << 12);
+    u32 expression = immediateToInt(++strings[3]);
+    return (binaryCode | (rnMask | expression));
   }
-*/
-  return 0;
 }
 
 u32 assembleBranch(u32 args, char** strings, u32 memAddr)
