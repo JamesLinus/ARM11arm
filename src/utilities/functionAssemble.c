@@ -34,13 +34,13 @@ const int setcond[] = {
   1, 1, 1, 1,
 };
 
-
 // to think about ==== what to do about the labels
 
 // Includes setting of the SET COND flag
 static inline u32 cmdToOpcode(char* cmd, int* type)
 {
   int res = 0;
+  printf("MARKER-------------------------------------\n");
   while (strcmp(operands[res++], cmd));
   *type = operandType[res];
   return OPCODE_SHIFT(res) || SET_SHIFT(setcond[res]);
@@ -71,7 +71,7 @@ u32 assembleDataProcessing(char **args)
   switch(opType)
   {
     case COMPUTES: 
-      processComplutes(&binaryCode, args[1], args[2], args[3]);
+      processComputes(&binaryCode, args[1], args[2], args[3]);
       break;
     case SINGLE_OP_ASSIGNS: 
       processSingleOp(&binaryCode, args[1], args[2]);
@@ -84,14 +84,14 @@ u32 assembleDataProcessing(char **args)
 }
 
 u32 assembleMultiply(u32 args, char** strings)
-{ /*
+{ 
   u32 binaryCode;
   u32 rd, rn, rs, rm;
 
   rd = (immediateToInt(strings[1]++) << 16);
   rn = (immediateToInt(strings[2]++) << 12);
   rs = (immediateToInt(strings[3]++) << 8);
-  rm = (immediateToInt(strings[4]++);
+  rm = (immediateToInt(strings[4]++));
 
   // mul
   if(args == 4)
@@ -103,7 +103,6 @@ u32 assembleMultiply(u32 args, char** strings)
   }
 
   return binaryCode | (rd | rn | rd | rm);
-  */ return 0;
 }
 
 // executed regardless of cond as far as I can tell

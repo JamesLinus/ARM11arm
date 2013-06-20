@@ -8,7 +8,6 @@ describe 'unit test for functionAssemble.c' do
   context 'data processing' do
 
     it 'and' do
-      Assemble.main 0, assembly_src + 'add01.s'
     end
 
   end
