@@ -14,6 +14,7 @@ run:
 clean:
 	make -C ./src clean
 	rm -rf bin/*.dSYM
+	rm obj/*.o
 	
 docs:
 	make -C ./doc all

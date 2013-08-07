@@ -20,7 +20,8 @@
 tree_entry* createTree(void)
 {
   tree_entry* res = malloc(sizeof(tree_entry));
-  return (res = NULL);
+  res = NULL;
+  return res;
 }
 
 tree_entry* mallocEntry(char* label, u32 addr)
@@ -35,21 +36,22 @@ tree_entry* mallocEntry(char* label, u32 addr)
 
 tree_entry* insert(tree_entry** node, char* label, u32 addr)
 {
-  printf("Inserting label %s at addr %d\n", label, addr);
   // if current node is null then assign to this
   if (*node == NULL) return (*node = mallocEntry(label, addr));
-  int cmp = strcmp((*node)->label, label);
-  // if equivilant then update current memaddr
-  if (!cmp) { (*node)->memAddr = addr; return *node; }
-  // if less than the current, then go left
-  if (cmp < 0) return insert(&(*node)->left, label, addr);
-  // else if more than current, then go right
-  return insert(&(*node)->right, label, addr);
+  switch (strcmp((*node)->label, label))
+  {
+    // if equivilant then update current memaddr
+    case EQUAL:  (*node)->memAddr = addr; return *node;
+    // if less than the current, then go left
+    case LESS:    return insert(&(*node)->left, label, addr);
+    // else if more than current, then go right
+    case GREATER: return insert(&(*node)->right, label, addr);
+  }
+  return NULL;
 }
 
 u32 getAddr(tree_entry* node, char* label)
 {
-  printf("Trying to get label %s, node is currently null? %d\n", label, node == NULL);
   // if the node is NULL then return 0
   if (node == NULL) return 0;
   int cmp = strcmp(node->label, label);
@@ -59,4 +61,5 @@ u32 getAddr(tree_entry* node, char* label)
     case LESS:    return getAddr(node->left,  label);
     case GREATER: return getAddr(node->right, label);
   }
+  return 0;
 }

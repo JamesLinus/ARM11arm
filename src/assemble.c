@@ -84,8 +84,8 @@ void assemble(Source *src)
   for (int i = 0; i < src->noOfLines; i++)
     if (IS_SYMBOL(src->lines[i][0]))
       insert(&symbolTree, src->lines[i][0], (i << 2));
-  fflush(stdout);
-  printf("Is tmp null? %d\n", getAddr(symbolTree, "loop:"));
+  // decode
+    
 }
 
 int main(int argc, char **argv) {

@@ -39,7 +39,7 @@ const int setcond[] = {
 static inline u32 cmdToOpcode(char* cmd, int* type)
 {
   int res = 0;
-  while (strcmp(operands[res++], cmd));
+  while (strcmp(operands[res++], cmd)) {}; res--;
   *type = operandType[res];
   return OPCODE_SHIFT(res) | SET_SHIFT(setcond[res]);
 }
@@ -48,7 +48,7 @@ static inline u32 cmdToOpcode(char* cmd, int* type)
 static inline u32 immediateToInt(char* str)
 {
   int l = 0; while (str[l++]);
-  if (str[0] = '#') str++;
+  if ((str[0] = '#')) str++;
   return strtoul(str, NULL, 10 + ((l > 2) && (str[1] == 'x'))*6);
 }
 
