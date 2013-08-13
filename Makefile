@@ -1,3 +1,4 @@
+# Top level makefile
 build:
 	make -C ./spec/test_binary_wrappers
 	make -C ./src all
@@ -14,6 +15,7 @@ run:
 clean:
 	make -C ./src clean
 	rm -rf bin/*.dSYM
+	rm obj/*.o
 	
 docs:
 	make -C ./doc all

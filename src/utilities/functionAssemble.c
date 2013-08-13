@@ -41,10 +41,7 @@ static inline u32 cmdToOpcode(char* cmd, int* type)
   printf("----  %s\n", cmd);
   fflush(stdout);
   int res = 0;
-  while (strcmp(operands[res++], cmd)); res -= 1;
-  printf("res is %d\n", res);
-  printf("set? %d\n", setcond[res]);
-  fflush(stdout);
+  while (strcmp(operands[res++], cmd)) {}; res--;
   *type = operandType[res];
   return OPCODE_SHIFT(res) | SET_SHIFT(setcond[res]);
 }
@@ -53,7 +50,7 @@ static inline u32 cmdToOpcode(char* cmd, int* type)
 static inline u32 immediateToInt(char* str)
 {
   int l = 0; while (str[l++]);
-  if (str[0] = '#') str++;
+  if ((str[0] = '#')) str++;
   return strtoul(str, NULL, 10 + ((l > 2) && (str[1] == 'x'))*6);
 }
 
@@ -108,6 +105,7 @@ u32 assembleMultiply(u32 args, char** strings)
   return binaryCode | (rd | rn | rd | rm);
 }
 
+/*
 // executed regardless of cond as far as I can tell
 u32 assembleDataTransfer(u32 args, char** strings) 
 {
@@ -116,7 +114,7 @@ u32 assembleDataTransfer(u32 args, char** strings)
   if(!strcmp(strings[0], "ldr"))
   {
   //the L bit will need to be set
-  u32 lBitMask = 0x00100000;l
+  u32 lBitMask = 0x00100000;
   binaryCode |= lBitMask;
   }
   //otherwise the L bit will be left clear
@@ -151,7 +149,7 @@ u32 assembleDataTransfer(u32 args, char** strings)
     u32 rnMask = (immediateToInt(rn) << 12);
     return (binaryCode |= rnMask);
     }
-  else if(!(strings[2][strlen(address) - 1] == ']'))
+  else if(!(strings[2][strlen(addr) - 1] == ']'))
   {
     //preindexing still
     char *rn = strings[2];
@@ -161,7 +159,7 @@ u32 assembleDataTransfer(u32 args, char** strings)
     char *expression = (strings[3] + 1);
     //get rid of the last ']' to pass it to the immediateToInt
     //function
-    (expression + strlen(expression) - 1) = '\0';
+    *(expression + strlen(expression) - 1) = '\0';
     u32 offset = immediateToInt(expression);
     return (binaryCode |= (rnMask | offset));
     //optional stuff here not covered yet
@@ -173,12 +171,13 @@ u32 assembleDataTransfer(u32 args, char** strings)
     //get rid of first '['
     rn++;
     //get rid of last ']'
-    (rn + strlen(rn) - 1) = '\0';
+    *(rn + strlen(rn) - 1) = '\0';
     u32 rnMask = (immediateToInt(rn) << 12);
     u32 expression = immediateToInt(++strings[3]);
     return (binaryCode | (rnMask | expression));
   }
 }
+*/
 
 u32 assembleBranch(u32 args, char** strings, u32 memAddr)
 {

@@ -47,6 +47,7 @@ tree_entry* insert(tree_entry** node, char* label, u32 addr)
     // else if more than current, then go right
     case GREATER: return insert(&(*node)->right, label, addr);
   }
+  return NULL;
 }
 
 u32 getAddr(tree_entry* node, char* label)
@@ -60,4 +61,5 @@ u32 getAddr(tree_entry* node, char* label)
     case LESS:    return getAddr(node->left,  label);
     case GREATER: return getAddr(node->right, label);
   }
+  return 0;
 }

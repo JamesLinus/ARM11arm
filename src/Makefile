@@ -1,11 +1,12 @@
+# Makefile for the src folder
 CC      = gcc
-CFLAGS  = -fPIC -pie -g -std=c99 -Werror -pedantic
-BIN=../bin/
-OBJ=../obj
-RES=./res
-UTILS=./utilities/
+CFLAGS  = -fPIC -g -std=c99 -Werror -pedantic
+BIN     = ../bin/
+OBJ     = ../obj
+RES     = ./res
+UTILS   = ./utilities/
 
-PROG=emulate assemble
+PROG=emulate # assemble
 # Emulate modules /////////////////////////////////////////
 EMODS=decode.o errorDump.o execute.o binaryLoading.o
 EOS=$(addprefix $(OBJ)/, $(EMODS))
@@ -23,8 +24,7 @@ LIST=$(addprefix $(BIN)/, $(PROG))
 all: $(LIST) $(OS)
 
 clean:
-	rm $(LIST)
-	rm $(OS)
+	rm $(LIST) $(OS)
 
 $(BIN)/assemble: assemble.c assemble.h
 	$(CC) -o $(BIN)/assemble $(CFLAGS) assemble.c $(AOS)
