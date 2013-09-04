@@ -1,17 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: execute.c
+// File: emu_data_processing.c
 // Group: 21
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "execute.h"
-#include <stdio.h>
-
-///////////////////////////////////////////////////////////////////////////////
-// DATA PROCESSING INSTRUCTIONS
-///////////////////////////////////////////////////////////////////////////////
+#include "emu_private.h"
 
 // macros for applying the functions, allows for
 // DRYer function bodies
@@ -141,93 +136,3 @@ void mov(PtrToBeCast base)
   // calc final, save and set flags if appropriate
   saveAndSet(i, *(i->op2));
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// MULTIPLY FUNCTION
-///////////////////////////////////////////////////////////////////////////////
-
-// Execute function
-// Deals with the multiplication, ideally with 2s complement
-void multiply(PtrToBeCast base)
-{
-  // cast to appropriate struct type
-  MultiplyInstr* i = (MultiplyInstr*) base;
-  // make calculation, move into destination
-  u32 acc = 0; if (i->acc) acc = *i->acc;
-  *(i->des) = *i->op1 * *i->op2 + acc;
-  // if required, mark the flags
-  if (i->s) setflags(i->cpsr, *(i->des));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// SINGLE DATA TRANSFER
-///////////////////////////////////////////////////////////////////////////////
-
-// Execute function
-// Deals with single data transfer
-void singleDataTransfer(PtrToBeCast base)
-{
-  // make the appropriate casting
-  SingleDataInstr *i = (SingleDataInstr *) base;
-  // find the op2 value from appropriate shifting
-  u32 offset = (*(i->exShift))(i->cpsr, *(i->op2), *(i->shift), 0);
-  u32 basePtr = *i->op1;
-  // generate unique code for each modifier
-  // TODO - stop using separate vars for the p u & l
-  int code = i->pul;
-  if (i->pc) basePtr = (basePtr + 1)*4;
-  // switch for the op1 modifiers
-  switch (code) {
-    //     Pre and Up
-    case 0x06u: case 0x07u: basePtr += offset; break; // for  U
-    //     Pre and Down
-    case 0x04u: case 0x05u: basePtr -= offset; break; // for ~U
-  }
-  // printf("Base pointer is %d\n", basePtr);
-  u32 *finalDestination = i->des;
-  if (basePtr < MEMSIZE)
-  {
-    // switch for the des modifiers
-    switch(code) {
-      //     Is Load
-      case 0x01u: case 0x03u:
-      case 0x05u: case 0x07u: 
-        *i->des = _memget(basePtr); break;
-      //     Is Store
-      case 0x00u: case 0x02u:
-      case 0x04u: case 0x06u: 
-        finalDestination = _memset(basePtr, *i->des);  // for ~L
-        break;
-    }
-  }
-  else printf("Error: Out of bounds memory access at address 0x%08x\n", basePtr);
-  switch (code) {
-    //     Post and Up
-    case 0x02u: case 0x03u: *i->op1 = basePtr + offset; break; // for  U
-    //     Post and Down
-    case 0x00u: case 0x01u: *i->op1 = basePtr - offset; break; // for ~U
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// BRANCH FUNCTION
-///////////////////////////////////////////////////////////////////////////////
-
-// Execute function
-// Offsets the PC for the raspi
-void branch(PtrToBeCast base)
-{
-  // make the casting to correct struct
-  BranchInstr *i = (BranchInstr *) base;
-  u32 offset = i->offset;
-  if (offset & (1 << 23)) 
-    offset = -(~offset & 0x007FFFFFu) - 1;
-  *(i->pc) += offset + 1;
-}
-
-void terminate(PtrToBeCast base)
-{
-  TerminateInstr *i = (TerminateInstr *) base;
-  *(i->halt) = 0;
-}
-

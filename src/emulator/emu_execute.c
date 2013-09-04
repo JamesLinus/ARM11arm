@@ -1,24 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: emulate.c
+// File: emu_execute.c
 // Group: 21
 // Members: amv12, lmj112, skd212
-///////////////////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <ctype.h>
-
-#include "emulate.h"
-#include "utilities/execute.h"
-#include "utilities/decode.h"
-#include "utilities/binaryLoading.h"
-#include "utilities/errorDump.h"
-
-///////////////////////////////////////////////////////////////////////////////
-// EXECUTION FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
 // PRE  - Given - Arm struct pointer with memory preloaded
@@ -30,6 +15,10 @@
 // POST - The raspi's registers and memory represent their real life
 //        siblings had the same machine code been executed on a 
 //        raspberry pi.
+
+#include "emu_private.h"
+#include <stdlib.h>
+
 void runRaspi(Arm *raspi, int entry, int suppress)
 {
   // assign variables that will keep swapping,
@@ -102,7 +91,7 @@ fini:
 //        point to (and including) the next branch statement
 // POST - All decoded memory from the entry to the next branch will be
 //        decoded, replaced with their BaseInstr representations 
-void decodeTillBranch(PtrToBeCast base)
+static void decodeTillBranch(PtrToBeCast base)
 {
   // i will be the empty instruction pointer
   EmptyInstr* i = (EmptyInstr*) base;
@@ -119,15 +108,22 @@ void decodeTillBranch(PtrToBeCast base)
 // UTILITY FUNCITONS
 ///////////////////////////////////////////////////////////////////////////////
 
-void deallocRaspi(Arm* raspi)
+static void deallocRaspi(Arm** raspi)
 {
+  if (*raspi == NULL)
+  {
+    fprintf(stderr, "Not a valid raspi pointer (free)\n\n");
+    exit(EXIT_FAILURE);
+  }
   free(mem.e);
   free(mem.d);
-  free(raspi->r);
-  free(raspi);
+
+  free((*raspi)->r);
+  free(*raspi);
+  *raspi = NULL;
 }
 
-Arm *makeRaspi()
+static Arm *makeRaspi()
 {
   // allocate and initialise the raspi struct
   Arm *raspi = (Arm *) calloc(1, sizeof(Arm));
@@ -151,7 +147,7 @@ Arm *makeRaspi()
   return raspi;
 }
 
-int main(int argc, char **argv)
+int startEmulator(int argc, char** argv)
 {
   char *path; int suppress = 1; 
   switch (argc)
@@ -167,6 +163,6 @@ int main(int argc, char **argv)
   loadBinaryFile(path, mem.e);
   // begin the emulation
   runRaspi(raspi, 0, suppress);
-  deallocRaspi(raspi);
+  deallocRaspi(&raspi);
   return 0;
 }

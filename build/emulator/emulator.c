@@ -1,24 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: assemble.h
+// File: emulator.c
 // Group: 21
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef ASSEMBLE
-#define ASSEMBLE
+#include "emulator.h"
 
-#include "res/uints.h"
-#include "res/definitions.h"
-
-typedef struct {
-  char*** lines;
-  int noOfLines;
-} Source;
-
-Source* tokeniser(char* path);
-u32 linesInFile(FILE* file, char* line);
-int main(int argc, char **argv);
-
-#endif
+int main(int argc, char **argv)
+{
+  // initialising the emulator
+  return startEmulator(argc, argv);
+}

@@ -1,24 +1,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: errorDump.c
+// File: emu_err_dump.c
 // Group: 21
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "errorDump.h"
-#include <stdio.h>
-#include <stdlib.h>
-
 // Small snippet to output a formatted register
-void printReg(char* name, int index, u32 i)
+static void printReg(char* name, int index, u32 i)
 {
   printf("    %s[\x1b[36m%2d\x1b[0m]  -  0x%08x  -  ", name, index, i);
   printBin(i, 1);
 }
 
 // Simple function to print the binary of a u32
-void printBin(u32 i, int newline)
+static void printBin(u32 i, int newline)
 {
   for (int j = 0; j < 32; j++)
   {

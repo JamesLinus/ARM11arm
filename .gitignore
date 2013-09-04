@@ -34,4 +34,3 @@ assemble
 *.toc
 
 .DS_Store
-src/utilities.h.gch
