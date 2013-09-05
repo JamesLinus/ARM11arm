@@ -11,21 +11,6 @@
 
 #define INSTR_MAX_ARGS 6 
 
-char*** tokeniser(char* path)
-{
-  char*** output;
-  FILE* file = fopen(path, "rt");
-  char** lines = readfile(file, countLines(file));
-  uint32_t line = 0;
-
-  while (line == 0)// total number less than total lines
-  {
-    output[line] = tokeniseLine(lines[line]);
-  }
-  fclose(file);
-  return output;
-}
-
 char** tokeniseLine(char* line)
 {
   char** tokens = calloc(1, INSTR_MAX_ARGS * sizeof(void*));
@@ -37,4 +22,21 @@ char** tokeniseLine(char* line)
     tokens[++token] = strtok(NULL, " ");
   }
   return tokens;
+}
+
+//TODO: make countLines better (maybe varibale)
+char*** tokeniser(char* path)
+{
+  FILE* file = fopen(path, "rt");
+  char*** output = calloc(1, countLines(file) * INSTR_MAX_ARGS * sizeof(void*));
+  char** lines = readfile(file, countLines(file));
+  uint32_t line = 0;
+
+  while (line < countLines(file))// total number less than total lines
+  {
+    output[line] = tokeniseLine(lines[line]);
+    line++;
+  }
+  fclose(file);
+  return output;
 }

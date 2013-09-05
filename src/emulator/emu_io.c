@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // C Group Project - First Year
 // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// File: emu_io.c
+// File: ass_io.c
 // Group: 21
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
@@ -9,13 +9,29 @@
 #include "emu_private.h"
 #include <stdlib.h>
 
-static long unsigned int getSize(FILE *file)
+FILE *openFile(char *path)
+{
+  // open the file
+  FILE *file = fopen(path, "rb");
+  return file;
+}
+
+int fileExists(char *path)
+{
+  FILE *file = openFile(path);
+  if (!file)
+  {
+    return 1;
+  }
+  fclose(file); return 0;
+}
+
+long unsigned int getSize(FILE *file)
 {
   // use fseek to set relative pointer pos in file
   fseek(file, 0, SEEK_END);
   // get size from current relative position of the seek
   // inside the file
-  // TODO: Does ftell() return size relative to start?
   long unsigned int size = ftell(file);
   // reset the offset to the beginning of the file
   fseek(file, 0, SEEK_SET);
@@ -26,12 +42,15 @@ u32 *loadBinaryFile(char *path, u32 *memory)
 {
   // declare variables
   // the binary file pointer
-  FILE *arm_bin = fopen(path, "rb");
+  FILE *arm_bin = 0;
   // the size of the binary file
   long unsigned int size = 0;
 
+  // file opens twice (use of auxiliary method) for testing purposes
+  arm_bin = openFile(path);
+
   // if the file is null
-  if (!arm_bin)
+  if (fileExists(path) == 1)
   {
     // output error to stdout
     fprintf(stderr, "Error opening file.\n");
@@ -78,3 +97,5 @@ u32 writeBinaryFile(u32* instr, u32 noOfInstr, char* path)
   fclose(file);
   return EXIT_SUCCESS;
 }
+
+

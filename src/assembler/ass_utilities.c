@@ -7,16 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ass_private.h"
-
-#define REG_D(x) (x << 16)
-#define REG_N(x) (x << 12)
-#define REG_S(x) (x << 8)
-#define REG_M(x) (x << 0)
+#include <string.h>
 
 uint32_t regToInt(char* reg)
 {
-  char** endPtr;
-  return (uint32_t)strtol(&reg[1], endPtr, 0);
+  //TODO: add end pointer and error messages
+  return (uint32_t)strtol(&reg[1], NULL, 0);
 }
 
 uint8_t arrayContains(char* item, char** array, uint32_t arrayLen)
@@ -30,8 +26,7 @@ uint8_t arrayContains(char* item, char** array, uint32_t arrayLen)
   return 0;
 }
 
-uint32_t toInt (char* int)
+uint32_t toInt (char* integer)
 {
-  char* endPtr;
-  return (uint32_t)strtol(int, endPtr, 0);
+  return (uint32_t)strtol(integer, NULL, 0);
 }

@@ -17,9 +17,12 @@ node* createSymbolTable(char*** tokens, uint32_t lines)
   for(i = 0; i < lines; i++)
   {
     token = tokens[i][0];
+    //TODO: double check this if statment
     if(token[strlen(token) - 1] == ':')
+    {
       insert(symbolTable, NULL, token, &token);
       tokens[i][0] = tokens[i][1];
+    }
   }
   return symbolTable;
 }
@@ -49,7 +52,3 @@ uint32_t* assemble(char*** tokens, uint32_t lines)
   }
   return assembledInstrs;
 }
-
-
-
-
