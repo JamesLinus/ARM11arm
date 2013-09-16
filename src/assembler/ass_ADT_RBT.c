@@ -6,21 +6,28 @@
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-/* 
-Red Black Tree Abstract Data Type
-(Faster insertion/deletion than AVL tree, not as rigidly balanced as though)
-    Polymorphic by setting up the following:
-        DATA = data type
-        KEY = key type
-        equals() = method to determine if two keys are equal 
-NOTE: get() returns reference to the node be sure not to change internal pointers
-      delete() unimplemented
-*/
-
-#define DATA void*
-#define KEY char*
+///////////////////////////////////////////////////////////////////////////////
+// Red Black Tree Abstract Data Type
+// (Faster insertion/deletion than AVL tree, not as rigidly balanced though)
+//     Polymorphic by setting up the following:
+//         DATA = data type
+//         KEY = key type
+//         equals() = method to determine if two keys are equal 
+// NOTE: get() returns reference to the node do not change internal pointers
+//       delete() unimplemented
+///////////////////////////////////////////////////////////////////////////////
 
 #include "ass_private.h"
+
+static uint8_t equals(KEY key1, KEY key2);
+static node* createNode(node* parent, KEY key, DATA data);
+static void rotateRight(node* start);
+static void rotateLeft(node* start);
+static void case5(node* child);
+static void case4(node* child);
+static void case3(node* child);
+static void case2(node* child);
+static void case1(node* child);
 
 struct node
 {
@@ -32,114 +39,6 @@ struct node
   KEY key;
   DATA data; 
 };
-
-//////////////////////////////////////////////////////////////
-//ADT Helper Methods
-// returns 1 for key1 > key 2, 2 for key1 < key2, 0 otherwise
-//////////////////////////////////////////////////////////////
-
-static uint8_t equals(KEY key1, KEY key2)
-{
-  if(key1 - key2 > 0)
-    return 1;
-  else if(key1 - key2 < 0)
-    return 2;
-  else
-    return 0;
-}
-
-static node* createNode(node* parent, KEY key, DATA data)
-{
-  node* new_node = malloc(sizeof(node));
-  new_node->left = NULL;
-  new_node->right = NULL;
-  new_node->parent = parent;
-  new_node->colour = 1;
-  new_node->key = key;
-  new_node->data = data;
-  return new_node;
-}
-
-static void rotateRight(node* start)
-{
-  node* left = start->left;
-  start->left = left->right;
-  left->right->parent = start;
-  left->right = start;
-  start->parent = left;
-}
-
-static void rotateLeft(node* start)
-{
-  node* right = start->right;
-  start->right = right->left;
-  right->left->parent = start;
-  right->left = start;
-  start->parent = right;
-}
-
-static void case2(node* child);
-
-static void case5(node* child)
-{
-  node* parent = child->parent;
-  node* grandParent = parent->parent;
-
-  grandParent->colour = 1;
-  parent->colour = 0;
-
-  if(grandParent->left == parent && parent->left == child)
-    rotateRight(grandParent);
-  else
-    rotateLeft(grandParent);
-}
-
-static void case4(node* child)
-{
-  node* parent =  child->parent;
-  node* grandParent = parent->parent;
-  if(grandParent->left == parent && parent->right == child)
-    case5(parent);
-  else
-    case5(parent);
-}
-
-static void case3(node* child)
-{
-  node* uncle = NULL;
-  if(child->parent->parent->left != child->parent)
-    uncle = child->parent->parent->left;
-  else
-    uncle = child->parent->parent->right;
-
-  if(uncle->colour != 0)
-  {
-    child->parent->colour = 0;
-    uncle->colour = 0;
-    uncle->parent->colour = 1;
-    case2(uncle->parent);
-  }
-  else
-    case4(child);
-}
-
-static void case2(node* child)
-{
-  if(child->parent->colour != 0) 
-    case3(child);
-}
-
-
-static void case1(node* child)
-{
-  if(child->parent == NULL) 
-    child->colour = 0;
-  else case2(child);
-}
-
-///////////////////////////////////////////////////////////
-//ADT Methods
-///////////////////////////////////////////////////////////
 
 node* makeRBT()
 {
@@ -222,4 +121,104 @@ void insert(node* root, node* parent, KEY key, DATA data)
 void* delete(node* root, KEY key)
 {
   return NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Helper Methods
+///////////////////////////////////////////////////////////////////////////////
+
+static uint8_t equals(KEY key1, KEY key2)
+{
+  if(key1 - key2 > 0)
+    return 1;
+  else if(key1 - key2 < 0)
+    return 2;
+  return 0;
+}
+
+static node* createNode(node* parent, KEY key, DATA data)
+{
+  node* new_node = malloc(sizeof(node));
+  new_node->left = NULL;
+  new_node->right = NULL;
+  new_node->parent = parent;
+  new_node->colour = 1;
+  new_node->key = key;
+  new_node->data = data;
+  return new_node;
+}
+
+static void rotateRight(node* start)
+{
+  node* left = start->left;
+  start->left = left->right;
+  left->right->parent = start;
+  left->right = start;
+  start->parent = left;
+}
+
+static void rotateLeft(node* start)
+{
+  node* right = start->right;
+  start->right = right->left;
+  right->left->parent = start;
+  right->left = start;
+  start->parent = right;
+}
+
+static void case5(node* child)
+{
+  node* parent = child->parent;
+  node* grandParent = parent->parent;
+
+  grandParent->colour = 1;
+  parent->colour = 0;
+
+  if(grandParent->left == parent && parent->left == child)
+    rotateRight(grandParent);
+  else
+    rotateLeft(grandParent);
+}
+
+static void case4(node* child)
+{
+  node* parent =  child->parent;
+  node* grandParent = parent->parent;
+  if(grandParent->left == parent && parent->right == child)
+    case5(parent);
+  else
+    case5(parent);
+}
+
+static void case3(node* child)
+{
+  node* uncle = NULL;
+  if(child->parent->parent->left != child->parent)
+    uncle = child->parent->parent->left;
+  else
+    uncle = child->parent->parent->right;
+
+  if(uncle->colour != 0)
+  {
+    child->parent->colour = 0;
+    uncle->colour = 0;
+    uncle->parent->colour = 1;
+    case2(uncle->parent);
+  }
+  else
+    case4(child);
+}
+
+static void case2(node* child)
+{
+  if(child->parent->colour != 0) 
+    case3(child);
+}
+
+
+static void case1(node* child)
+{
+  if(child->parent == NULL) 
+    child->colour = 0;
+  else case2(child);
 }
