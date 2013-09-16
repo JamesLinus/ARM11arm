@@ -15,11 +15,9 @@ static char** tokeniseLine(char* string_line);
 char*** tokeniser(char* path)
 {
   uint32_t curr_line = 0;
-  FILE* file = fopen(path, "rt");
   uint32_t num_lines = countLines(path);
   char*** tokens = calloc(1, num_lines * OP_MAX_ARGS * sizeof(void*));
-  char** string_lines = readInstrs(file, num_lines);
-  fclose(file);
+  char** string_lines = readInstrs(path, num_lines);
 
   for (; curr_line < num_lines; curr_line++)
   {

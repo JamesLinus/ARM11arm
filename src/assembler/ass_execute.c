@@ -17,7 +17,9 @@ int startAssembler(int argc, char **argv)
   {
     return 1;
   }
-  return writeInstrs(argv[2], assemble(tokeniser(argv[1]), countLines(argv[1])));
+  return writeInstrs(argv[2], 
+                     assemble(tokeniser(argv[1]), countLines(argv[1])),
+                     0); // TODO;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

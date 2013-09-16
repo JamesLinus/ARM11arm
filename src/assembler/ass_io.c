@@ -10,18 +10,23 @@
 
 #define MAX_LINES 512
 
-char** readInstrs(FILE* file, uint32_t num_lines)
+char** readInstrs(char* path, uint32_t num_lines)
 {
   uint32_t curr_line = 0;
+  FILE* file = fopen(path, "rt");
   char** string_lines = calloc(num_lines, MAX_LINES);
 
   fseek(file, 0, SEEK_SET);
   for (; fgets(string_lines[curr_line], MAX_LINES, file) != NULL; curr_line++);
+  fclose(file);
 
   return string_lines;
 }
 
-int writeInstrs(char* path, uint32_t* ass_instrs)
+int writeInstrs(char* path, uint32_t* ass_instrs, uint32_t num_instrs)
 {
- return 0;
+  FILE* file = fopen(path, "wb");
+  fwrite(ass_instrs, 4, num_instrs, file);
+  fclose(file);
+  return 0;
 }
