@@ -117,7 +117,6 @@ void insert(node* root, node* parent, KEY key, DATA data)
   }
 }
 
-// returns 0 if not found
 void* delete(node* root, KEY key)
 {
   return NULL;
@@ -129,9 +128,9 @@ void* delete(node* root, KEY key)
 
 static uint8_t equals(KEY key1, KEY key2)
 {
-  if(key1 - key2 > 0)
+  if(strcmp(key1, key2) > 0)
     return 1;
-  else if(key1 - key2 < 0)
+  else if(strcmp(key1, key2) < 0)
     return 2;
   return 0;
 }

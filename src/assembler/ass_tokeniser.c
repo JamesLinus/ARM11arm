@@ -11,15 +11,14 @@
 #define OP_MAX_ARGS 6 
 
 static char** tokeniseLine(char* string_line);
-static uint32_t countLines(FILE* file);
 
 char*** tokeniser(char* path)
 {
   uint32_t curr_line = 0;
   FILE* file = fopen(path, "rt");
-  uint32_t num_lines = countLines(file);
+  uint32_t num_lines = countLines(path);
   char*** tokens = calloc(1, num_lines * OP_MAX_ARGS * sizeof(void*));
-  char** string_lines = readfile(file, num_lines);
+  char** string_lines = readInstrs(file, num_lines);
   fclose(file);
 
   for (; curr_line < num_lines; curr_line++)
@@ -44,21 +43,4 @@ static char** tokeniseLine(char* string_line)
     line[++token] = strtok(NULL, " ");
   }
   return line;
-}
-
-static uint32_t countLines(FILE* file)
-{
-  uint32_t num_lines = 1;
-  uint32_t num_chars = 0;
-  int ch = 0;
-
-  while ((ch = fgetc(file)) != EOF)
-  {
-    fseek(file, num_chars++, SEEK_SET);
-    if((char)ch == '\n')
-    {
-      num_lines++;
-    }
-  }
-  return num_lines;
 }
