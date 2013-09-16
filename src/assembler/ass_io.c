@@ -6,37 +6,17 @@
 // Members: amv12, lmj112, skd212
 ///////////////////////////////////////////////////////////////////////////////
 
-#define MAX_LINE_SIZE 512
-
 #include "ass_private.h"
 
-char** readfile(FILE* file, uint32_t numLines)
+#define MAX_LINES 512
+
+char** readfile(FILE* file, uint32_t num_lines)
 {
-  uint32_t line = 0;
-  char** lines = calloc(numLines, MAX_LINE_SIZE);
+  uint32_t curr_line = 0;
+  char** string_lines = calloc(num_lines, MAX_LINES);
 
   fseek(file, 0, SEEK_SET);
-  for (; fgets(lines[line], MAX_LINE_SIZE, file) != NULL; line++);
+  for (; fgets(string_lines[curr_line], MAX_LINES, file) != NULL; curr_line++);
 
-  return lines;
-}
-
-
-/*=============================Helper Methods=======================*/
-
-uint32_t countLines(FILE* file)
-{
-  uint32_t lines = 1;
-  uint64_t chars = 0;
-  int ch = 0;
-
-  fseek(file, 0, SEEK_SET);
-  while ((ch = fgetc(file)) != EOF)
-  {
-    if((char)ch == '\n')
-      lines++;
-    chars++;
-    fseek(file, chars, SEEK_SET);
-  }
-  return lines;
+  return string_lines;
 }

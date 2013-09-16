@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #define REG_D(x) (x << 16)
 #define REG_N(x) (x << 12)
@@ -21,14 +22,13 @@
 typedef struct node node;
 
 uint32_t regToInt(char* reg);
-uint8_t arrayContains(char* item, char** array, uint32_t arrayLen);
+uint8_t arrayContains(char* item, char** array, uint32_t array_length);
 uint32_t toInt (char* integer);
-char** readfile(FILE* file, uint32_t numLines);
-uint32_t countLines(FILE* file);
+char** readfile(FILE* file, uint32_t num_lines);
 node* makeRBT();
 node* get(node* root, KEY key);
 void insert(node* root, node* parent, KEY key, DATA data);
-uint32_t data_processing(char** expression);
-uint32_t multiply_instr(char** line);
-uint32_t branch_instr(char** line, node* symbolTable);
-uint32_t single_data_transfer(char** line, node* symbolTable);
+uint32_t ass_data_processing(char** line);
+uint32_t ass_multiply(char** line);
+uint32_t ass_branch(char** line, node* symbol_table);
+uint32_t ass_single_data_transfer(char** line, node* symbol_table);

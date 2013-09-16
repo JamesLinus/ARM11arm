@@ -7,21 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ass_private.h"
-#include <string.h>
 
 uint32_t regToInt(char* reg)
 {
-  //TODO: add end pointer and error messages
-  return (uint32_t)strtol(&reg[1], NULL, 0);
+  return toInt(&reg[1]);
 }
 
-uint8_t arrayContains(char* item, char** array, uint32_t arrayLen)
+uint8_t arrayContains(char* item, char** array, uint32_t array_length)
 {
-  uint32_t i;
-  for(i = 0; i < arrayLen ; i++)
+  uint32_t i = 0;
+  for(; i < array_length ; i++)
   {
     if(strcmp(item, array[i]) == 0)
+    {
       return 1;
+    }
   }
   return 0;
 }
