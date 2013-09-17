@@ -59,7 +59,7 @@ static uint32_t* assemble(char*** tokens, uint32_t num_lines)
     }
     else
     {
-      printf("Unknown command");
+      printf("\nLabel: %s\n", tokens[i][0]);
     }
   }
   return ass_instrs;

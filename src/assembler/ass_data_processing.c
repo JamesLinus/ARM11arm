@@ -9,7 +9,7 @@
 #include "ass_private.h"
 
 static uint32_t operand_2(char** op_2);
-static uint32_t expression(char* op_2);
+static uint32_t expression(char* op_2, uint32_t max_size);
 static uint32_t registor(char** op_2);
 
 uint32_t ass_data_processing(char** line)
@@ -80,45 +80,48 @@ static inline uint32_t operand_2(char** op_2)
 {
   if(op_2[0][0] == '#')
   {
-    return expression(&op_2[0][1]);
+    return expression(&op_2[0][1], 255);
   }
   return registor(op_2);
 }
 
-static uint32_t expression(char* op_2)
+static uint32_t expression(char* op_2, uint32_t max_size)
 {
   uint32_t instr_op_2 = toInt(op_2);
-  if(instr_op_2 > 255)
+  if(instr_op_2 > max_size)
   {
     //TODO: Dont exit deal with it differently
     printf("Opperand 2 too large to be an imemdiate");
     exit(EXIT_FAILURE);
   }
-  else
-  {
-    return instr_op_2;
-  }
+  return instr_op_2;
 }
 
 static uint32_t registor(char** op_2)
 {
-  uint32_t instr_op_2 = 0x00000000;
+  uint32_t instr_op_2 = REG_M(regToInt(op_2[0]));
 
-  if(strcmp(op_2[0], "lsl") == 0)
+  if(strcmp(op_2[1], "lsr") == 0)
   {
-    
+    instr_op_2 |= 0x00000020;
   }
-  else if(strcmp(op_2[0], "ror"))
+  else if(strcmp(op_2[1], "ror"))
   {
-
+    instr_op_2 |= 0x00000040;
   }
-  else if(strcmp(op_2[0], "asr"))
+  else if(strcmp(op_2[1], "asr"))
   {
+    instr_op_2 |= 0x00000050;
+  }
 
+  if(op_2[2][0] == '#')
+  {
+    instr_op_2 |= (expression(&op_2[2][1], 31) << 7);
   }
   else
   {
-
+    instr_op_2 |= (0x00000010 | REG_S(regToInt(op_2[2])));
   }
+
   return instr_op_2;
 }

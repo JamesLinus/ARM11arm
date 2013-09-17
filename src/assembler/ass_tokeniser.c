@@ -34,11 +34,11 @@ static char** tokeniseLine(char* string_line)
 {
   char** line = calloc(1, OP_MAX_ARGS * sizeof(void*));
   uint32_t token = 0;
-  line[token] = strtok(string_line, " ");
+  line[token] = strtok(string_line, " ,");
 
   while (token < OP_MAX_ARGS)
   {
-    line[++token] = strtok(NULL, " ");
+    line[++token] = strtok(NULL, " ,");
   }
   return line;
 }
