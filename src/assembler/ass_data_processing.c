@@ -91,7 +91,7 @@ static uint32_t expression(char* op_2, uint32_t max_size)
   if(instr_op_2 > max_size)
   {
     //TODO: Dont exit deal with it differently
-    printf("Opperand 2 too large to be an imemdiate");
+    printf("Opperand 2 too large to be an imemdiate\n\n");
     exit(EXIT_FAILURE);
   }
   return instr_op_2;
